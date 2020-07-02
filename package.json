@@ -1,14 +1,18 @@
 {
-  "name": "mapvote",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": { 
-  	"start": "node index.js"
-  },
-  "author": "error401de,acra5y",
-  "license": "MIT",
-  "dependencies": {
-    "express": "^4.17.1"
-  }
+	"name": "mapvote",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"dev": "nodemon index.js",
+		"start": "node index.js"
+	},
+	"author": "error401de,acra5y",
+	"license": "MIT",
+	"dependencies": {
+		"express": "^4.17.1"
+	},
+	"devDependencies": {
+		"nodemon": "^2.0.4"
+	}
 }
