@@ -1,5 +1,19 @@
 body {
 	background-color: #657887;
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+h1 {
+	font-size: 1.0em;
+    color: #ffffff;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
+    height: 100%;
+    padding-right: 4px;
+    padding-bottom: 2px;
 }
 
 #menu-box {
@@ -20,6 +34,15 @@ body {
 .box-styling {
 	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.5), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 	border-radius: 10px;
+}
+
+.box-header {
+	background-color: #1b232e;
+	height: 25px;
+	width: 100%;
+	border-top-right-radius: inherit;
+	border-top-left-radius: inherit;
+	text-align: right;
 }
 
 .outer {
