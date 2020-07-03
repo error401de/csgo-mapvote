@@ -64,6 +64,19 @@ h2 {
 	width: 200px;
 }
 
+.map-voted {
+	background: url(../img/tick.svg);
+}
+
+.map-icon {
+	width: 40px;
+	height: 40px;
+	background-size: 40px 40px;
+	position: absolute;
+	right: 0;
+	bottom: 0;
+}
+
 .participant-waiting {
 	display: block;
 	width: 40px;
@@ -90,6 +103,7 @@ h2 {
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	position: relative;
 }
 
 .map:hover, .menu-button:hover {

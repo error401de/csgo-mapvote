@@ -1,17 +1,30 @@
-async function createMapBoxes() {
+votingStatus = "voting";
+
+async function createMapBoxes(ws) {
 	const url = 'config/maps_competitive.json';
 	const response = await fetch(url);
 	const json = await response.json();
 
-	json.items.forEach(renderBox);
+	json.items.forEach(renderBox.bind(null, ws));
 }
 
-function renderBox({ id, name }) {
+function renderBox(ws, { id, name }) {
 	const div = document.createElement('div');
 	div.setAttribute('class', 'map');
 	div.setAttribute('id', id);
 	div.textContent = name;
 	document.getElementById('box-maps').appendChild(div);
+	div.onclick = function () {
+		if (votingStatus == 'voting') {
+			const tick = document.createElement('div');
+			tick.setAttribute('class', 'map-voted map-icon');
+			document.getElementById(id).appendChild(tick);
+			ws.send(JSON.stringify(["voted", { maps: [id] }]))
+			votingStatus = 'vetoing';
+		}
+		
+	}
+	
 }
 
 function renderUser({ name, vetoed }) {
@@ -58,12 +71,11 @@ function sendDataOnClick(elementId, ws, data) {
 }
 
 window.onload = function () {
-	createMapBoxes();
 	const ws = new WebSocket('ws://' + document.location.host);
+	createMapBoxes(ws);
 
 	ws.onmessage = function (message) {
 		const json = JSON.parse(message.data);
-		//ws.send(JSON.stringify(["vetoed", { maps: ['de_dust2'] }])) // only for dev reasons
 
 		switch (json[0]) {
 			case 'participants':
