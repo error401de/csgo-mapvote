@@ -16,3 +16,7 @@ function renderBox(id, text) {
 	div.textContent = text;
 	document.getElementById('box-maps').appendChild(div);
 }
+
+window.onload=function(){
+	createMapBoxes();
+}
