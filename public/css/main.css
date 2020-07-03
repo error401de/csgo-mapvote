@@ -29,6 +29,7 @@ h2 {
 }
 
 #menu-box {
+	visibility: hidden;
 	background-color: #313a41;
 	width: 200px;
 }

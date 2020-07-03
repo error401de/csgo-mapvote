@@ -75,7 +75,6 @@ module.exports = (webSocketServer) => {
 			console.log(`new admin ${ws.id}`);
 			state.adminId = ws.id;
 		}
-
-		messageHandler.sendJson(ws, ['registered', { ack: true, id: ws.id }]);
+		messageHandler.sendJson(ws, ['registered', { ack: true, id: ws.id, isAdmin: shouldBecomeAdmin }]);
 	}
 }

@@ -91,5 +91,6 @@ const process = (webSocketServer, state, ws, msg) => {
 
 module.exports = {
 	process,
-	updateParticipants
+	updateParticipants,
+	sendJson
 }
