@@ -42,6 +42,10 @@ function handleRegistered(data) {
 	};
 }
 
+function sendDataOnClick(elementId, ws, data) {
+	document.querySelector(elementId).onclick = () => ws.send(JSON.stringify(data));
+}
+
 window.onload = function () {
 	createMapBoxes();
 	const ws = new WebSocket('ws://' + document.location.host);
@@ -67,4 +71,7 @@ window.onload = function () {
 				console.log('Message not handled', message);
 		}
 	}
+
+	sendDataOnClick('#show-result', ws, ['show_result']);
+	sendDataOnClick('#reset', ws, ['reset']);
 }
