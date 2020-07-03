@@ -1,32 +1,71 @@
+const { v4: uuidv4 } = require('uuid');
+
+const messageHandler = require('./messageHandler');
+
+const defaultState = {
+	adminId: ''
+};
+
 function heartbeat() {
 	this.isAlive = true;
 }
 
-const checkIsAlive = (webSocketServer) => {
-	webSocketServer.getWss().clients.forEach(function each(ws) {
+const checkIsAlive = (webSocketServer, state) => {
+	for (let ws of webSocketServer.getWss().clients) {
 		if (ws.isAlive === false) {
-			console.debug('closing socket');
-			return ws.terminate();
+			console.log('closing socket');
+
+			if (ws.id !== state.adminId) {
+				ws.terminate();
+				messageHandler.updateParticipants(webSocketServer.getWss());
+			}
+
+			webSocketServer.getWss().clients.forEach((ws) => ws.terminate());
+			break;
 		}
 
 		ws.isAlive = false;
 		ws.ping(() => { });
-	});
+	};
 }
 
-module.exports = (webSocketServer) => {
-	const interval = setInterval(checkIsAlive.bind(null, webSocketServer), 1000);
+const isFirstParticipant = (webSocketServer) => webSocketServer.getWss().clients.size === 1;
 
-	webSocketServer.getWss().on('close', () => {
+const isLimitReached = webSocketServer => webSocketServer.getWss().clients.size > 5;
+
+module.exports = (webSocketServer) => {
+	const state = {
+		...defaultState
+	};
+	const interval = setInterval(checkIsAlive.bind(null, webSocketServer, state), 1000);
+	const wss = webSocketServer.getWss();
+
+	wss.on('close', () => {
 		clearInterval(interval);
 	});
 
 	return function (ws, req) {
+		if (isLimitReached(webSocketServer)) {
+			return ws.terminate();
+		}
+
+		ws.id = uuidv4();
 		ws.isAlive = true;
+		ws.votes = [];
+		ws.vetos = [];
 		ws.on('pong', heartbeat);
 
-		ws.on('message', function (msg) {
-			console.log(`received ${msg}`);
-		});
+		ws.on('message', messageHandler.process.bind(null, webSocketServer, state, ws));
+
+		messageHandler.updateParticipants(wss);
+
+		const shouldBecomeAdmin = isFirstParticipant(webSocketServer);
+
+		if (shouldBecomeAdmin) {
+			console.log(`new admin ${ws.id}`);
+			state.adminId = ws.id;
+		}
+
+		messageHandler.sendJson(ws, ['registered', { ack: true, id: ws.id }]);
 	}
 }
