@@ -8,6 +8,15 @@ async function createMapBoxes(ws) {
 	json.items.forEach(renderBox.bind(null, ws));
 }
 
+function renderVetoedImg() {
+	const img = document.createElement('img');
+	img.src = 'img/vetoed.svg';
+	img.alt = 'This map was vetoed';
+	img.width = 40;
+	img.classList.add('map-icon');
+	return img;
+}
+
 function renderBox(ws, { id, name }) {
 	const div = document.createElement('div');
 	div.setAttribute('class', 'map');
@@ -15,16 +24,20 @@ function renderBox(ws, { id, name }) {
 	div.textContent = name;
 	document.getElementById('box-maps').appendChild(div);
 	div.onclick = function () {
-		if (votingStatus == 'voting') {
+		if (votingStatus === 'voting') {
 			const tick = document.createElement('div');
 			tick.setAttribute('class', 'map-voted map-icon');
 			document.getElementById(id).appendChild(tick);
-			ws.send(JSON.stringify(["voted", { maps: [id] }]))
+			ws.send(JSON.stringify(["voted", { maps: [id] }]));
 			votingStatus = 'vetoing';
+			document.getElementById('status-message').innerText = 'Status: Please place your veto';
+		} else if (votingStatus === 'vetoing') {
+			document.getElementById(id).appendChild(renderVetoedImg());
+			ws.send(JSON.stringify(["vetoed", { maps: [id] }]));
+			votingStatus = 'waiting';
+			document.getElementById('status-message').innerText = 'Status: Wait until the result is revealed';
 		}
-		
 	}
-	
 }
 
 function renderUser({ name, vetoed }) {
@@ -52,30 +65,33 @@ function handleParticipants(data) {
 	data.items.forEach(renderUser);
 }
 
+function removeMapIcons(map) {
+	for (let node of map.childNodes) {
+		if (node.className && node.className.includes('map-icon')) {
+			node.remove();
+		}
+	}
+}
+
 function handleResult(data) {
 	document.querySelectorAll('.map').forEach(map => {
+		removeMapIcons(map);
 		if (!data.items.some(({ votes }) => votes.includes(map.id))) {
 			map.style.visibility = 'hidden';
 		}
 		if (data.items.some(({ vetos }) => vetos.includes(map.id))) {
-			const img = document.createElement('img');
-			img.src = 'img/vetoed.svg';
-			img.alt = 'This map was vetoed';
-			img.width = 40;
-			img.classList.add('map-icon');
-			map.appendChild(img);
+			map.appendChild(renderVetoedImg());
 		}
 	})
+	document.getElementById('status-message').innerText = 'Status: Wait until the votes are reset';
 }
 
 function handleReset() {
 	document.querySelectorAll('.map').forEach(map => {
-		for (let node of map.childNodes) {
-			if (node.className && node.className.includes('map-icon')) {
-				node.remove();
-			}
-		}
+		removeMapIcons(map);
 		map.style.visibility = 'visible';
+		votingStatus = 'voting';
+		document.getElementById('status-message').innerText = 'Status: Please place your vote';
 	})
 }
 
