@@ -81,6 +81,7 @@ const process = (webSocketServer, state, ws, msg) => {
 					ws.vetoed = false;
 					sendJson(ws, ['reset']);
 				});
+				updateParticipants(webSocketServer.getWss());
 				break;
 			default:
 				console.log(`Unkown message ${msg} from ${ws.id}`);
