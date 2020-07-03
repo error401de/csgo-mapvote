@@ -76,7 +76,9 @@ const process = (webSocketServer, state, ws, msg) => {
 				}
 				webSocketServer.getWss().clients.forEach(ws => {
 					ws.votes = [];
+					ws.voted = false;
 					ws.vetos = [];
+					ws.vetoed = false;
 					sendJson(ws, ['reset']);
 				});
 				break;
