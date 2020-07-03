@@ -186,3 +186,9 @@ h2 {
 	display: flex;
 	justify-content: space-between;
 }
+
+.github-icon {
+	position: absolute;
+	right: 2px;
+	bottom: 2px;
+}
