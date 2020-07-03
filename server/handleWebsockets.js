@@ -17,7 +17,7 @@ const checkIsAlive = (webSocketServer, state) => {
 
 			if (ws.id !== state.adminId) {
 				ws.terminate();
-				messageHandler.updateParticipants(webSocketServer.getWss());
+				return messageHandler.updateParticipants(webSocketServer.getWss());
 			}
 
 			webSocketServer.getWss().clients.forEach((ws) => ws.terminate());
@@ -56,6 +56,16 @@ module.exports = (webSocketServer) => {
 		ws.on('pong', heartbeat);
 
 		ws.on('message', messageHandler.process.bind(null, webSocketServer, state, ws));
+
+		ws.on('close', () => {
+			if (ws.id !== state.adminId) {
+				ws.terminate();
+				console.log('ho')
+				return messageHandler.updateParticipants(webSocketServer.getWss());
+			}
+
+			webSocketServer.getWss().clients.forEach((ws) => ws.terminate());
+		});
 
 		messageHandler.updateParticipants(wss);
 
