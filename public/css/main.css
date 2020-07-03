@@ -46,6 +46,22 @@ h2 {
 	width: 200px;
 }
 
+.participant-waiting {
+	display: block;
+	width: 40px;
+	height: 40px;
+	background: url(../img/sandclock.svg);
+	background-size: 40px 40px;
+}
+
+.participant-finished {
+	display: block;
+	width: 40px;
+	height: 40px;
+	background: url(../img/tick.svg);
+	background-size: 40px 40px;
+}
+
 .map {
 	height: 125px;
 	width: 125px;
@@ -81,8 +97,8 @@ h2 {
 	border-radius: 10px;
 	display: flex;
 	align-items: center;
-	justify-content: left;
 	padding-left: 10px;
+	justify-content: space-between;
 }
 
 .box-participants {

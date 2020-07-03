@@ -14,12 +14,23 @@ function renderBox({ id, name }) {
 	document.getElementById('box-maps').appendChild(div);
 }
 
-function renderUser({name}) {
+function renderUser({name, vetoed}) {
 	const div = document.createElement('div');
 	div.setAttribute('class', 'user');
 	div.setAttribute('id', 'user'+ name);
 	div.textContent = "User " + name;
 	document.getElementById('box-participants').appendChild(div);
+
+	const status = document.createElement('div');
+	
+	if (vetoed) {
+		status.setAttribute('class', 'participant-finished');
+	}
+	else {
+		status.setAttribute('class', 'participant-waiting');
+	}
+
+	document.getElementById('user'+ name).appendChild(status);
 }
 
 function handleParticipants(data) {
