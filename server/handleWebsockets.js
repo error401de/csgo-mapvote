@@ -17,7 +17,7 @@ const checkIsAlive = (webSocketServer, state) => {
 
 			if (ws.id !== state.adminId) {
 				ws.terminate();
-				messageHandler.updateParticipants(webSocketServer.getWss());
+				return messageHandler.updateParticipants(webSocketServer.getWss());
 			}
 
 			webSocketServer.getWss().clients.forEach((ws) => ws.terminate());
@@ -57,6 +57,16 @@ module.exports = (webSocketServer) => {
 
 		ws.on('message', messageHandler.process.bind(null, webSocketServer, state, ws));
 
+		ws.on('close', () => {
+			if (ws.id !== state.adminId) {
+				ws.terminate();
+				console.log('ho')
+				return messageHandler.updateParticipants(webSocketServer.getWss());
+			}
+
+			webSocketServer.getWss().clients.forEach((ws) => ws.terminate());
+		});
+
 		messageHandler.updateParticipants(wss);
 
 		const shouldBecomeAdmin = isFirstParticipant(webSocketServer);
@@ -65,7 +75,6 @@ module.exports = (webSocketServer) => {
 			console.log(`new admin ${ws.id}`);
 			state.adminId = ws.id;
 		}
-
-		messageHandler.sendJson(ws, ['registered', { ack: true, id: ws.id }]);
+		messageHandler.sendJson(ws, ['registered', { ack: true, id: ws.id, isAdmin: shouldBecomeAdmin }]);
 	}
 }

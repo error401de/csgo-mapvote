@@ -1,6 +1,11 @@
 const allMaps = require('../public/config/maps_competitive.json');
 
-const sendJson = (ws, data) => ws.send(JSON.stringify(data));
+const sendJson = (ws, data) => {
+	if (ws.readyState !== 1) {
+		return console.error(`Trying to send ${data} to ${ws.id} with ready state ${ws.readyState}`);
+	}
+	ws.send(JSON.stringify(data))
+};
 
 const areMapsValid = maps => maps.every(mapId => allMaps.items.find(({ id }) => id === mapId));
 
@@ -86,5 +91,6 @@ const process = (webSocketServer, state, ws, msg) => {
 
 module.exports = {
 	process,
-	updateParticipants
+	updateParticipants,
+	sendJson
 }

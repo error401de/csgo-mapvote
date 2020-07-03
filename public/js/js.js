@@ -6,7 +6,7 @@ async function createMapBoxes() {
 	json.items.forEach(renderBox);
 }
 
-function renderBox({id, name}) {
+function renderBox({ id, name }) {
 	const div = document.createElement('div');
 	div.setAttribute('class', 'map');
 	div.setAttribute('id', id);
@@ -36,12 +36,18 @@ function handleReset() {
 	console.log("hiiiiii");
 }
 
-window.onload=function(){
+function handleRegistered(data) {
+	if (data.isAdmin) {
+		document.querySelector('#menu-box').style.visibility = 'visible';
+	};
+}
+
+window.onload = function () {
 	createMapBoxes();
 	const ws = new WebSocket('ws://' + document.location.host);
 
-	ws.onmessage=function(message){
-		const json = JSON.parse(message.data);
+	ws.onmessage = function (message) {
+	const json = JSON.parse(message.data);
 	ws.send(JSON.stringify(["vetoed", {maps: ['de_dust2']}])) // only for dev reasons
 
 		switch (json[0]) {
@@ -54,8 +60,10 @@ window.onload=function(){
 			case 'reset':
 				handleReset();
 				break;
-		default:
-			console.log('Message not handled');
+			case 'registered':
+				handleRegistered(json[1]);
+			default:
+				console.log('Message not handled');
 		}
 	}
 }
