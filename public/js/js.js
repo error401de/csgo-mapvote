@@ -30,7 +30,7 @@ function renderUser({ name, vetoed }) {
 		status.setAttribute('class', 'participant-waiting');
 	}
 
-	document.getElementById('user'+ name).appendChild(status);
+	document.getElementById('user' + name).appendChild(status);
 }
 
 function handleParticipants(data) {
@@ -39,18 +39,37 @@ function handleParticipants(data) {
 	data.items.forEach(renderUser);
 }
 
-function handleResult() {
-	console.log("hiiiiii");
+function handleResult(data) {
+	document.querySelectorAll('.map').forEach(map => {
+		if (!data.items.some(({ votes }) => votes.includes(map.id))) {
+			map.style.visibility = 'hidden';
+		}
+		if (data.items.some(({ vetos }) => vetos.includes(map.id))) {
+			const img = document.createElement('img');
+			img.src = 'img/vetoed.svg';
+			img.alt = 'This map was vetoed';
+			img.width = 40;
+			img.classList.add('map-icon');
+			map.appendChild(img);
+		}
+	})
 }
 
 function handleReset() {
-	console.log("hiiiiii");
+	document.querySelectorAll('.map').forEach(map => {
+		for (let node of map.childNodes) {
+			if (node.className && node.className.includes('map-icon')) {
+				node.remove();
+			}
+		}
+		map.style.visibility = 'visible';
+	})
 }
 
 function handleRegistered(data) {
 	if (data.isAdmin) {
 		document.querySelector('#menu-box').style.visibility = 'visible';
-	};
+	}
 }
 
 function sendDataOnClick(elementId, ws, data) {
@@ -70,7 +89,7 @@ window.onload = function () {
 				handleParticipants(json[1]);
 				break;
 			case 'result':
-				handleResult();
+				handleResult(json[1]);
 				break;
 			case 'reset':
 				handleReset();
