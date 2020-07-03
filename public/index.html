@@ -2,6 +2,7 @@
 <head>
 	<title>CS:GO Mapvote</title>
 	<link rel="stylesheet" type="text/css" href="css/main.css">
+	<script src="js/js.js"></script>
 </head>
 <body>
 	<div class="outer">
@@ -16,8 +17,8 @@
 					<div class="box-header">
 						<h1>Voting panel</h1>
 					</div>
-					<div class="box-maps">
-						<div class="map" id="map1">Dust II</div>
+					<div class="box-maps" id="box-maps">
+						<script type="text/javascript">createMapBoxes();</script>
 					</div>
 					<div class="box-footer">
 						<h2>Status: Waiting for votes</h2>
