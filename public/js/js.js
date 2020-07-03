@@ -63,7 +63,7 @@ window.onload = function () {
 
 	ws.onmessage = function (message) {
 		const json = JSON.parse(message.data);
-		ws.send(JSON.stringify(["vetoed", { maps: ['de_dust2'] }])) // only for dev reasons
+		//ws.send(JSON.stringify(["vetoed", { maps: ['de_dust2'] }])) // only for dev reasons
 
 		switch (json[0]) {
 			case 'participants':
