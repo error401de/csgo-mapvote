@@ -106,7 +106,7 @@ function sendDataOnClick(elementId, ws, data) {
 }
 
 window.onload = function () {
-	const ws = new WebSocket(document.location.protocol === 'https:' ? 'wss://' : 'ws://' + document.location.host);
+	const ws = new WebSocket((document.location.protocol === 'https:' ? 'wss://' : 'ws://') + document.location.host);
 	createMapBoxes(ws);
 
 	ws.onmessage = function (message) {
