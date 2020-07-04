@@ -175,7 +175,7 @@ h2 {
 
 .box-footer {
 	background-color: #1b232e;
-	height: 25px;
+	min-height: 25px;
 	border-bottom-right-radius: inherit;
 	border-bottom-left-radius: inherit;
 	margin-top: auto;
