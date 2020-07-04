@@ -12,8 +12,8 @@ function renderVetoedImg() {
 	const img = document.createElement('img');
 	img.src = 'img/vetoed.svg';
 	img.alt = 'This map was vetoed';
-	img.width = 40;
 	img.classList.add('map-icon');
+
 	return img;
 }
 
