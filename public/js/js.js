@@ -134,6 +134,8 @@ window.onload = function () {
 		}
 	}
 
+	ws.onclose = () => alert('Your connection was interrupted.');
+
 	sendDataOnClick('#show-result', ws, ['show_result']);
 	sendDataOnClick('#reset', ws, ['reset']);
 }
