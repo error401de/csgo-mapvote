@@ -1,72 +1,17 @@
-# csgo-mapvotes
+# csgo-mapvote
+csgo-mapvote is a tool to reach a consensus on a CS:GO map pool while playing with friends.
 
-## websocket message interface
+## mvp
+The current state is a mvp and provides only basic functionality. There is only one mode: Each player has one vote and one veto.  
+There is no session handling, so the tool can be used by one group of max. 5 players only.
 
-The sent messages contain a json string (apart from ping/pong messages).
-The structure of the messages is
-```json
-	[
-		"type_of_message",
-		{ "some": "data" }
-	]
-```
+## installation
+The tool relies on node.js. So just navigate into the main directory and run ```npm i```
 
-Where the first entry of the array is the type of message being sent and the second entry contains the payload.
+## contributing
+We're happy about contributions. Feel free to fix bugs via PR. New features should be discussed in "Issues" with "enhancement" label.
 
-The types of messages a user can send to the server and their payloads are:
+## demo
+Live demo is coming soon.
 
-### voted
-```json
-	"maps": ["de_dust2"]
-```
-Which maps does one want to play?
-
-### vetoed
-```json
-	"maps": ["de_dust2"]
-```
-Which maps does one not want to play?
-
-### show_result
-No payload required.
-Only the admin (the first participant) can send this. A message containing all votes will be broadcasted to everyone.
-
-### reset
-No payload required.
-Only the admin (the first participant) can send this. All votes will be reset.
-
-
-The types of messages the server will send to the participants and their payloads are:
-
-### reset
-No payload. The client should update the view do enable voting again.
-
-### participants
-```json
-{
-	"items": [
-		{
-			"name": 1,
-			"voted": true,
-			"vetoed": false
-		}
-	]
-}
-```
-
-This message is broadcasted to everyone, every time someone joins or leaves or submits a vote or a veto.
-
-### result
-```json
-{
-	"items": [
-		{
-			"name": 1,
-			"votes": ["de_dust2"],
-			"vetos": ["de_anubis"]
-		}
-	]
-}
-```
-
-This message is broadcastet after the admin sent the `show_result" message.
+![screenshot](https://github.com/error401de/csgo-mapvote/tree/master/doku/screenshot.png?raw=true)
