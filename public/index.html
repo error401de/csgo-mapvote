@@ -1,7 +1,9 @@
-<html>
+<html lang="en">
 
 <head>
 	<title>CS:GO Mapvote</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="stylesheet" type="text/css" href="css/main.css">
 	<script src="js/js.js"></script>
 	<script src="js/essential.js"></script>
@@ -9,36 +11,35 @@
 </head>
 
 <body>
-	<div class="outer">
-		<div class="middle">
-			<div class="inner">
-				<div class="box-styling" id="box-participants-wrapper">
-					<div class="box-header">
-						<h1>Participants</h1>
-					</div>
-					<div class="box-participants" id="box-participants"></div>
-				</div>
-				<div class="box-styling" id="box-main">
-					<div class="box-header">
-						<h1>Voting panel</h1>
-					</div>
-					<div class="box-maps" id="box-maps"></div>
-					<div class="box-footer">
-						<div id="status-message">
-							<h2>Status: Please place your vote</h2>
-						</div>
-					</div>
-				</div>
-				<div class="box-styling" id="box-menu">
-					<div class="box-header">
-						<h1>Action menu</h1>
-					</div>
-					<div class="menu-button" id="show-result">Show Result</div>
-					<div class="menu-button" id="reset">Reset Votes</div>
+	<main>
+		<div class="box-styling" id="box-participants-wrapper">
+			<div class="box-header">
+				<h1>Participants</h1>
+			</div>
+			<div class="box-participants" id="box-participants"></div>
+		</div>
+		<div class="box-styling" id="box-main">
+			<div class="box-header">
+				<h1>Voting panel</h1>
+			</div>
+			<div class="box-maps" id="box-maps"></div>
+			<div class="box-footer">
+				<div id="status-message">
+					<h2>Status: Please place your vote</h2>
 				</div>
 			</div>
 		</div>
+		<div class="box-styling" id="box-menu">
+			<div class="box-header">
+				<h1>Action menu</h1>
+			</div>
+			<div class="menu-button" id="show-result">Show Result</div>
+			<div class="menu-button" id="reset">Reset Votes</div>
+		</div>
+	</main>
+	<div class="github-icon">
+		<a href="https://github.com/error401de/csgo-mapvote" target="_blank" border="0">
+			<img src="img/github.png" />
+		</a>
 	</div>
-	<a href="https://github.com/error401de/csgo-mapvote" target="_blank" border="0"><img src="img/github.png"
-			class="github-icon" /></a>
 </body>
