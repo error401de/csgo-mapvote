@@ -40,11 +40,11 @@ function renderBox(ws, { id, name }) {
 	}
 }
 
-function renderUser({ name, vetoed }) {
+function renderParticipant({ name, vetoed }) {
 	const div = document.createElement('div');
-	div.setAttribute('class', 'user');
-	div.setAttribute('id', 'user' + name);
-	div.textContent = "User " + name;
+	div.setAttribute('class', 'participant');
+	div.setAttribute('id', 'participant' + name);
+	div.textContent = "Player " + name;
 	document.getElementById('box-participants').appendChild(div);
 
 	const status = document.createElement('div');
@@ -56,13 +56,13 @@ function renderUser({ name, vetoed }) {
 		status.setAttribute('class', 'participant-waiting');
 	}
 
-	document.getElementById('user' + name).appendChild(status);
+	document.getElementById('participant' + name).appendChild(status);
 }
 
 function handleParticipants(data) {
 	const clearList = document.getElementById('box-participants');
 	clearList.textContent = '';
-	data.items.forEach(renderUser);
+	data.items.forEach(renderParticipant);
 }
 
 function removeMapIcons(map) {
