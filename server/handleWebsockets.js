@@ -60,7 +60,6 @@ module.exports = (webSocketServer) => {
 		ws.on('close', () => {
 			if (ws.id !== state.adminId) {
 				ws.terminate();
-				console.log('ho')
 				return messageHandler.updateParticipants(webSocketServer.getWss());
 			}
 
