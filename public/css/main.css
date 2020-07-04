@@ -28,7 +28,7 @@ h2 {
 	padding-top: 4px;
 }
 
-#menu-box {
+#box-menu {
 	visibility: hidden;
 	background-color: #313a41;
 	width: 200px;
@@ -52,7 +52,7 @@ h2 {
 	background-color: #b10000;
 }
 
-#main-box {
+#box-main {
 	background-color: #313a41;
 	width: 600px;
 	display: flex;

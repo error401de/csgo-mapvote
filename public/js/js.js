@@ -5,7 +5,7 @@ async function createMapBoxes(ws) {
 	const response = await fetch(url);
 	const json = await response.json();
 
-	json.items.forEach(renderBox.bind(null, ws));
+	json.items.forEach(renderMap.bind(null, ws));
 }
 
 function renderVetoedImg() {
@@ -17,7 +17,7 @@ function renderVetoedImg() {
 	return img;
 }
 
-function renderBox(ws, { id, name }) {
+function renderMap(ws, { id, name }) {
 	const div = document.createElement('div');
 	div.setAttribute('class', 'map');
 	div.setAttribute('id', id);
@@ -97,7 +97,7 @@ function handleReset() {
 
 function handleRegistered(data) {
 	if (data.isAdmin) {
-		document.querySelector('#menu-box').style.visibility = 'visible';
+		document.querySelector('#box-menu').style.visibility = 'visible';
 	}
 }
 
