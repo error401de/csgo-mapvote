@@ -14,4 +14,4 @@ We're happy about contributions. Feel free to fix bugs via PR. New features shou
 ## demo
 Live demo is coming soon.
 
-![screenshot](https://github.com/error401de/csgo-mapvote/tree/master/doku/screenshot.png?raw=true)
+![screenshot](https://github.com/error401de/csgo-mapvote/blob/master/docu/screenshot.png?raw=true)
