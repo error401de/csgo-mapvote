@@ -70,7 +70,8 @@ function handleParticipants(data) {
 }
 
 function removeMapIcons(map) {
-	for (let node of map.childNodes) {
+	const nodes = [...map.childNodes]; // copy because for loop mutates map.childNodes
+	for (let node of nodes) {
 		if (node.className && node.className.includes('map-icon')) {
 			node.remove();
 		}
