@@ -17,6 +17,10 @@ function renderVetoedImg() {
 	return img;
 }
 
+function changeStatusTextTo(newText) {
+	document.querySelector('#status-message > h2').innerText = newText;
+}
+
 function renderMap(ws, { id, name }) {
 	const div = document.createElement('div');
 	div.setAttribute('class', 'map');
@@ -30,12 +34,12 @@ function renderMap(ws, { id, name }) {
 			document.getElementById(id).appendChild(tick);
 			ws.send(JSON.stringify(["voted", { maps: [id] }]));
 			votingStatus = 'vetoing';
-			document.getElementById('status-message').innerText = 'Status: Please place your veto';
+			changeStatusTextTo('Status: Please place your veto');
 		} else if (votingStatus === 'vetoing') {
 			document.getElementById(id).appendChild(renderVetoedImg());
 			ws.send(JSON.stringify(["vetoed", { maps: [id] }]));
 			votingStatus = 'waiting';
-			document.getElementById('status-message').innerText = 'Status: Wait until the result is revealed';
+			changeStatusTextTo('Status: Wait until the result is revealed');
 		}
 	}
 }
@@ -48,7 +52,7 @@ function renderParticipant({ name, vetoed }) {
 	document.getElementById('box-participants').appendChild(div);
 
 	const status = document.createElement('div');
-	
+
 	if (vetoed) {
 		status.setAttribute('class', 'participant-finished');
 	}
@@ -83,7 +87,7 @@ function handleResult(data) {
 			map.appendChild(renderVetoedImg());
 		}
 	})
-	document.getElementById('status-message').innerText = 'Status: Wait until the votes are reset';
+	changeStatusTextTo('Status: Wait until the votes are reset');
 }
 
 function handleReset() {
@@ -91,7 +95,7 @@ function handleReset() {
 		removeMapIcons(map);
 		map.style.visibility = 'visible';
 		votingStatus = 'voting';
-		document.getElementById('status-message').innerText = 'Status: Please place your vote';
+		changeStatusTextTo('Status: Please place your vote');
 	})
 }
 
