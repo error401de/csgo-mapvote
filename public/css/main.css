@@ -125,6 +125,7 @@ h2 {
 	flex-wrap: wrap;
 	align-items: center;
 	justify-content: center;
+	flex: 1 1 auto;
 }
 
 .participant {
@@ -204,5 +205,9 @@ main {
 	#box-participants-wrapper, #box-main, #box-menu {
 		width: 100%;
 		margin-top: 10px;
+	}
+
+	#box-main {
+		flex: 1 1 auto;
 	}
 }
