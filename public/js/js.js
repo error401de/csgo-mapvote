@@ -1,5 +1,16 @@
 (() => {
-	let votingStatus = "voting";
+	const STATUS_VOTING = 1;
+	const STATUS_VETOING = 2;
+	const STATUS_WAITING = 3;
+	let votingStatus = STATUS_VOTING;
+
+	function createElement(tagName, className, id) {
+		const element = document.createElement(tagName);
+		className && element.setAttribute('class', className);
+		id && element.setAttribute('id', id);
+
+		return element;
+	}
 
 	async function createMapBoxes(ws) {
 		const url = 'config/maps_competitive.json';
@@ -23,43 +34,31 @@
 	}
 
 	function renderMap(ws, { id, name }) {
-		const div = document.createElement('div');
-		div.setAttribute('class', 'map');
-		div.setAttribute('id', id);
+		const div = createElement('div', 'map', id)
 		div.textContent = name;
-		document.getElementById('box-maps').appendChild(div);
-		div.onclick = function () {
-			if (votingStatus === 'voting') {
-				const tick = document.createElement('div');
-				tick.setAttribute('class', 'map-voted map-icon');
+		div.onclick = () => {
+			if (votingStatus === STATUS_VOTING) {
+				const tick = createElement('div', 'map-voted map-icon');
 				document.getElementById(id).appendChild(tick);
-				ws.send(JSON.stringify(["voted", { maps: [id] }]));
-				votingStatus = 'vetoing';
+				ws.send(JSON.stringify(['voted', { maps: [id] }]));
+				votingStatus = STATUS_VETOING;
 				changeStatusTextTo('Status: Please place your veto');
-			} else if (votingStatus === 'vetoing') {
+			} else if (votingStatus === STATUS_VETOING) {
 				document.getElementById(id).appendChild(renderVetoedImg());
-				ws.send(JSON.stringify(["vetoed", { maps: [id] }]));
-				votingStatus = 'waiting';
+				ws.send(JSON.stringify(['vetoed', { maps: [id] }]));
+				votingStatus = STATUS_WAITING;
 				changeStatusTextTo('Status: Wait until the result is revealed');
 			}
 		}
+		document.getElementById('box-maps').appendChild(div);
 	}
 
 	function renderParticipant({ name, vetoed }) {
-		const div = document.createElement('div');
-		div.setAttribute('class', 'participant');
-		div.setAttribute('id', 'participant' + name);
-		div.textContent = "Player " + name;
+		const div = createElement('div', 'participant', 'participant' + name);
+		div.textContent = name;
 		document.getElementById('box-participants').appendChild(div);
 
-		const status = document.createElement('div');
-
-		if (vetoed) {
-			status.setAttribute('class', 'participant-finished');
-		}
-		else {
-			status.setAttribute('class', 'participant-waiting');
-		}
+		const status = createElement('div', vetoed ? 'participant-finished' : 'participant-waiting');
 
 		document.getElementById('participant' + name).appendChild(status);
 	}
@@ -96,7 +95,7 @@
 		document.querySelectorAll('.map').forEach(map => {
 			removeMapIcons(map);
 			map.style.visibility = 'visible';
-			votingStatus = 'voting';
+			votingStatus = STATUS_VOTING;
 			changeStatusTextTo('Status: Please place your vote');
 		})
 	}
@@ -107,38 +106,43 @@
 		}
 	}
 
-	function sendDataOnClick(elementId, ws, data) {
+	function handleMessage(message) {
+		const json = JSON.parse(message.data);
+
+		switch (json[0]) {
+			case 'participants':
+				handleParticipants(json[1]);
+				break;
+			case 'result':
+				handleResult(json[1]);
+				break;
+			case 'reset':
+				handleReset();
+				break;
+			case 'registered':
+				handleRegistered(json[1]);
+				break;
+			default:
+				console.log('Message not handled', message);
+		}
+	}
+
+	function sendDataOnClick(ws, elementId, data) {
 		document.querySelector(elementId).onclick = () => ws.send(JSON.stringify(data));
 	}
 
 	window.onload = function () {
-		const ws = new WebSocket((document.location.protocol === 'https:' ? 'wss://' : 'ws://') + document.location.host);
+		const ws = new WebSocket(`${document.location.protocol === 'https:' ? 'wss' : 'ws'}://${document.location.host}`);
 		createMapBoxes(ws);
 
-		ws.onmessage = function (message) {
-			const json = JSON.parse(message.data);
-
-			switch (json[0]) {
-				case 'participants':
-					handleParticipants(json[1]);
-					break;
-				case 'result':
-					handleResult(json[1]);
-					break;
-				case 'reset':
-					handleReset();
-					break;
-				case 'registered':
-					handleRegistered(json[1]);
-					break;
-				default:
-					console.log('Message not handled', message);
-			}
-		}
+		ws.onmessage = handleMessage;
 
 		ws.onclose = () => alert('Your connection was interrupted.');
+		window.addEventListener('beforeunload', () =>
+			ws.onclose = null
+		);
 
-		sendDataOnClick('#show-result', ws, ['show_result']);
-		sendDataOnClick('#reset', ws, ['reset']);
+		sendDataOnClick(ws, '#show-result', ['show_result']);
+		sendDataOnClick(ws, '#reset', ['reset']);
 	}
 })();
