@@ -2,10 +2,10 @@
 	"name": "mapvote",
 	"version": "1.0.0",
 	"description": "",
-	"main": "index.js",
+	"main": "server/index.js",
 	"scripts": {
-		"dev": "nodemon index.js",
-		"start": "node index.js"
+		"dev": "nodemon server/index.js",
+		"start": "node server/index.js"
 	},
 	"author": "error401de,acra5y",
 	"license": "MIT",
