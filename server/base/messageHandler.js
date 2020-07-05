@@ -1,4 +1,4 @@
-const allMaps = require('../public/config/maps_competitive.json');
+const allMaps = require('../../public/config/maps_competitive.json');
 
 const sendJson = (ws, data) => {
 	if (ws.readyState !== 1) {
