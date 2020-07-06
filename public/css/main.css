@@ -120,6 +120,15 @@ h2 {
 	line-height: 20px; font-size: 15px;
 }
 
+.map:hover > .map-icon {
+	width: 23px;
+	height: 23px;
+	background-size: 23px 23px;
+	position: absolute;
+	right: 6px;
+	bottom: 6px;
+}
+
 .box-maps {
 	display: flex;
 	flex-wrap: wrap;
