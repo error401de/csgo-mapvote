@@ -132,7 +132,7 @@
 	}
 
 	function handleSlider(ws, sliderId, value) {
-		let items = [{votesPerParticipant: '1', vetoesPerParticipant: '1'}];
+		let items = [{votesPerParticipant: 1, vetoesPerParticipant: 1}];
 		document.querySelectorAll('.slider').forEach(slider => {
 			let currentSlider = document.getElementById(slider.id);
 			let output = document.getElementById(currentSlider.id+"-value");
@@ -147,7 +147,7 @@
 				} else if (slider.id === 'slider-vetoes') {
 					items[0].vetoesPerParticipant = currentSlider.value;
 				}
-				ws.send(JSON.stringify(['slide', { items }]));
+				ws.send(JSON.stringify(['slider', { items }]));
 			}
 		})
 	}

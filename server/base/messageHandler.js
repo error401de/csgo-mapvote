@@ -71,6 +71,24 @@ const reset = (webSocketServer, state, ws) => {
 	updateParticipants(webSocketServer.getWss());
 }
 
+const slider = (webSocketServer, state, ws, data) => {
+	if (ws.id !== state.adminId) {
+		console.log(`${ws.id} tried to change slider settings as non-admin`);
+		return;
+	}
+	const votesPerParticipant = data.items[0].votesPerParticipant;
+	const vetoesPerParticipant = data.items[0].vetoesPerParticipant
+
+	if (sliderIsNotValid(votesPerParticipant) || sliderIsNotValid(vetoesPerParticipant)) {
+		console.log(`${ws.id} tried to set slider to an invalid value: ${JSON.stringify(data)}`);
+		return;
+	}
+}
+
+const sliderIsNotValid = (value) => {
+	return (value < 0 || value > countMaps || !Number.isInteger(value));
+}
+
 const process = (webSocketServer, state, ws, msg) => {
 	try {
 		const [msgType, data] = JSON.parse(msg);
@@ -88,7 +106,8 @@ const process = (webSocketServer, state, ws, msg) => {
 			case 'reset':
 				reset(webSocketServer, state, ws)
 				break;
-			case 'slide':
+			case 'slider':
+				slider(webSocketServer, state, ws, data)
 				break;
 			default:
 				console.log(`Unkown message ${msg} from ${ws.id}`);
