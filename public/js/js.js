@@ -143,9 +143,9 @@
 
 			currentSlider.onchange = function () {
 				if (slider.id === 'slider-votes') {
-					items[0].votesPerParticipant = currentSlider.value;
+					items[0].votesPerParticipant = parseint(currentSlider.value);
 				} else if (slider.id === 'slider-vetoes') {
-					items[0].vetoesPerParticipant = currentSlider.value;
+					items[0].vetoesPerParticipant = parseint(currentSlider.value);
 				}
 				ws.send(JSON.stringify(['slider', { items }]));
 			}
