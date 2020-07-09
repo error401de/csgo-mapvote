@@ -10,6 +10,8 @@ const sendJson = (ws, data) => {
 
 const areMapsValid = maps => maps.every(mapId => allMaps.items.find(({ id }) => id === mapId));
 
+const countMaps = allMaps.items.length;
+
 const updateParticipants = (wss) => {
 	const items = [];
 	wss.clients.forEach(
@@ -85,6 +87,8 @@ const process = (webSocketServer, state, ws, msg) => {
 				break;
 			case 'reset':
 				reset(webSocketServer, state, ws)
+				break;
+			case 'slide':
 				break;
 			default:
 				console.log(`Unkown message ${msg} from ${ws.id}`);

@@ -132,18 +132,24 @@
 	}
 
 	function handleSlider(ws, sliderId, value) {
-		let slider = document.getElementById(sliderId);
-		let output = document.getElementById(value);
-		let messageTitle = "";
-		if (sliderId === 'slider-votes') {
-			messageTitle = 'votesPerParticipant';
-		} else if (sliderId === 'slider-vetoes') {
-			messageTitle = 'vetoesPerParticipant';
-		}
-		slider.oninput = function () {
-			output.innerHTML = this.value;
-			ws.send(JSON.stringify([messageTitle.toString(), this.value]))
-		}
+		let items = [{votesPerParticipant: '1', vetoesPerParticipant: '1'}];
+		document.querySelectorAll('.slider').forEach(slider => {
+			let currentSlider = document.getElementById(slider.id);
+			let output = document.getElementById(currentSlider.id+"-value");
+
+			currentSlider.oninput = function () {
+				output.innerHTML = currentSlider.value;
+			}
+
+			currentSlider.onchange = function () {
+				if (slider.id === 'slider-votes') {
+					items[0].votesPerParticipant = currentSlider.value;
+				} else if (slider.id === 'slider-vetoes') {
+					items[0].vetoesPerParticipant = currentSlider.value;
+				}
+				ws.send(JSON.stringify(['slide', { items }]));
+			}
+		})
 	}
 
 	window.onload = function () {
@@ -159,7 +165,6 @@
 
 		sendDataOnClick(ws, '#show-result', ['show_result']);
 		sendDataOnClick(ws, '#reset', ['reset']);
-		handleSlider(ws, 'slider-votes', 'slider-votes-value');
-		handleSlider(ws, 'slider-vetoes', 'slider-vetoes-value');
+		handleSlider(ws);
 	}
 })();
