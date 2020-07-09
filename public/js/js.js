@@ -131,6 +131,21 @@
 		document.querySelector(elementId).onclick = () => ws.send(JSON.stringify(data));
 	}
 
+	function handleSlider(ws, sliderId, value) {
+		let slider = document.getElementById(sliderId);
+		let output = document.getElementById(value);
+		let messageTitle = "";
+		if (sliderId === 'slider-votes') {
+			messageTitle = 'votesPerParticipant';
+		} else if (sliderId === 'slider-vetoes') {
+			messageTitle = 'vetoesPerParticipant';
+		}
+		slider.oninput = function () {
+			output.innerHTML = this.value;
+			ws.send(JSON.stringify([messageTitle.toString(), this.value]))
+		}
+	}
+
 	window.onload = function () {
 		const ws = new WebSocket(`${document.location.protocol === 'https:' ? 'wss' : 'ws'}://${document.location.host}`);
 		createMapBoxes(ws);
@@ -144,5 +159,7 @@
 
 		sendDataOnClick(ws, '#show-result', ['show_result']);
 		sendDataOnClick(ws, '#reset', ['reset']);
+		handleSlider(ws, 'slider-votes', 'slider-votes-value');
+		handleSlider(ws, 'slider-vetoes', 'slider-vetoes-value');
 	}
 })();
