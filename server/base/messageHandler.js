@@ -83,6 +83,17 @@ const slider = (webSocketServer, state, ws, data) => {
 		console.log(`${ws.id} tried to set slider to an invalid value: ${JSON.stringify(data)}`);
 		return;
 	}
+
+	state.votesPerParticipant = votesPerParticipant;
+	state.vetoesPerParticipant = vetoesPerParticipant;
+
+	updateSettings(webSocketServer, state);
+}
+
+const updateSettings = (webSocketServer, state) => {
+	const items = {votesPerParticipant: state.votesPerParticipant, vetoesPerParticipant: state.vetoesPerParticipant};
+	const wss = webSocketServer.getWss();
+	wss.clients.forEach(ws => sendJson(ws, ['settings', items]));
 }
 
 const sliderIsNotValid = (value) => {
@@ -121,5 +132,6 @@ const process = (webSocketServer, state, ws, msg) => {
 module.exports = {
 	process,
 	updateParticipants,
-	sendJson
+	sendJson,
+	updateSettings
 }

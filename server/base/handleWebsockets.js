@@ -3,7 +3,9 @@ const { v4: uuidv4 } = require('uuid');
 const messageHandler = require('./messageHandler');
 
 const defaultState = {
-	adminId: ''
+	adminId: '',
+	votesPerParticipant: 1,
+	vetoesPerParticipant: 1
 };
 
 function heartbeat() {
@@ -19,6 +21,9 @@ const checkIsAlive = (webSocketServer, state) => {
 				ws.terminate();
 				return messageHandler.updateParticipants(webSocketServer.getWss());
 			}
+			state = {
+				...defaultState
+			};
 
 			webSocketServer.getWss().clients.forEach((ws) => ws.terminate());
 			break;
@@ -34,7 +39,7 @@ const isFirstParticipant = (webSocketServer) => webSocketServer.getWss().clients
 const isLimitReached = webSocketServer => webSocketServer.getWss().clients.size > 5;
 
 module.exports = (webSocketServer) => {
-	const state = {
+	let state = {
 		...defaultState
 	};
 	const interval = setInterval(checkIsAlive.bind(null, webSocketServer, state), 1000);
@@ -62,11 +67,16 @@ module.exports = (webSocketServer) => {
 				ws.terminate();
 				return messageHandler.updateParticipants(webSocketServer.getWss());
 			}
+			state = {
+				...defaultState
+			};
 
 			webSocketServer.getWss().clients.forEach((ws) => ws.terminate());
 		});
 
 		messageHandler.updateParticipants(wss);
+		messageHandler.updateSettings(webSocketServer, state);
+
 
 		const shouldBecomeAdmin = isFirstParticipant(webSocketServer);
 

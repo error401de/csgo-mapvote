@@ -106,6 +106,11 @@
 		}
 	}
 
+	function settings(data) {
+		console.log("Votes data: "+data);
+		//changeStatusTextTo('Status: Wait until the votes are reset');
+	}
+
 	function handleMessage(message) {
 		const json = JSON.parse(message.data);
 
@@ -121,6 +126,9 @@
 				break;
 			case 'registered':
 				handleRegistered(json[1]);
+				break;
+			case 'settings':
+				settings(json[1]);
 				break;
 			default:
 				console.log('Message not handled', message);
