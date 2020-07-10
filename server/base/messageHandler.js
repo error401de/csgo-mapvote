@@ -12,28 +12,28 @@ const areMapsValid = maps => maps.every(mapId => allMaps.items.find(({ id }) => 
 
 const countMaps = allMaps.items.length;
 
-const updateParticipants = (wss) => {
+const updateParticipants = (wss, lobbyId) => {
 	const items = [];
 	wss.clients.forEach(
-		({ voted, vetoed }) => items.push({
+		({ voted, vetoed, lobbyId: wsLobbyId }) => lobbyId === wsLobbyId && items.push({
 			name: `Player ${items.length + 1}`,
 			voted,
 			vetoed
 		})
 	);
-	wss.clients.forEach(ws => sendJson(ws, ['participants', { items }]));
+	wss.clients.forEach(ws => lobbyId === ws.lobbyId && sendJson(ws, ['participants', { items }]));
 }
 
-const publishResult = (wss) => {
+const publishResult = (wss, lobbyId) => {
 	const items = [];
 	wss.clients.forEach(
-		({ votes, vetos }) => items.push({
+		({ votes, vetos, lobbyId: wsLobbyId }) => lobbyId === wsLobbyId && items.push({
 			name: items.length + 1,
 			votes,
 			vetos
 		})
 	);
-	wss.clients.forEach(ws => sendJson(ws, ['result', { items }]));
+	wss.clients.forEach(ws => ws.lobbyId === lobbyId && sendJson(ws, ['result', { items }]));
 }
 
 const handleMapChange = (webSocketServer, state, ws, validationProp, listProp, limitProp, data) => {
@@ -51,7 +51,7 @@ const handleMapChange = (webSocketServer, state, ws, validationProp, listProp, l
 	}
 	ws[listProp] = ws[listProp].length ? ws[listProp] : data.maps;
 	ws[validationProp] = true;
-	updateParticipants(webSocketServer.getWss());
+	updateParticipants(webSocketServer.getWss(), ws.lobbyId);
 };
 
 const showResult = (webSocketServer, state, ws) => {
@@ -60,23 +60,27 @@ const showResult = (webSocketServer, state, ws) => {
 		return;
 	}
 	const wss = webSocketServer.getWss();
-	updateParticipants(wss);
-	publishResult(wss);
+	updateParticipants(wss, ws.lobbyId);
+	publishResult(wss, ws.lobbyId);
 }
+
+const resetSingleConnection = (lobbyId, ws) => {
+	if (ws.lobbyId === lobbyId) {
+		ws.votes = [];
+		ws.voted = false;
+		ws.vetos = [];
+		ws.vetoed = false;
+		sendJson(ws, ['reset']);
+	}
+};
 
 const reset = (webSocketServer, state, ws) => {
 	if (ws.id !== state.adminId) {
 		console.log(`${ws.id} tried to reset as non-admin`);
 		return;
 	}
-	webSocketServer.getWss().clients.forEach(ws => {
-		ws.votes = [];
-		ws.voted = false;
-		ws.vetos = [];
-		ws.vetoed = false;
-		sendJson(ws, ['reset']);
-	});
-	updateParticipants(webSocketServer.getWss());
+	webSocketServer.getWss().clients.forEach(resetSingleConnection.bind(null, ws.lobbyId));
+	updateParticipants(webSocketServer.getWss(), ws.lobbyId);
 }
 
 const slider = (webSocketServer, state, ws, data) => {
@@ -95,14 +99,14 @@ const slider = (webSocketServer, state, ws, data) => {
 	state.votesPerParticipant = votesPerParticipant;
 	state.vetosPerParticipant = vetosPerParticipant;
 
-	updateSettings(webSocketServer, state);
+	updateSettings(webSocketServer, state, ws.lobbyId);
 	reset(webSocketServer, state, ws);
 }
 
-const updateSettings = (webSocketServer, state) => {
-	const items = {votesPerParticipant: state.votesPerParticipant, vetosPerParticipant: state.vetosPerParticipant};
+const updateSettings = (webSocketServer, state, lobbyId) => {
+	const items = { votesPerParticipant: state.votesPerParticipant, vetosPerParticipant: state.vetosPerParticipant };
 	const wss = webSocketServer.getWss();
-	wss.clients.forEach(ws => sendJson(ws, ['settings', items]));
+	wss.clients.forEach(ws => ws.lobbyId === lobbyId && sendJson(ws, ['settings', items]));
 }
 
 const sliderIsNotValid = (value) => {

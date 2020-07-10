@@ -119,6 +119,9 @@
 	function handleRegistered(data) {
 		if (data.isAdmin) {
 			document.querySelector('#box-menu').style.visibility = 'visible';
+			const linkToLobby = createElement('div');
+			linkToLobby.innerHTML = `Lobby Id: ${data.lobbyId}`;
+			document.querySelector('#box-menu').appendChild(linkToLobby)
 		}
 	}
 
@@ -158,10 +161,10 @@
 	}
 
 	function handleSlider(ws, sliderId, value) {
-		let items = [{votesPerParticipant: 1, vetosPerParticipant: 1}];
+		let items = [{ votesPerParticipant: 1, vetosPerParticipant: 1 }];
 		document.querySelectorAll('.slider').forEach(slider => {
 			let currentSlider = document.getElementById(slider.id);
-			let output = document.getElementById(currentSlider.id+"-value");
+			let output = document.getElementById(currentSlider.id + "-value");
 
 			currentSlider.oninput = function () {
 				output.innerHTML = currentSlider.value;
@@ -179,7 +182,7 @@
 	}
 
 	window.onload = function () {
-		const ws = new WebSocket(`${document.location.protocol === 'https:' ? 'wss' : 'ws'}://${document.location.host}`);
+		const ws = new WebSocket(`${document.location.protocol === 'https:' ? 'wss' : 'ws'}://${document.location.host}${document.location.search}`);
 		createMapBoxes(ws);
 
 		ws.onmessage = handleMessage;
