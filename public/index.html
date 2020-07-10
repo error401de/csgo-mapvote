@@ -11,7 +11,7 @@
 		function joinLobby() {
 			const input = document.getElementById('lobby-input').value;
 			if (input && input.length === 6) {
-				window.location = '/lobby.html?lobbyID=' + input;
+				window.location = '/lobby.html?lobbyId=' + input;
 			} else {
 				document.getElementById('error').style.visibility = 'visible';
 			}
@@ -19,6 +19,7 @@
 	</script>
 	<link rel="icon" type="image/svg+xml" href="img/favicon.svg" sizes="any">
 </head>
+
 <body>
 	<main>
 		<div class="box-styling" id="box-wrapper">
@@ -34,14 +35,14 @@
 				<h1>Join Lobby</h1>
 			</div>
 			<div class="box box-lobby">
-					<input type="text" name="lobbyid" id="lobby-input" maxlength="6" autofocus />
-					<div class="menu-button button button-green" onclick="joinLobby();">Join lobby</div>
-			<span id="error">Enter valid LobbyID</span>
+				<input type="text" name="lobbyid" id="lobby-input" maxlength="6" autofocus />
+				<div class="menu-button button button-green" onclick="joinLobby();">Join lobby</div>
+				<span id="error">Enter valid LobbyID</span>
 			</div>
 		</div>
-	<div class="github-icon">
-		<a href="https://github.com/error401de/csgo-mapvote" target="_blank" border="0">
-			<img src="img/github.png" />
-		</a>
-	</div>
+		<div class="github-icon">
+			<a href="https://github.com/error401de/csgo-mapvote" target="_blank" border="0">
+				<img src="img/github.png" />
+			</a>
+		</div>
 </body>
