@@ -1,9 +1,12 @@
 const { v4: uuidv4 } = require('uuid');
 
+const createLobbyId = require('../createLobbyId');
 const messageHandler = require('./messageHandler');
+const getConnectionsByLobbyId = require('../getConnectionsByLobbyId');
 
 const defaultState = {
 	adminId: '',
+	lobbyId: '',
 	votesPerParticipant: 1,
 	vetosPerParticipant: 1
 };
@@ -17,15 +20,12 @@ const checkIsAlive = (webSocketServer, state) => {
 		if (ws.isAlive === false) {
 			console.log('closing socket');
 
-			if (ws.id !== state.adminId) {
+			if (state.has(ws.lobbyId) && ws.id !== state.get(ws.lobbyId).adminId) {
 				ws.terminate();
-				return messageHandler.updateParticipants(webSocketServer.getWss());
+				return messageHandler.updateParticipants(webSocketServer.getWss(), ws.lobbyId);
 			}
-			state = {
-				...defaultState
-			};
-
-			webSocketServer.getWss().clients.forEach((ws) => ws.terminate());
+			getConnectionsByLobbyId(webSocketServer, ws.lobbyId).forEach(ws => ws.terminate());
+			state.delete(ws.lobbyId);
 			break;
 		}
 
@@ -34,14 +34,39 @@ const checkIsAlive = (webSocketServer, state) => {
 	};
 }
 
-const isFirstParticipant = (webSocketServer) => webSocketServer.getWss().clients.size === 1;
+const isLobbyIdValid = (webSocketServer, lobbyId) => {
+	const connections = getConnectionsByLobbyId(webSocketServer, lobbyId);
 
-const isLimitReached = webSocketServer => webSocketServer.getWss().clients.size > 5;
+	return connections.length > 0 && connections.length < 5;
+};
+
+const initLobbyId = (webSocketServer, state, ws, req) => {
+	const lobbyId = req.query.lobbyId ? req.query.lobbyId.toUpperCase() : null;
+	if (!lobbyId) {
+		ws.lobbyId = createLobbyId();
+		state.set(ws.lobbyId, {
+			...defaultState,
+			lobbyId: ws.lobbyId,
+			adminId: ws.id
+		});
+		console.log(`new admin ${ws.id} in lobby ${ws.lobbyId}`);
+
+		return { lobbyId: ws.lobbyId, isAdmin: true };
+	} else if (isLobbyIdValid(webSocketServer, lobbyId)) {
+		ws.lobbyId = lobbyId;
+
+		return { lobbyId: ws.lobbyId, isAdmin: false };
+	} else {
+		console.log(`Rejecting invalid lobbyId ${lobbyId}`);
+
+		return {};
+	}
+}
+
+const isLimitReached = webSocketServer => webSocketServer.getWss().clients.size > 100;
 
 module.exports = (webSocketServer) => {
-	let state = {
-		...defaultState
-	};
+	const state = new Map();
 	const interval = setInterval(checkIsAlive.bind(null, webSocketServer, state), 1000);
 	const wss = webSocketServer.getWss();
 
@@ -60,30 +85,24 @@ module.exports = (webSocketServer) => {
 		ws.vetos = [];
 		ws.on('pong', heartbeat);
 
-		ws.on('message', messageHandler.process.bind(null, webSocketServer, state, ws));
+		const { lobbyId, isAdmin } = initLobbyId(webSocketServer, state, ws, req);
+
+		if (!lobbyId) {
+			return ws.terminate();
+		}
 
 		ws.on('close', () => {
-			if (ws.id !== state.adminId) {
+			if (state.has(ws.lobbyId) && ws.id !== state.get(ws.lobbyId).adminId) {
 				ws.terminate();
-				return messageHandler.updateParticipants(webSocketServer.getWss());
+				return messageHandler.updateParticipants(webSocketServer, ws.lobbyId);
 			}
-			state = {
-				...defaultState
-			};
-
-			webSocketServer.getWss().clients.forEach((ws) => ws.terminate());
+			getConnectionsByLobbyId(webSocketServer, ws.lobbyId).forEach(ws => ws.terminate());
+			state.delete(ws.lobbyId);
 		});
 
-		messageHandler.updateParticipants(wss);
-		messageHandler.updateSettings(webSocketServer, state);
-
-
-		const shouldBecomeAdmin = isFirstParticipant(webSocketServer);
-
-		if (shouldBecomeAdmin) {
-			console.log(`new admin ${ws.id}`);
-			state.adminId = ws.id;
-		}
-		messageHandler.sendJson(ws, ['registered', { ack: true, id: ws.id, isAdmin: shouldBecomeAdmin }]);
+		ws.on('message', messageHandler.process.bind(null, webSocketServer, state.get(ws.lobbyId), ws));
+		messageHandler.updateParticipants(webSocketServer, ws.lobbyId);
+		messageHandler.updateSettings(webSocketServer, state.get(ws.lobbyId));
+		messageHandler.sendJson(ws, ['registered', { ack: true, id: ws.id, isAdmin, lobbyId: ws.lobbyId }]);
 	}
 }

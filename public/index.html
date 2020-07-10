@@ -5,53 +5,44 @@
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="stylesheet" type="text/css" href="css/main.css">
-	<script src="js/js.js"></script>
+	<link rel="stylesheet" type="text/css" href="css/index.css">
 	<script src="js/essential.js"></script>
+	<script type="text/javascript">
+		function joinLobby() {
+			const input = document.getElementById('lobby-input').value;
+			if (input && input.length === 6) {
+				window.location = '/lobby.html?lobbyId=' + input;
+			} else {
+				document.getElementById('error').style.visibility = 'visible';
+			}
+		}
+	</script>
 	<link rel="icon" type="image/svg+xml" href="img/favicon.svg" sizes="any">
 </head>
 
 <body>
 	<main>
-		<div class="box-styling" id="box-participants-wrapper">
+		<div class="box-styling" id="box-wrapper">
 			<div class="box-header">
-				<h1>Participants</h1>
+				<h1>Create Lobby</h1>
 			</div>
-			<div class="box-participants" id="box-participants"></div>
-		</div>
-		<div class="box-styling" id="box-main">
-			<div class="box-header">
-				<h1>Voting panel</h1>
-			</div>
-			<div class="box-maps" id="box-maps"></div>
-			<div class="box-footer">
-				<div id="status-message">
-					<h2>Status: Loading status</h2>
-				</div>
+			<div class="box">
+				<a href="/lobby.html" class="menu-button button button-green">Create lobby</a>
 			</div>
 		</div>
-		<div class="box-styling" id="box-menu">
+		<div class="box-styling" id="box-wrapper">
 			<div class="box-header">
-				<h1>Action menu</h1>
+				<h1>Join Lobby</h1>
 			</div>
-			<div class="menu-button" id="show-result">Show Result</div>
-			<div class="menu-button" id="reset">Reset Votes</div>
-			<div class="slider-wrapper">
-				<span class="slider-text">
-					<span>Votes:</span>
-					<span id="slider-votes-value">1</span>
-				</span>
-				<input type="range" min="0" max="11" value="1" class="slider" id="slider-votes">
-				<span class="slider-text">
-					<span>Vetos:</span>
-					<span id="slider-vetos-value">1</span>
-				</span>
-				<input type="range" min="0" max="11" value="1" class="slider" id="slider-vetos">
+			<div class="box box-lobby">
+				<input type="text" name="lobbyid" id="lobby-input" maxlength="6" autofocus />
+				<div class="menu-button button button-green" onclick="joinLobby();">Join lobby</div>
+				<span id="error">Enter valid LobbyID</span>
 			</div>
 		</div>
-	</main>
-	<div class="github-icon">
-		<a href="https://github.com/error401de/csgo-mapvote" target="_blank" border="0">
-			<img src="img/github.png" />
-		</a>
-	</div>
+		<div class="github-icon">
+			<a href="https://github.com/error401de/csgo-mapvote" target="_blank" border="0">
+				<img src="img/github.png" />
+			</a>
+		</div>
 </body>
