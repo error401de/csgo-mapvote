@@ -1,8 +1,8 @@
 # csgo-mapvote
 csgo-mapvote is a tool to reach a consensus on a CS:GO map pool while playing with friends.
 
-## mvp
-The current state is a mvp  and can be used by one group of max. 5 players only. Session handling will follow with ongoing development.
+## work in progress
+The project is still in development, there are some missing functionalities (see issues).
 
 ## installation
 The tool relies on node.js. So just navigate into the main directory and run ```npm i```
