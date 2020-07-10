@@ -94,14 +94,16 @@ const slider = (webSocketServer, state, ws, data) => {
 	state.votesPerParticipant = votesPerParticipant;
 	state.vetosPerParticipant = vetosPerParticipant;
 
-	updateSettings(webSocketServer, state);
+	updateSettingsForAll(webSocketServer, state);
 	reset(webSocketServer, state, ws);
 }
 
-const updateSettings = (webSocketServer, state) => {
-	const items = { votesPerParticipant: state.votesPerParticipant, vetosPerParticipant: state.vetosPerParticipant };
-	getConnectionsByLobbyId(webSocketServer, state.lobbyId).forEach(ws => sendJson(ws, ['settings', items]));
-}
+const getSettings = state => ({ votesPerParticipant: state.votesPerParticipant, vetosPerParticipant: state.vetosPerParticipant });
+
+const updateSettings = (ws, state) => sendJson(ws, ['settings', getSettings(state)]);
+
+const updateSettingsForAll = (webSocketServer, state) => getConnectionsByLobbyId(webSocketServer, state.lobbyId)
+	.forEach(ws => sendJson(ws, ['settings', getSettings(state)]));
 
 const sliderIsNotValid = (value) => {
 	return (value < 0 || value > countMaps || !Number.isInteger(value));

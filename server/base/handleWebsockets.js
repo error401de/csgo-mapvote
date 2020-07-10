@@ -102,7 +102,7 @@ module.exports = (webSocketServer) => {
 
 		ws.on('message', messageHandler.process.bind(null, webSocketServer, state.get(ws.lobbyId), ws));
 		messageHandler.updateParticipants(webSocketServer, ws.lobbyId);
-		messageHandler.updateSettings(webSocketServer, state.get(ws.lobbyId));
+		messageHandler.updateSettings(ws, state.get(ws.lobbyId));
 		messageHandler.sendJson(ws, ['registered', { ack: true, id: ws.id, isAdmin, lobbyId: ws.lobbyId }]);
 	}
 }
