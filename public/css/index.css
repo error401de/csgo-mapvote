@@ -1,0 +1,51 @@
+#box-newlobby-wrapper {
+	background-color: #313a41;
+	width: 200px;
+}
+
+#lobby-input {
+	width: 95px;
+	height: 45px;
+	margin-left: auto;
+	margin-right: auto;
+	background: #6c6d75;
+	color: white;
+	border: 2px solid black;
+	border-radius: 10px;
+	outline-width: 0;
+	text-align: center;
+	text-transform: uppercase;
+	font-size: 17px;
+}
+
+.box{
+	width: 100%;
+	height: calc(100% - 60px);
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+
+.box-lobby {
+	height: calc(100% - 25px);
+}
+
+#box-wrapper {
+	background-color: #313a41;
+	width: 200px;
+}
+
+.github-icon {
+	position: absolute;
+	bottom: 2px;
+	right: 2px;
+}
+
+main {
+	display: flex;
+	justify-content: center;
+	height: 300px;
+	padding: 40px 75px;
+	width: calc(100% - 150px);
+	margin: auto;
+}

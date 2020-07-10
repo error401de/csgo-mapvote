@@ -38,7 +38,7 @@
 	}
 
 	function renderMap(ws, { id, name }) {
-		const div = createElement('div', 'map', id)
+		const div = createElement('div', 'map button', id)
 		div.textContent = name;
 		div.onclick = () => {
 			if (votesLeft > 0) {

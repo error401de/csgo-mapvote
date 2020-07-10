@@ -1,0 +1,36 @@
+<html lang="en">
+
+<head>
+	<title>CS:GO Mapvote</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" type="text/css" href="css/main.css">
+	<link rel="stylesheet" type="text/css" href="css/index.css">
+	<script src="js/essential.js"></script>
+	<link rel="icon" type="image/svg+xml" href="img/favicon.svg" sizes="any">
+</head>
+<body>
+	<main>
+		<div class="box-styling" id="box-wrapper">
+			<div class="box-header">
+				<h1>Create Lobby</h1>
+			</div>
+			<div class="box">
+				<a href="/lobby.html" class="menu-button button" id="button-green">Create lobby</a>
+			</div>
+		</div>
+		<div class="box-styling" id="box-wrapper">
+			<div class="box-header">
+				<h1>Join Lobby</h1>
+			</div>
+			<div class="box box-lobby">
+					<input type="text" name="lobbyid" id="lobby-input" maxlength="6" autofocus />
+					<div class="menu-button button" id="button-green" onclick="window.location = '/lobby.html?lobbyId=' + document.getElementById('lobby-input').value">Join lobby</div>
+			</div>
+		</div>
+	<div class="github-icon">
+		<a href="https://github.com/error401de/csgo-mapvote" target="_blank" border="0">
+			<img src="img/github.png" />
+		</a>
+	</div>
+</body>
