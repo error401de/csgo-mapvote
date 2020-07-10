@@ -36,8 +36,16 @@ const publishResult = (wss) => {
 	wss.clients.forEach(ws => sendJson(ws, ['result', { items }]));
 }
 
-const handleMapChange = (webSocketServer, ws, validationProp, listProp, data) => {
-	if (!areMapsValid(data.maps) || ws[validationProp]) {
+const handleMapChange = (webSocketServer, state, ws, validationProp, listProp, limitProp, data) => {
+	if (data.maps.length > state[limitProp]) {
+		console.log(`${ws.id} ${validationProp} more than ${state[limitProp]} maps: ${JSON.stringify(data)}`);
+		return;
+	}
+	if (!areMapsValid(data.maps)) {
+		console.log(`${ws.id} ${validationProp} invalid maps: ${JSON.stringify(data)}`);
+		return;
+	}
+	if (ws[validationProp]) {
 		console.log(`${ws.id} tried to change ${listProp} multiple times`);
 		return;
 	}
@@ -77,21 +85,22 @@ const slider = (webSocketServer, state, ws, data) => {
 		return;
 	}
 	const votesPerParticipant = data.items[0].votesPerParticipant;
-	const vetoesPerParticipant = data.items[0].vetoesPerParticipant
+	const vetosPerParticipant = data.items[0].vetosPerParticipant
 
-	if (sliderIsNotValid(votesPerParticipant) || sliderIsNotValid(vetoesPerParticipant)) {
+	if (sliderIsNotValid(votesPerParticipant) || sliderIsNotValid(vetosPerParticipant)) {
 		console.log(`${ws.id} tried to set slider to an invalid value: ${JSON.stringify(data)}`);
 		return;
 	}
 
 	state.votesPerParticipant = votesPerParticipant;
-	state.vetoesPerParticipant = vetoesPerParticipant;
+	state.vetosPerParticipant = vetosPerParticipant;
 
 	updateSettings(webSocketServer, state);
+	reset(webSocketServer, state, ws);
 }
 
 const updateSettings = (webSocketServer, state) => {
-	const items = {votesPerParticipant: state.votesPerParticipant, vetoesPerParticipant: state.vetoesPerParticipant};
+	const items = {votesPerParticipant: state.votesPerParticipant, vetosPerParticipant: state.vetosPerParticipant};
 	const wss = webSocketServer.getWss();
 	wss.clients.forEach(ws => sendJson(ws, ['settings', items]));
 }
@@ -109,10 +118,10 @@ const process = (webSocketServer, state, ws, msg) => {
 				showResult(webSocketServer, state, ws);
 				break;
 			case 'voted':
-				handleMapChange(webSocketServer, ws, 'voted', 'votes', data);
+				handleMapChange(webSocketServer, state, ws, 'voted', 'votes', 'votesPerParticipant', data);
 				break;
 			case 'vetoed':
-				handleMapChange(webSocketServer, ws, 'vetoed', 'vetos', data);
+				handleMapChange(webSocketServer, state, ws, 'vetoed', 'vetos', 'vetosPerParticipant', data);
 				break;
 			case 'reset':
 				reset(webSocketServer, state, ws)

@@ -5,7 +5,7 @@ const messageHandler = require('./messageHandler');
 const defaultState = {
 	adminId: '',
 	votesPerParticipant: 1,
-	vetoesPerParticipant: 1
+	vetosPerParticipant: 1
 };
 
 function heartbeat() {

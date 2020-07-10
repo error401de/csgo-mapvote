@@ -1,8 +1,12 @@
 (() => {
-	const STATUS_VOTING = 1;
-	const STATUS_VETOING = 2;
-	const STATUS_WAITING = 3;
-	let votingStatus = STATUS_VOTING;
+	let votesLeft = null;
+	let vetosLeft = null;
+	let settings = {
+		votesPerParticipant: 1,
+		vetosPerParticipant: 1
+	};
+	let votedMaps = [];
+	let vetoedMaps = [];
 
 	function createElement(tagName, className, id) {
 		const element = document.createElement(tagName);
@@ -37,17 +41,26 @@
 		const div = createElement('div', 'map', id)
 		div.textContent = name;
 		div.onclick = () => {
-			if (votingStatus === STATUS_VOTING) {
+			if (votesLeft > 0) {
 				const tick = createElement('div', 'map-voted map-icon');
 				document.getElementById(id).appendChild(tick);
-				ws.send(JSON.stringify(['voted', { maps: [id] }]));
-				votingStatus = STATUS_VETOING;
-				changeStatusTextTo('Status: Please place your veto');
-			} else if (votingStatus === STATUS_VETOING) {
+				votesLeft--;
+				changeStatusTextTo('Status: Please place your vote. ' + votesLeft + ' left.');
+				votedMaps.push(id);
+				if (votesLeft === 0) {
+					ws.send(JSON.stringify(['voted', { maps: votedMaps }]));
+					changeStatusTextTo('Status: Please place your veto. ' + vetosLeft + ' left.');
+				}
+			}
+			else if (vetosLeft > 0) {
 				document.getElementById(id).appendChild(renderVetoedImg());
-				ws.send(JSON.stringify(['vetoed', { maps: [id] }]));
-				votingStatus = STATUS_WAITING;
-				changeStatusTextTo('Status: Wait until the result is revealed');
+				vetosLeft--;
+				changeStatusTextTo('Status: Please place your veto. ' + vetosLeft + ' left.');
+				vetoedMaps.push(id);
+				if (vetosLeft === 0) {
+					ws.send(JSON.stringify(['vetoed', { maps: vetoedMaps }]));
+					changeStatusTextTo('Status: Wait until the result is revealed');
+				}
 			}
 		}
 		document.getElementById('box-maps').appendChild(div);
@@ -92,11 +105,14 @@
 	}
 
 	function handleReset() {
+		votedMaps = [];
+		vetoedMaps = [];
+		votesLeft = settings.votesPerParticipant;
+		vetosLeft = settings.vetosPerParticipant;
 		document.querySelectorAll('.map').forEach(map => {
 			removeMapIcons(map);
 			map.style.visibility = 'visible';
-			votingStatus = STATUS_VOTING;
-			changeStatusTextTo('Status: Please place your vote');
+			changeStatusTextTo('Status: Please place your vote. ' + votesLeft + " left.");
 		})
 	}
 
@@ -106,9 +122,11 @@
 		}
 	}
 
-	function settings(data) {
-		console.log("Votes data: "+data);
-		//changeStatusTextTo('Status: Wait until the votes are reset');
+	function handleSettings(data) {
+		votesLeft = data.votesPerParticipant;
+		vetosLeft = data.vetosPerParticipant;
+		settings = data;
+		changeStatusTextTo('Status: Please place your vote. ' + votesLeft + " left.");
 	}
 
 	function handleMessage(message) {
@@ -128,7 +146,7 @@
 				handleRegistered(json[1]);
 				break;
 			case 'settings':
-				settings(json[1]);
+				handleSettings(json[1]);
 				break;
 			default:
 				console.log('Message not handled', message);
@@ -140,7 +158,7 @@
 	}
 
 	function handleSlider(ws, sliderId, value) {
-		let items = [{votesPerParticipant: 1, vetoesPerParticipant: 1}];
+		let items = [{votesPerParticipant: 1, vetosPerParticipant: 1}];
 		document.querySelectorAll('.slider').forEach(slider => {
 			let currentSlider = document.getElementById(slider.id);
 			let output = document.getElementById(currentSlider.id+"-value");
@@ -152,8 +170,8 @@
 			currentSlider.onchange = function () {
 				if (slider.id === 'slider-votes') {
 					items[0].votesPerParticipant = parseInt(currentSlider.value);
-				} else if (slider.id === 'slider-vetoes') {
-					items[0].vetoesPerParticipant = parseInt(currentSlider.value);
+				} else if (slider.id === 'slider-vetos') {
+					items[0].vetosPerParticipant = parseInt(currentSlider.value);
 				}
 				ws.send(JSON.stringify(['slider', { items }]));
 			}
