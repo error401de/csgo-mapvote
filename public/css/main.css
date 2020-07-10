@@ -69,19 +69,6 @@ h2 {
 	width: 200px;
 }
 
-.map-voted {
-	background: url(../img/tick.svg);
-}
-
-.map-icon {
-	width: 25px;
-	height: 25px;
-	background-size: 25px 25px;
-	position: absolute;
-	right: 5px;
-	bottom: 5px;
-}
-
 .participant-waiting {
 	display: block;
 	width: 35px;
@@ -114,19 +101,48 @@ h2 {
 	position: relative;
 }
 
-.map:hover, .menu-button:hover {
-	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.5) inset, 0 6px 20px 0 rgba(0, 0, 0, 0.19) inset;
-	cursor: pointer;
-	line-height: 20px; font-size: 15px;
+.map-voted {
+	background: url(../img/tick.svg);
 }
 
-.map:hover > .map-icon {
+.map-icon {
+	width: 25px;
+	height: 25px;
+	background-size: 25px 25px;
+	position: absolute;
+	right: 5px;
+	bottom: 5px;
+}
+
+.map:active, .map:focus, .map:hover, .menu-button:active, .menu-button:focus, .menu-button:hover {
+	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.5) inset, 0 6px 20px 0 rgba(0, 0, 0, 0.19) inset;
+	cursor: pointer;
+	line-height: 20px;
+	font-size: 15px;
+}
+
+.map:active > .map-icon, .map:focus > .map-icon, .map:hover > .map-icon {
 	width: 23px;
 	height: 23px;
 	background-size: 23px 23px;
-	position: absolute;
 	right: 6px;
 	bottom: 6px;
+}
+
+@media(hover: none) {
+	.map:hover, .menu-button:hover {
+		cursor: auto;
+		box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.5), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+		font-size: inherit;
+	}
+
+	.map:hover > .map-icon {
+		width: 25px;
+		height: 25px;
+		background-size: 25px 25px;
+		right: 5px;
+		bottom: 5px;
+	}
 }
 
 .box-maps {
@@ -263,5 +279,17 @@ main {
 
 	#box-main {
 		flex: 1 1 auto;
+	}
+
+	.box-styling {
+		margin: 10px 0 0 0;
+	}
+
+	.box-footer {
+		position: fixed;
+		bottom: 0;
+		left: 0;
+		margin: auto 40px;
+		width: calc(100% - 80px);
 	}
 }
