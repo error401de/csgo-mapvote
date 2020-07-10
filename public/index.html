@@ -7,6 +7,16 @@
 	<link rel="stylesheet" type="text/css" href="css/main.css">
 	<link rel="stylesheet" type="text/css" href="css/index.css">
 	<script src="js/essential.js"></script>
+	<script type="text/javascript">
+		function joinLobby() {
+			const input = document.getElementById('lobby-input').value;
+			if (input && input.length === 6) {
+				window.location = '/lobby.html?lobbyID=' + input;
+			} else {
+				document.getElementById('error').style.visibility = 'visible';
+			}
+		}
+	</script>
 	<link rel="icon" type="image/svg+xml" href="img/favicon.svg" sizes="any">
 </head>
 <body>
@@ -16,7 +26,7 @@
 				<h1>Create Lobby</h1>
 			</div>
 			<div class="box">
-				<a href="/lobby.html" class="menu-button button" id="button-green">Create lobby</a>
+				<a href="/lobby.html" class="menu-button button button-green">Create lobby</a>
 			</div>
 		</div>
 		<div class="box-styling" id="box-wrapper">
@@ -25,7 +35,8 @@
 			</div>
 			<div class="box box-lobby">
 					<input type="text" name="lobbyid" id="lobby-input" maxlength="6" autofocus />
-					<div class="menu-button button" id="button-green" onclick="window.location = '/lobby.html?lobbyId=' + document.getElementById('lobby-input').value">Join lobby</div>
+					<div class="menu-button button button-green" onclick="joinLobby();">Join lobby</div>
+			<span id="error">Enter valid LobbyID</span>
 			</div>
 		</div>
 	<div class="github-icon">

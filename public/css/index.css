@@ -18,6 +18,12 @@
 	font-size: 17px;
 }
 
+#error {
+	color: red;
+	text-align: center;
+	visibility: hidden;
+}
+
 .box{
 	width: 100%;
 	height: calc(100% - 60px);
