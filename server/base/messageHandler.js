@@ -1,4 +1,5 @@
 const allMaps = require('../../public/config/maps_competitive.json');
+const getConnectionsByLobbyId = require('../getConnectionsByLobbyId');
 
 const sendJson = (ws, data) => {
 	const dataAsString = JSON.stringify(data);
@@ -12,28 +13,25 @@ const areMapsValid = maps => maps.every(mapId => allMaps.items.find(({ id }) => 
 
 const countMaps = allMaps.items.length;
 
-const updateParticipants = (wss, lobbyId) => {
-	const items = [];
-	wss.clients.forEach(
-		({ voted, vetoed, lobbyId: wsLobbyId }) => lobbyId === wsLobbyId && items.push({
-			name: `Player ${items.length + 1}`,
-			voted,
-			vetoed
-		})
-	);
-	wss.clients.forEach(ws => lobbyId === ws.lobbyId && sendJson(ws, ['participants', { items }]));
+const updateParticipants = (webSocketServer, lobbyId) => {
+	const connections = getConnectionsByLobbyId(webSocketServer, lobbyId);
+	const items = connections.map(({ voted, vetoed }, index) => ({
+		name: `Player ${index + 1}`,
+		voted,
+		vetoed
+	}));
+
+	connections.forEach(ws => sendJson(ws, ['participants', { items }]));
 }
 
-const publishResult = (wss, lobbyId) => {
-	const items = [];
-	wss.clients.forEach(
-		({ votes, vetos, lobbyId: wsLobbyId }) => lobbyId === wsLobbyId && items.push({
-			name: items.length + 1,
-			votes,
-			vetos
-		})
-	);
-	wss.clients.forEach(ws => ws.lobbyId === lobbyId && sendJson(ws, ['result', { items }]));
+const publishResult = (webSocketServer, lobbyId) => {
+	const connections = getConnectionsByLobbyId(webSocketServer, lobbyId);
+	const items = connections.map(({ votes, vetos }, index) => ({
+		name: `Player ${index + 1}`,
+		votes,
+		vetos
+	}));
+	connections.forEach(ws => sendJson(ws, ['result', { items }]));
 }
 
 const handleMapChange = (webSocketServer, state, ws, validationProp, listProp, limitProp, data) => {
@@ -51,7 +49,7 @@ const handleMapChange = (webSocketServer, state, ws, validationProp, listProp, l
 	}
 	ws[listProp] = ws[listProp].length ? ws[listProp] : data.maps;
 	ws[validationProp] = true;
-	updateParticipants(webSocketServer.getWss(), ws.lobbyId);
+	updateParticipants(webSocketServer, ws.lobbyId);
 };
 
 const showResult = (webSocketServer, state, ws) => {
@@ -59,19 +57,16 @@ const showResult = (webSocketServer, state, ws) => {
 		console.log(`${ws.id} tried to show result as non-admin`);
 		return;
 	}
-	const wss = webSocketServer.getWss();
-	updateParticipants(wss, ws.lobbyId);
-	publishResult(wss, ws.lobbyId);
+	updateParticipants(webSocketServer, ws.lobbyId);
+	publishResult(webSocketServer, ws.lobbyId);
 }
 
-const resetSingleConnection = (lobbyId, ws) => {
-	if (ws.lobbyId === lobbyId) {
-		ws.votes = [];
-		ws.voted = false;
-		ws.vetos = [];
-		ws.vetoed = false;
-		sendJson(ws, ['reset']);
-	}
+const resetSingleConnection = ws => {
+	ws.votes = [];
+	ws.voted = false;
+	ws.vetos = [];
+	ws.vetoed = false;
+	sendJson(ws, ['reset']);
 };
 
 const reset = (webSocketServer, state, ws) => {
@@ -79,8 +74,8 @@ const reset = (webSocketServer, state, ws) => {
 		console.log(`${ws.id} tried to reset as non-admin`);
 		return;
 	}
-	webSocketServer.getWss().clients.forEach(resetSingleConnection.bind(null, ws.lobbyId));
-	updateParticipants(webSocketServer.getWss(), ws.lobbyId);
+	getConnectionsByLobbyId(webSocketServer, state.lobbyId).forEach(resetSingleConnection);
+	updateParticipants(webSocketServer, ws.lobbyId);
 }
 
 const slider = (webSocketServer, state, ws, data) => {
@@ -99,14 +94,13 @@ const slider = (webSocketServer, state, ws, data) => {
 	state.votesPerParticipant = votesPerParticipant;
 	state.vetosPerParticipant = vetosPerParticipant;
 
-	updateSettings(webSocketServer, state, ws.lobbyId);
+	updateSettings(webSocketServer, state);
 	reset(webSocketServer, state, ws);
 }
 
-const updateSettings = (webSocketServer, state, lobbyId) => {
+const updateSettings = (webSocketServer, state) => {
 	const items = { votesPerParticipant: state.votesPerParticipant, vetosPerParticipant: state.vetosPerParticipant };
-	const wss = webSocketServer.getWss();
-	wss.clients.forEach(ws => ws.lobbyId === lobbyId && sendJson(ws, ['settings', items]));
+	getConnectionsByLobbyId(webSocketServer, state.lobbyId).forEach(ws => sendJson(ws, ['settings', items]));
 }
 
 const sliderIsNotValid = (value) => {
