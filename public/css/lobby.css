@@ -20,6 +20,22 @@
 	width: 200px;
 }
 
+#lobby-link-wrapper {
+	width: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+#lobby-link-img {
+	width: 100%;
+	cursor: pointer;
+}
+
+#lobby-link-img:hover {
+	opacity: 0.5;
+}
+
 .participant-waiting {
 	display: block;
 	width: 35px;
