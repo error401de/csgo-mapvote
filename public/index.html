@@ -16,6 +16,18 @@
 				document.getElementById('error').style.visibility = 'visible';
 			}
 		}
+
+		(() => {
+			window.addEventListener('load', () => {
+				const input = document.getElementById('lobby-input');
+				input.addEventListener("keyup", event => {
+					if (input.value && event.keyCode === 13) {
+						event.preventDefault();
+						joinLobby();
+					}
+				});
+			});
+		})();
 	</script>
 	<link rel="icon" type="image/svg+xml" href="img/favicon.svg" sizes="any">
 </head>
