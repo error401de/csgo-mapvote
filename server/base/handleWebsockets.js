@@ -22,7 +22,7 @@ const checkIsAlive = (webSocketServer, state) => {
 
 			if (state.has(ws.lobbyId) && ws.id !== state.get(ws.lobbyId).adminId) {
 				ws.terminate();
-				return messageHandler.updateParticipants(webSocketServer.getWss(), ws.lobbyId);
+				return messageHandler.updateParticipants(webSocketServer, ws.lobbyId);
 			}
 			getConnectionsByLobbyId(webSocketServer, ws.lobbyId).forEach(ws => ws.terminate());
 			state.delete(ws.lobbyId);
