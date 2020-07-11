@@ -15,18 +15,26 @@ function heartbeat() {
 	this.isAlive = true;
 }
 
+const handleDeadConnection = (webSocketServer, state, ws) => {
+	if (state.has(ws.lobbyId) && ws.id !== state.get(ws.lobbyId).adminId) {
+		ws.terminate();
+		messageHandler.updateParticipants(webSocketServer, ws.lobbyId);
+		return false;
+	}
+	getConnectionsByLobbyId(webSocketServer, ws.lobbyId).forEach(ws => ws.terminate());
+	state.delete(ws.lobbyId);
+
+	return true
+}
+
 const checkIsAlive = (webSocketServer, state) => {
 	for (let ws of webSocketServer.getWss().clients) {
 		if (ws.isAlive === false) {
 			console.log('closing socket');
 
-			if (state.has(ws.lobbyId) && ws.id !== state.get(ws.lobbyId).adminId) {
-				ws.terminate();
-				return messageHandler.updateParticipants(webSocketServer, ws.lobbyId);
+			if (handleDeadConnection(webSocketServer, state, ws)) {
+				break;
 			}
-			getConnectionsByLobbyId(webSocketServer, ws.lobbyId).forEach(ws => ws.terminate());
-			state.delete(ws.lobbyId);
-			break;
 		}
 
 		ws.isAlive = false;
@@ -91,14 +99,7 @@ module.exports = (webSocketServer) => {
 			return ws.terminate();
 		}
 
-		ws.on('close', () => {
-			if (state.has(ws.lobbyId) && ws.id !== state.get(ws.lobbyId).adminId) {
-				ws.terminate();
-				return messageHandler.updateParticipants(webSocketServer, ws.lobbyId);
-			}
-			getConnectionsByLobbyId(webSocketServer, ws.lobbyId).forEach(ws => ws.terminate());
-			state.delete(ws.lobbyId);
-		});
+		ws.on('close', () => handleDeadConnection(webSocketServer, state, ws));
 
 		ws.on('message', messageHandler.process.bind(null, webSocketServer, state.get(ws.lobbyId), ws));
 		messageHandler.updateParticipants(webSocketServer, ws.lobbyId);
