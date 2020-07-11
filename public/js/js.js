@@ -121,6 +121,7 @@
 			document.querySelector('#box-menu').style.visibility = 'visible';
 			const linkToLobby = createElement('div', 'lobby-link');
 			linkToLobby.innerHTML = `Lobby Id: ${data.lobbyId}`;
+			document.querySelector('.modal-background').style.display = 'block';
 			document.querySelector('#lobby-link-wrapper').insertBefore(linkToLobby, document.querySelector('#lobby-link-wrapper').childNodes[0]);
 			document.querySelector('#lobby-link-img').onclick = copyToClipboard.bind(null, data.lobbyId);
 			document.querySelector('#lobby-url').innerHTML = generateLobbyUrl(data.lobbyId);
