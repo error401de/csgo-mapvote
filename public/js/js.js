@@ -183,7 +183,7 @@
 	}
 
 	function copyToClipboard(lobbyId) {
-		let url = window.location.href + "/" + lobbyId;
+		let url = window.location.href + "?lobbyId=" + lobbyId;
 		var el = document.createElement('textarea');
 		el.value = url;
 		el.setAttribute('readonly', '');
