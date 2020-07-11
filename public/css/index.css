@@ -5,10 +5,8 @@
 
 #lobby-input {
 	width: 95px;
-	height: 45px;
-	margin-left: auto;
-	margin-right: auto;
-	background: #6c6d75;
+	height: 50px;
+	background-color: #6c6d75;
 	color: white;
 	border: 2px solid black;
 	border-radius: 10px;
@@ -18,27 +16,34 @@
 	font-size: 17px;
 }
 
-#error {
-	color: red;
-	text-align: center;
-	visibility: hidden;
+input[type="text"]:invalid {
+	background-image: url(../img/rejected.svg);
+	background-size: 14px;
+	background-position: 97% 3%;
+	background-repeat: no-repeat;
 }
 
-.box{
+#join-lobby {
+	margin: 20px 0 0;
+}
+
+.box {
 	width: 100%;
-	height: calc(100% - 60px);
+	height: 100%;
+	position: absolute;
+	top: 0;
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
-}
-
-.box-lobby {
-	height: calc(100% - 25px);
+	align-items: center;
 }
 
 #box-wrapper {
 	background-color: #313a41;
 	width: 200px;
+	margin: 14px;
+	height: 272px;
+	position: relative;
 }
 
 .github-icon {
@@ -50,8 +55,8 @@
 main {
 	display: flex;
 	justify-content: center;
-	height: 300px;
-	padding: 40px 75px;
-	width: calc(100% - 150px);
+	padding: 10px 20px;
+	width: calc(100% - 40px);
 	margin: auto;
+	flex-wrap: wrap;
 }

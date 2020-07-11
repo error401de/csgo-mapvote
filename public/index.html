@@ -9,19 +9,23 @@
 	<script src="js/essential.js"></script>
 	<script type="text/javascript">
 		function joinLobby() {
-			const input = document.getElementById('lobby-input').value;
-			if (input && input.length === 6) {
-				window.location = '/lobby.html?lobbyId=' + input;
+			const input = document.getElementById('lobby-input');
+			const { value } = input;
+			if (value && value.length === 6) {
+				window.location = '/lobby.html?lobbyId=' + value;
 			} else {
-				document.getElementById('error').style.visibility = 'visible';
+				document.getElementById('join-lobby').blur();
+				input.reportValidity && input.reportValidity();
+				input.focus();
 			}
 		}
 
 		(() => {
+			const KEY_CODE_RETURN = 13;
 			window.addEventListener('load', () => {
 				const input = document.getElementById('lobby-input');
-				input.addEventListener("keyup", event => {
-					if (input.value && event.keyCode === 13) {
+				input.addEventListener('keyup', event => {
+					if (input.value && event.keyCode === KEY_CODE_RETURN) {
 						event.preventDefault();
 						joinLobby();
 					}
@@ -47,9 +51,8 @@
 				<h1>Join Lobby</h1>
 			</div>
 			<div class="box box-lobby">
-				<input type="text" name="lobbyid" id="lobby-input" maxlength="6" autofocus />
-				<div class="menu-button button button-green" onclick="joinLobby();">Join lobby</div>
-				<span id="error">Enter valid LobbyID</span>
+				<input type="text" name="lobbyid" id="lobby-input" minlength="6" maxlength="6" autofocus />
+				<div class="menu-button button button-green" id="join-lobby" onclick="joinLobby();">Join lobby</div>
 			</div>
 		</div>
 		<div class="github-icon">
