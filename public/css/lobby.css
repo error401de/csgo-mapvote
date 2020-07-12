@@ -48,12 +48,12 @@
 	flex-direction: end;
 	flex-grow: 1;
 	display: flex;
-    justify-content: flex-end;
-    flex-direction: column;
-    width: 80%;
-    margin: auto;
-    padding-bottom: 10px;
-    display: none;
+	justify-content: flex-end;
+	flex-direction: column;
+	width: 80%;
+	margin: auto;
+	padding-bottom: 10px;
+	display: none;
 }
 
 #modal-content-picture {
