@@ -3,8 +3,13 @@ const mime = require('mime-types');
 
 const config = require('./config.json');
 const handleWebsockets = require('./base/handleWebsockets');
+const rateLimiterMiddleware = require('./middleware/rateLimiterMiddleware');
 
 const app = express();
+
+app.enable('trust proxy');
+
+app.use('/', rateLimiterMiddleware);
 
 const wss = require('express-ws')(app);
 
@@ -18,7 +23,6 @@ app.use(express.static('public', {
 		}
 	}
 }));
-
 
 app.ws(config.webSocketBasePath, handleWebsockets(wss));
 
