@@ -215,7 +215,7 @@
 
 	function updateLobbySettings() {
 		document.querySelector('#show-settings-votes').innerHTML = 'Votes: ' + settings.votesPerParticipant;
-		document.querySelector('#show-settings-vetos').innerHTML = 'Votes: ' + settings.vetosPerParticipant;
+		document.querySelector('#show-settings-vetos').innerHTML = 'Vetos: ' + settings.vetosPerParticipant;
 	}
 
 	window.onload = function () {
