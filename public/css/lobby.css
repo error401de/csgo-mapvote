@@ -18,6 +18,8 @@
 #box-participants-wrapper {
 	background-color: #313a41;
 	width: 200px;
+	display: flex;
+    flex-direction: column;
 }
 
 #lobby-link-wrapper {
@@ -40,6 +42,18 @@
 	font-size: 14px;
 	font-style: italic;
 	cursor: pointer;
+}
+
+#box-settings {
+	flex-direction: end;
+	flex-grow: 1;
+	display: flex;
+    justify-content: flex-end;
+    flex-direction: column;
+    width: 80%;
+    margin: auto;
+    padding-bottom: 10px;
+    display: none;
 }
 
 #modal-content-picture {

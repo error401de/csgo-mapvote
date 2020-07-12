@@ -114,6 +114,7 @@
 			map.style.visibility = 'visible';
 			changeStatusTextTo('Status: Please place your vote. ' + votesLeft + " left.");
 		})
+		updateLobbySettings();
 	}
 
 	function handleRegistered(data) {
@@ -127,6 +128,8 @@
 			document.querySelector('#lobby-url').innerHTML = generateLobbyUrl(data.lobbyId);
 			document.querySelector('#lobby-url').onclick = closeModal.bind(null, data.lobbyId, 1);
 			document.querySelector('.modal-background').onclick = closeModal.bind(null, data.lobbyId, 0);
+		} else {
+			document.querySelector('#box-settings').style.display = 'flex';
 		}
 	}
 
@@ -210,6 +213,11 @@
 		document.querySelector('.modal-background').style.display = 'none';
 	}
 
+	function updateLobbySettings() {
+		document.querySelector('#show-settings-votes').innerHTML = 'Votes: ' + settings.votesPerParticipant;
+		document.querySelector('#show-settings-vetos').innerHTML = 'Votes: ' + settings.vetosPerParticipant;
+	}
+
 	window.onload = function () {
 		const ws = new WebSocket(`${document.location.protocol === 'https:' ? 'wss' : 'ws'}://${document.location.host}${document.location.search}`);
 		createMapBoxes(ws);
@@ -224,5 +232,6 @@
 		sendDataOnClick(ws, '#show-result', ['show_result']);
 		sendDataOnClick(ws, '#reset', ['reset']);
 		handleSlider(ws);
+		updateLobbySettings();
 	}
 })();
