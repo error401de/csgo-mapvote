@@ -28,9 +28,11 @@ const handleDeadConnection = (webSocketServer, state, ws) => {
 }
 
 const checkIsAlive = (webSocketServer, state) => {
-	for (let ws of webSocketServer.getWss().clients) {
+	const clients = webSocketServer.getWss().clients;
+	console.log(`Executing ping for ${clients.size}`);
+	for (let ws of clients) {
 		if (ws.isAlive === false) {
-			console.log('closing socket');
+			console.log(`ping for ${ws.id} failed, closing connection.`);
 
 			if (handleDeadConnection(webSocketServer, state, ws)) {
 				break;
@@ -75,7 +77,7 @@ const isLimitReached = webSocketServer => webSocketServer.getWss().clients.size 
 
 module.exports = (webSocketServer) => {
 	const state = new Map();
-	const interval = setInterval(checkIsAlive.bind(null, webSocketServer, state), 1000);
+	const interval = setInterval(checkIsAlive.bind(null, webSocketServer, state), 30000);
 	const wss = webSocketServer.getWss();
 
 	wss.on('close', () => {
