@@ -138,6 +138,7 @@
 		vetosLeft = data.vetosPerParticipant;
 		settings = data;
 		changeStatusTextTo('Status: Please place your vote. ' + votesLeft + " left.");
+		updateLobbySettings();
 	}
 
 	function handleMessage(message) {
@@ -232,6 +233,5 @@
 		sendDataOnClick(ws, '#show-result', ['show_result']);
 		sendDataOnClick(ws, '#reset', ['reset']);
 		handleSlider(ws);
-		updateLobbySettings();
 	}
 })();
