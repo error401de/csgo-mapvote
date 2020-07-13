@@ -3,6 +3,7 @@ const { v4: uuidv4 } = require('uuid');
 const createLobbyId = require('../createLobbyId');
 const messageHandler = require('./messageHandler');
 const getConnectionsByLobbyId = require('../getConnectionsByLobbyId');
+const messageRateLimiter = require('./messageRateLimiter');
 
 const defaultState = {
 	adminId: '',
@@ -103,7 +104,7 @@ module.exports = (webSocketServer) => {
 
 		ws.on('close', () => handleDeadConnection(webSocketServer, state, ws));
 
-		ws.on('message', messageHandler.process.bind(null, webSocketServer, state.get(ws.lobbyId), ws));
+		ws.on('message', msg => messageRateLimiter(ws, () => messageHandler.process(webSocketServer, state.get(ws.lobbyId), ws, msg)));
 		messageHandler.updateParticipants(webSocketServer, ws.lobbyId);
 		messageHandler.updateSettings(ws, state.get(ws.lobbyId));
 		messageHandler.sendJson(ws, ['registered', { ack: true, id: ws.id, isAdmin, lobbyId: ws.lobbyId }]);
