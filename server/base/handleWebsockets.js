@@ -73,7 +73,7 @@ const initLobbyId = (webSocketServer, state, ws, req) => {
 	}
 }
 
-const isLimitReached = webSocketServer => webSocketServer.getWss().clients.size > 100;
+const isLimitReached = webSocketServer => webSocketServer.getWss().clients.size > 10000;
 
 module.exports = (webSocketServer) => {
 	const state = new Map();
