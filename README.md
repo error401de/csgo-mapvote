@@ -11,6 +11,6 @@ The tool relies on node.js. So just navigate into the main directory and run ```
 We're happy about contributions. Feel free to fix bugs via PR. New features should be discussed in "Issues" with "enhancement" label.
 
 ## demo
-Live demo is coming soon.
+You can find a live demo at [https://mapvote.error401.de](https://mapvote.error401.de)
 
 ![screenshot](https://github.com/error401de/csgo-mapvote/blob/master/docu/screenshot.png?raw=true)
