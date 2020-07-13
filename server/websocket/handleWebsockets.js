@@ -3,6 +3,7 @@ const { v4: uuidv4 } = require('uuid');
 const createLobbyId = require('../createLobbyId');
 const messageHandler = require('./messageHandler');
 const getConnectionsByLobbyId = require('../getConnectionsByLobbyId');
+const messageRateLimiter = require('./messageRateLimiter');
 
 const defaultState = {
 	adminId: '',
@@ -28,9 +29,11 @@ const handleDeadConnection = (webSocketServer, state, ws) => {
 }
 
 const checkIsAlive = (webSocketServer, state) => {
-	for (let ws of webSocketServer.getWss().clients) {
+	const clients = webSocketServer.getWss().clients;
+	console.log(`Executing ping for ${clients.size}`);
+	for (let ws of clients) {
 		if (ws.isAlive === false) {
-			console.log('closing socket');
+			console.log(`ping for ${ws.id} failed, closing connection.`);
 
 			if (handleDeadConnection(webSocketServer, state, ws)) {
 				break;
@@ -71,11 +74,11 @@ const initLobbyId = (webSocketServer, state, ws, req) => {
 	}
 }
 
-const isLimitReached = webSocketServer => webSocketServer.getWss().clients.size > 100;
+const isLimitReached = webSocketServer => webSocketServer.getWss().clients.size > 10000;
 
 module.exports = (webSocketServer) => {
 	const state = new Map();
-	const interval = setInterval(checkIsAlive.bind(null, webSocketServer, state), 1000);
+	const interval = setInterval(checkIsAlive.bind(null, webSocketServer, state), 30000);
 	const wss = webSocketServer.getWss();
 
 	wss.on('close', () => {
@@ -101,7 +104,7 @@ module.exports = (webSocketServer) => {
 
 		ws.on('close', () => handleDeadConnection(webSocketServer, state, ws));
 
-		ws.on('message', messageHandler.process.bind(null, webSocketServer, state.get(ws.lobbyId), ws));
+		ws.on('message', msg => messageRateLimiter(ws, () => messageHandler.process(webSocketServer, state.get(ws.lobbyId), ws, msg)));
 		messageHandler.updateParticipants(webSocketServer, ws.lobbyId);
 		messageHandler.updateSettings(ws, state.get(ws.lobbyId));
 		messageHandler.sendJson(ws, ['registered', { ack: true, id: ws.id, isAdmin, lobbyId: ws.lobbyId }]);
