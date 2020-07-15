@@ -21,11 +21,10 @@
 		}
 
 		(() => {
-			const KEY_CODE_RETURN = 13;
 			window.addEventListener('load', () => {
 				const input = document.getElementById('lobby-input');
 				input.addEventListener('keyup', event => {
-					if (input.value && event.keyCode === KEY_CODE_RETURN) {
+					if (input.value && event.key === 'Enter') {
 						event.preventDefault();
 						joinLobby();
 					}
