@@ -1,5 +1,5 @@
 const allMaps = require('../../public/config/maps_competitive.json');
-const getConnectionsByLobbyId = require('../getConnectionsByLobbyId');
+const getConnectionsByLobbyId = require('./getConnectionsByLobbyId');
 
 const sendJson = (ws, data) => {
 	const dataAsString = JSON.stringify(data);
