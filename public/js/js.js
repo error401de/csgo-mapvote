@@ -80,15 +80,20 @@
 		div.appendChild(span);
 
 		if (id === participantId) {
-			span.textContent = `${span.textContent} (You)`;
+			const identifier = ' (You)';
+			span.textContent = span.textContent + identifier;
 			div.classList.add('self');
 			span.setAttribute('contenteditable', 'true');
-			span.oninput = event => {
-				if (event.inputType === 'insertParagraph' || event.target.textContent.length >= 30) {
-					event.preventDefault();
-					changeParticipantName(event.target);
-				}
+			span.onfocus = () => {
+				span.textContent = span.textContent.slice(0, -identifier.length);
 			};
+			span.onkeyup = (event) => {
+				console.log(event);
+				if (event.key === 'Enter' || event.target.textContent.length >= 30) {
+					event.preventDefault();
+					changeParticipantName(span);
+				}
+			}
 			span.onblur = () => changeParticipantName(span);
 		}
 
