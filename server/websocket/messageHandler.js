@@ -22,7 +22,7 @@ const updateParticipants = (webSocketServer, lobbyId) => {
 	}));
 
 	connections.forEach(ws => sendJson(ws, ['participants', { items }]));
-}
+};
 
 const publishResult = (webSocketServer, lobbyId) => {
 	const connections = getConnectionsByLobbyId(webSocketServer, lobbyId);
@@ -32,11 +32,11 @@ const publishResult = (webSocketServer, lobbyId) => {
 		vetos
 	}));
 	connections.forEach(ws => sendJson(ws, ['result', { items }]));
-}
+};
 
-const handleMapChange = (webSocketServer, state, ws, validationProp, listProp, limitProp, data) => {
-	if (data.maps.length > state[limitProp]) {
-		console.log(`${ws.id} ${validationProp} more than ${state[limitProp]} maps: ${JSON.stringify(data)}`);
+const handleMapChange = (webSocketServer, ws, validationProp, listProp, limit, data) => {
+	if (data.maps.length > limit) {
+		console.log(`${ws.id} ${validationProp} more than ${limit} maps: ${JSON.stringify(data)}`);
 		return;
 	}
 	if (!areMapsValid(data.maps)) {
@@ -52,14 +52,14 @@ const handleMapChange = (webSocketServer, state, ws, validationProp, listProp, l
 	updateParticipants(webSocketServer, ws.lobbyId);
 };
 
-const showResult = (webSocketServer, state, ws) => {
-	if (ws.id !== state.adminId) {
+const showResult = (webSocketServer, lobbyState, ws) => {
+	if (ws.id !== lobbyState.adminId) {
 		console.log(`${ws.id} tried to show result as non-admin`);
 		return;
 	}
 	updateParticipants(webSocketServer, ws.lobbyId);
 	publishResult(webSocketServer, ws.lobbyId);
-}
+};
 
 const resetSingleConnection = ws => {
 	ws.votes = [];
@@ -69,65 +69,65 @@ const resetSingleConnection = ws => {
 	sendJson(ws, ['reset']);
 };
 
-const reset = (webSocketServer, state, ws) => {
-	if (ws.id !== state.adminId) {
+const reset = (webSocketServer, lobbyState, ws) => {
+	if (ws.id !== lobbyState.adminId) {
 		console.log(`${ws.id} tried to reset as non-admin`);
 		return;
 	}
-	getConnectionsByLobbyId(webSocketServer, state.lobbyId).forEach(resetSingleConnection);
+	getConnectionsByLobbyId(webSocketServer, lobbyState.id).forEach(resetSingleConnection);
 	updateParticipants(webSocketServer, ws.lobbyId);
 }
 
-const slider = (webSocketServer, state, ws, data) => {
-	if (ws.id !== state.adminId) {
+const slider = (webSocketServer, lobbyState, ws, data) => {
+	if (ws.id !== lobbyState.adminId) {
 		console.log(`${ws.id} tried to change slider settings as non-admin`);
 		return;
 	}
 	const votesPerParticipant = data.items[0].votesPerParticipant;
-	const vetosPerParticipant = data.items[0].vetosPerParticipant
+	const vetosPerParticipant = data.items[0].vetosPerParticipant;
 
 	if (sliderIsNotValid(votesPerParticipant) || sliderIsNotValid(vetosPerParticipant)) {
 		console.log(`${ws.id} tried to set slider to an invalid value: ${JSON.stringify(data)}`);
 		return;
 	}
 
-	state.votesPerParticipant = votesPerParticipant;
-	state.vetosPerParticipant = vetosPerParticipant;
+	lobbyState.votesPerParticipant = votesPerParticipant;
+	lobbyState.vetosPerParticipant = vetosPerParticipant;
 
-	updateSettingsForAll(webSocketServer, state);
-	reset(webSocketServer, state, ws);
+	updateSettingsForAll(webSocketServer, lobbyState);
+	reset(webSocketServer, lobbyState, ws);
 }
 
-const getSettings = state => ({ votesPerParticipant: state.votesPerParticipant, vetosPerParticipant: state.vetosPerParticipant });
+const getSettings = lobbyState => ({ votesPerParticipant: lobbyState.votesPerParticipant, vetosPerParticipant: lobbyState.vetosPerParticipant });
 
-const updateSettings = (ws, state) => sendJson(ws, ['settings', getSettings(state)]);
+const updateSettings = (ws, lobbyState) => sendJson(ws, ['settings', getSettings(lobbyState)]);
 
-const updateSettingsForAll = (webSocketServer, state) => getConnectionsByLobbyId(webSocketServer, state.lobbyId)
-	.forEach(ws => sendJson(ws, ['settings', getSettings(state)]));
+const updateSettingsForAll = (webSocketServer, lobbyState) => getConnectionsByLobbyId(webSocketServer, lobbyState.id)
+	.forEach(ws => sendJson(ws, ['settings', getSettings(lobbyState)]));
 
 const sliderIsNotValid = (value) => {
 	return (value < 0 || value > countMaps || !Number.isInteger(value));
-}
+};
 
-const process = (webSocketServer, state, ws, msg) => {
+const process = (webSocketServer, lobbyState, ws, msg) => {
 	try {
 		const [msgType, data] = JSON.parse(msg);
 
 		switch (msgType) {
 			case 'show_result':
-				showResult(webSocketServer, state, ws);
+				showResult(webSocketServer, lobbyState, ws);
 				break;
 			case 'voted':
-				handleMapChange(webSocketServer, state, ws, 'voted', 'votes', 'votesPerParticipant', data);
+				handleMapChange(webSocketServer, ws, 'voted', 'votes', lobbyState.votesPerParticipant, data);
 				break;
 			case 'vetoed':
-				handleMapChange(webSocketServer, state, ws, 'vetoed', 'vetos', 'vetosPerParticipant', data);
+				handleMapChange(webSocketServer, ws, 'vetoed', 'vetos', lobbyState.vetosPerParticipant, data);
 				break;
 			case 'reset':
-				reset(webSocketServer, state, ws)
+				reset(webSocketServer, lobbyState, ws);
 				break;
 			case 'slider':
-				slider(webSocketServer, state, ws, data)
+				slider(webSocketServer, lobbyState, ws, data);
 				break;
 			default:
 				console.log(`Unkown message ${msg} from ${ws.id}`);
@@ -143,4 +143,4 @@ module.exports = {
 	updateParticipants,
 	sendJson,
 	updateSettings
-}
+};

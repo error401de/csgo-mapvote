@@ -2,19 +2,19 @@ const { v4: uuidv4 } = require('uuid');
 
 const createLobbyId = require('../createLobbyId');
 const messageHandler = require('./messageHandler');
-const getConnectionsByLobbyId = require('../getConnectionsByLobbyId');
+const getConnectionsByLobbyId = require('./getConnectionsByLobbyId');
 const messageRateLimiter = require('./messageRateLimiter');
 
-const defaultState = {
+const defaultLobbyState = {
+	id: '',
 	adminId: '',
-	lobbyId: '',
 	votesPerParticipant: 1,
 	vetosPerParticipant: 1
 };
 
 function heartbeat() {
 	this.isAlive = true;
-}
+};
 
 const handleDeadConnection = (webSocketServer, state, ws) => {
 	if (state.has(ws.lobbyId) && ws.id !== state.get(ws.lobbyId).adminId) {
@@ -26,7 +26,7 @@ const handleDeadConnection = (webSocketServer, state, ws) => {
 	state.delete(ws.lobbyId);
 
 	return true
-}
+};
 
 const checkIsAlive = (webSocketServer, state) => {
 	const clients = webSocketServer.getWss().clients;
@@ -43,7 +43,7 @@ const checkIsAlive = (webSocketServer, state) => {
 		ws.isAlive = false;
 		ws.ping(() => { });
 	};
-}
+};
 
 const isLobbyIdValid = (webSocketServer, lobbyId) => {
 	const connections = getConnectionsByLobbyId(webSocketServer, lobbyId);
@@ -56,8 +56,8 @@ const initLobbyId = (webSocketServer, state, ws, req) => {
 	if (!lobbyId) {
 		ws.lobbyId = createLobbyId();
 		state.set(ws.lobbyId, {
-			...defaultState,
-			lobbyId: ws.lobbyId,
+			...defaultLobbyState,
+			id: ws.lobbyId,
 			adminId: ws.id
 		});
 		console.log(`new admin ${ws.id} in lobby ${ws.lobbyId}`);
@@ -72,7 +72,7 @@ const initLobbyId = (webSocketServer, state, ws, req) => {
 
 		return {};
 	}
-}
+};
 
 const isLimitReached = webSocketServer => webSocketServer.getWss().clients.size > 10000;
 
@@ -108,5 +108,5 @@ module.exports = (webSocketServer) => {
 		messageHandler.updateParticipants(webSocketServer, ws.lobbyId);
 		messageHandler.updateSettings(ws, state.get(ws.lobbyId));
 		messageHandler.sendJson(ws, ['registered', { ack: true, id: ws.id, isAdmin, lobbyId: ws.lobbyId }]);
-	}
-}
+	};
+};
