@@ -7,6 +7,8 @@
 	};
 	let votedMaps = [];
 	let vetoedMaps = [];
+	let participantId = null;
+	let ws;
 
 	function createElement(tagName, className, id) {
 		const element = document.createElement(tagName);
@@ -16,12 +18,12 @@
 		return element;
 	}
 
-	async function createMapBoxes(ws) {
+	async function createMapBoxes() {
 		const url = 'config/maps_competitive.json';
 		const response = await fetch(url);
 		const json = await response.json();
 
-		json.items.forEach(renderMap.bind(null, ws));
+		json.items.forEach(renderMap);
 	}
 
 	function renderVetoedImg() {
@@ -37,7 +39,7 @@
 		document.querySelector('#status-message > h2').innerText = newText;
 	}
 
-	function renderMap(ws, { id, name }) {
+	function renderMap({ id, name }) {
 		const div = createElement('div', 'map button', id)
 		div.textContent = name;
 		div.onclick = () => {
@@ -66,14 +68,35 @@
 		document.getElementById('box-maps').appendChild(div);
 	}
 
-	function renderParticipant({ name, vetoed }) {
+	function changeParticipantName(newNameElement) {
+		newNameElement.textContent = newNameElement.textContent.trim().substring(0, 30);
+		ws.send(JSON.stringify(['participant_name_changed', { name: newNameElement.textContent }]));
+	}
+
+	function renderParticipant({ id, name, vetoed }) {
 		const div = createElement('div', 'participant', 'participant' + name);
-		div.textContent = name;
+		const span = createElement('span');
+		span.textContent = name;
+		div.appendChild(span);
+
+		if (id === participantId) {
+			span.textContent = `${span.textContent} (You)`;
+			div.classList.add('self');
+			span.setAttribute('contenteditable', 'true');
+			span.oninput = event => {
+				if (event.inputType === 'insertParagraph' || event.target.textContent.length >= 30) {
+					event.preventDefault();
+					changeParticipantName(event.target);
+				}
+			};
+			span.onblur = () => changeParticipantName(span);
+		}
+
 		document.getElementById('box-participants').appendChild(div);
 
 		const status = createElement('div', vetoed ? 'participant-finished' : 'participant-waiting');
 
-		document.getElementById('participant' + name).appendChild(status);
+		div.appendChild(status);
 	}
 
 	function handleParticipants(data) {
@@ -100,7 +123,7 @@
 			if (data.items.some(({ vetos }) => vetos.includes(map.id))) {
 				map.appendChild(renderVetoedImg());
 			}
-		})
+		});
 		changeStatusTextTo('Status: Wait until the votes are reset');
 	}
 
@@ -118,17 +141,21 @@
 	}
 
 	function handleRegistered(data) {
+		participantId = data.id;
+		document.querySelector('.modal-background').style.display = 'block';
+		document.querySelector('.modal-background').onclick = closeModal.bind(null, data.lobbyId, 0);
+
 		if (data.isAdmin) {
+			document.querySelector('.admin-modal').style.display = 'flex';
 			document.querySelector('#box-menu').style.visibility = 'visible';
 			const linkToLobby = createElement('div', 'lobby-link');
 			linkToLobby.innerHTML = `Lobby Id: ${data.lobbyId}`;
-			document.querySelector('.modal-background').style.display = 'block';
 			document.querySelector('#lobby-link-wrapper').insertBefore(linkToLobby, document.querySelector('#lobby-link-wrapper').childNodes[0]);
 			document.querySelector('#lobby-link-img').onclick = copyToClipboard.bind(null, data.lobbyId);
 			document.querySelector('#lobby-url').innerHTML = generateLobbyUrl(data.lobbyId);
 			document.querySelector('#lobby-url').onclick = closeModal.bind(null, data.lobbyId, 1);
-			document.querySelector('.modal-background').onclick = closeModal.bind(null, data.lobbyId, 0);
 		} else {
+			document.querySelector('.default-modal').style.display = 'flex';
 			document.querySelector('#box-settings').style.display = 'flex';
 		}
 	}
@@ -165,11 +192,11 @@
 		}
 	}
 
-	function sendDataOnClick(ws, elementId, data) {
+	function sendDataOnClick(elementId, data) {
 		document.querySelector(elementId).onclick = () => ws.send(JSON.stringify(data));
 	}
 
-	function handleSlider(ws, sliderId, value) {
+	function handleSlider() {
 		let items = [{ votesPerParticipant: 1, vetosPerParticipant: 1 }];
 		document.querySelectorAll('.slider').forEach(slider => {
 			let currentSlider = document.getElementById(slider.id);
@@ -200,7 +227,7 @@
 		var el = document.createElement('textarea');
 		el.value = url;
 		el.setAttribute('readonly', '');
-		el.style = {position: 'absolute', left: '-9999px'};
+		el.style = { position: 'absolute', left: '-9999px' };
 		document.body.appendChild(el);
 		el.select();
 		document.execCommand('copy');
@@ -220,8 +247,8 @@
 	}
 
 	window.onload = function () {
-		const ws = new WebSocket(`${document.location.protocol === 'https:' ? 'wss' : 'ws'}://${document.location.host}${document.location.search}`);
-		createMapBoxes(ws);
+		ws = new WebSocket(`${document.location.protocol === 'https:' ? 'wss' : 'ws'}://${document.location.host}${document.location.search}`);
+		createMapBoxes();
 
 		ws.onmessage = handleMessage;
 
@@ -230,8 +257,8 @@
 			ws.onclose = null
 		);
 
-		sendDataOnClick(ws, '#show-result', ['show_result']);
-		sendDataOnClick(ws, '#reset', ['reset']);
-		handleSlider(ws);
+		sendDataOnClick('#show-result', ['show_result']);
+		sendDataOnClick('#reset', ['reset']);
+		handleSlider();
 	}
 })();

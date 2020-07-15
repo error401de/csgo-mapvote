@@ -105,8 +105,8 @@ module.exports = (webSocketServer) => {
 		ws.on('close', () => handleDeadConnection(webSocketServer, state, ws));
 
 		ws.on('message', msg => messageRateLimiter(ws, () => messageHandler.process(webSocketServer, state.get(ws.lobbyId), ws, msg)));
+		messageHandler.sendJson(ws, ['registered', { ack: true, id: ws.id, isAdmin, lobbyId: ws.lobbyId }]);
 		messageHandler.updateParticipants(webSocketServer, ws.lobbyId);
 		messageHandler.updateSettings(ws, state.get(ws.lobbyId));
-		messageHandler.sendJson(ws, ['registered', { ack: true, id: ws.id, isAdmin, lobbyId: ws.lobbyId }]);
 	};
 };

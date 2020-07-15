@@ -97,6 +97,11 @@
 	justify-content: space-between;
 }
 
+.admin-modal, .default-modal {
+	display: none;
+	padding: 10px;
+}
+
 .participant-waiting {
 	display: block;
 	width: 35px;
@@ -189,6 +194,17 @@
 
 .participant:first-of-type {
 	margin-top: 20px;
+}
+
+.participant.self > span:hover {
+	cursor: pointer;
+}
+
+.participant >  span {
+	text-overflow: ellipsis;
+	flex: 0 1 100%;
+	white-space: nowrap;
+	overflow: hidden;
 }
 
 .box-participants {

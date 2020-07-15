@@ -13,15 +13,27 @@ const areMapsValid = maps => maps.every(mapId => allMaps.items.find(({ id }) => 
 
 const countMaps = allMaps.items.length;
 
+const removeForeignIds = (ws, participant) => {
+	if (ws.id !== participant.id) {
+		return {
+			...participant,
+			id: null
+		};
+	}
+	return participant;
+};
+
 const updateParticipants = (webSocketServer, lobbyId) => {
 	const connections = getConnectionsByLobbyId(webSocketServer, lobbyId);
-	const items = connections.map(({ voted, vetoed }, index) => ({
-		name: `Player ${index + 1}`,
+	const items = connections.map(({ id, name, voted, vetoed }, index) => ({
+		id,
+		name: name || `Player ${index + 1}`,
 		voted,
 		vetoed
 	}));
-
-	connections.forEach(ws => sendJson(ws, ['participants', { items }]));
+	connections.forEach(ws =>
+		sendJson(ws, ['participants', { items: items.map(participant => removeForeignIds(ws, participant)) }])
+	);
 };
 
 const publishResult = (webSocketServer, lobbyId) => {
@@ -109,6 +121,15 @@ const sliderIsNotValid = (value) => {
 	return (value < 0 || value > countMaps || !Number.isInteger(value));
 };
 
+const changeParticipantName = (webSocketServer, ws, data) => {
+	if (data.name.length > 30) {
+		return console.log(`${ws.id} tried to set participant name to an invalid value`);
+	}
+
+	ws.name = data.name;
+	updateParticipants(webSocketServer, ws.lobbyId);
+};
+
 const process = (webSocketServer, lobbyState, ws, msg) => {
 	try {
 		const [msgType, data] = JSON.parse(msg);
@@ -128,6 +149,9 @@ const process = (webSocketServer, lobbyState, ws, msg) => {
 				break;
 			case 'slider':
 				slider(webSocketServer, lobbyState, ws, data);
+				break;
+			case 'participant_name_changed':
+				changeParticipantName(webSocketServer, ws, data);
 				break;
 			default:
 				console.log(`Unkown message ${msg} from ${ws.id}`);
