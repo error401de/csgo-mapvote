@@ -88,7 +88,6 @@
 				span.textContent = span.textContent.slice(0, -identifier.length);
 			};
 			span.onkeyup = (event) => {
-				console.log(event);
 				if (event.key === 'Enter' || event.target.textContent.length >= 30) {
 					event.preventDefault();
 					changeParticipantName(span);
