@@ -22,7 +22,7 @@ const handleDeadConnection = (webSocketServer, state, ws) => {
 		messageHandler.updateParticipants(webSocketServer, ws.lobbyId);
 		return false;
 	}
-	getConnectionsByLobbyId(webSocketServer, ws.lobbyId).forEach(ws => ws.terminate());
+	getConnectionsByLobbyId(webSocketServer, ws.lobbyId).forEach(ws => ws.close(4504, 'Lobby Admin left'));
 	state.delete(ws.lobbyId);
 
 	return true
@@ -45,10 +45,18 @@ const checkIsAlive = (webSocketServer, state) => {
 	};
 };
 
-const isLobbyIdValid = (webSocketServer, lobbyId) => {
+const checkLobbyId = (webSocketServer, lobbyId) => {
 	const connections = getConnectionsByLobbyId(webSocketServer, lobbyId);
 
-	return connections.length > 0 && connections.length < 5;
+	if (connections.length === 0) {
+		return { code: 4404, reason: 'Lobby ID Not Found' };
+	}
+
+	if (connections.length >= 5) {
+		return { code: 4400, reason: 'Lobby Occupied' };
+	}
+
+	return null;
 };
 
 const initLobbyId = (webSocketServer, state, ws, req) => {
@@ -62,16 +70,18 @@ const initLobbyId = (webSocketServer, state, ws, req) => {
 		});
 		console.log(`new admin ${ws.id} in lobby ${ws.lobbyId}`);
 
-		return { lobbyId: ws.lobbyId, isAdmin: true };
-	} else if (isLobbyIdValid(webSocketServer, lobbyId)) {
-		ws.lobbyId = lobbyId;
-
-		return { lobbyId: ws.lobbyId, isAdmin: false };
-	} else {
-		console.log(`Rejecting invalid lobbyId ${lobbyId}`);
-
-		return {};
+		return null;
 	}
+
+	const error = checkLobbyId(webSocketServer, lobbyId);
+
+	if (error) {
+		return error;
+	}
+
+	ws.lobbyId = lobbyId;
+
+	return null;
 };
 
 const isLimitReached = webSocketServer => webSocketServer.getWss().clients.size > 10000;
@@ -87,25 +97,27 @@ module.exports = (webSocketServer) => {
 
 	return function (ws, req) {
 		if (isLimitReached(webSocketServer)) {
-			return ws.terminate();
+			return ws.close(4001, 'Can not open new connections');
 		}
 
 		ws.id = uuidv4();
 		ws.isAlive = true;
 		ws.votes = [];
 		ws.vetos = [];
-		ws.on('pong', heartbeat);
 
-		const { lobbyId, isAdmin } = initLobbyId(webSocketServer, state, ws, req);
+		const error = initLobbyId(webSocketServer, state, ws, req);
 
-		if (!lobbyId) {
-			return ws.terminate();
+		if (error) {
+			return ws.close(error.code, error.reason);
 		}
 
+		ws.on('pong', heartbeat);
 		ws.on('close', () => handleDeadConnection(webSocketServer, state, ws));
 
-		ws.on('message', msg => messageRateLimiter(ws, () => messageHandler.process(webSocketServer, state.get(ws.lobbyId), ws, msg)));
-		messageHandler.sendJson(ws, ['registered', { ack: true, id: ws.id, isAdmin, lobbyId: ws.lobbyId }]);
+		const lobbyState = state.get(ws.lobbyId);
+
+		ws.on('message', msg => messageRateLimiter(ws, () => messageHandler.process(webSocketServer, lobbyState, ws, msg)));
+		messageHandler.sendJson(ws, ['registered', { ack: true, id: ws.id, isAdmin: ws.id === lobbyState.adminId, lobbyId: ws.lobbyId }]);
 		messageHandler.updateParticipants(webSocketServer, ws.lobbyId);
 		messageHandler.updateSettings(ws, state.get(ws.lobbyId));
 	};

@@ -251,13 +251,49 @@
 		document.querySelector('#show-settings-vetos').innerHTML = 'Vetos: ' + settings.vetosPerParticipant;
 	}
 
+	function navigateToHome() {
+		window.location = '/';
+	}
+
 	window.onload = function () {
 		ws = new WebSocket(`${document.location.protocol === 'https:' ? 'wss' : 'ws'}://${document.location.host}${document.location.search}`);
 		createMapBoxes();
 
 		ws.onmessage = handleMessage;
 
-		ws.onclose = () => alert('Your connection was interrupted.');
+		ws.onclose = (closeEvent) => {
+			let message = '';
+			let shouldNavigateToHome = true;
+
+			switch (closeEvent.code) {
+				case 4001:
+					message = 'A new lobby can currently not be opened. Please try again later.';
+					break;
+				case 4400:
+					message = 'There are no free seats left, you can not join anymore.';
+					break;
+				case 4404:
+					message = 'Your lobby id is invalid.';
+					break;
+				case 4504:
+					message = 'The Lobby Admin left.';
+					break;
+				case 4429:
+					message = 'You sent too many messages. Try reloading the page in a few seconds.';
+					shouldNavigateToHome = false;
+					break;
+				default:
+					message = 'Try reloading the page';
+					shouldNavigateToHome = false;
+					break;
+			}
+
+			alert('Your connection was interrupted: ' + message);
+			if (shouldNavigateToHome) {
+				navigateToHome();
+			}
+		};
+
 		window.addEventListener('beforeunload', () =>
 			ws.onclose = null
 		);

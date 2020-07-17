@@ -16,7 +16,7 @@ const rateLimiterMiddleware = (ws, cb) => {
 			if (rejectReason.isFirstInDuration) {
 				console.log(`Closing ${ws.id}, too many messages.`);
 			}
-			ws.terminate();
+			ws.close(4429, 'Too many messages');
 		});
 };
 
