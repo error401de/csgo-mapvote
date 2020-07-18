@@ -9,9 +9,7 @@ const rateLimiter = new RateLimiterMemory({
 
 const rateLimiterMiddleware = (ws, cb) => {
 	rateLimiter.consume(ws.id)
-		.then(() => {
-			cb();
-		})
+		.then(cb)
 		.catch(rejectReason => {
 			if (rejectReason.isFirstInDuration) {
 				console.log(`Closing ${ws.id}, too many messages.`);

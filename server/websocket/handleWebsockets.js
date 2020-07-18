@@ -113,6 +113,7 @@ module.exports = (webSocketServer) => {
 
 		ws.on('pong', heartbeat);
 		ws.on('close', () => handleDeadConnection(webSocketServer, state, ws));
+		ws.on('error', errorEvent => console.error(errorEvent));
 
 		const lobbyState = state.get(ws.lobbyId);
 

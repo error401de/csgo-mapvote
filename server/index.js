@@ -11,7 +11,11 @@ app.enable('trust proxy');
 
 app.use('/', rateLimiterMiddleware);
 
-const wss = require('express-ws')(app);
+const wss = require('express-ws')(app, undefined, {
+	wsOptions: {
+		maxPayload: 5 * 1024
+	}
+});
 
 app.use(express.static('public', {
 	setHeaders: (res, path) => {
