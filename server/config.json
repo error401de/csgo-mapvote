@@ -1,4 +1,4 @@
 {
-    "port": 3000,
-    "webSocketBasePath": "/"
+	"port": 3000,
+	"webSocketBasePath": "/lobby"
 }

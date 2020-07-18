@@ -140,7 +140,7 @@
 			removeMapIcons(map);
 			map.style.visibility = 'visible';
 			changeStatusTextTo('Status: Please place your vote. ' + votesLeft + " left.");
-		})
+		});
 		updateLobbySettings();
 	}
 
@@ -222,13 +222,12 @@
 	}
 
 	function generateLobbyUrl(lobbyId) {
-		let url = window.location.href + "?lobbyId=" + lobbyId;
-		return url;
+		return `${window.location.protocol}//${window.location.host}/lobby/${lobbyId}`;
 	}
 
 	function copyToClipboard(lobbyId) {
-		let url = generateLobbyUrl(lobbyId);
-		var el = document.createElement('textarea');
+		const url = generateLobbyUrl(lobbyId);
+		const el = document.createElement('textarea');
 		el.value = url;
 		el.setAttribute('readonly', '');
 		el.style = { position: 'absolute', left: '-9999px' };
@@ -255,7 +254,7 @@
 	}
 
 	window.onload = function () {
-		ws = new WebSocket(`${document.location.protocol === 'https:' ? 'wss' : 'ws'}://${document.location.host}${document.location.search}`);
+		ws = new WebSocket(`${document.location.protocol === 'https:' ? 'wss' : 'ws'}://${document.location.host}${document.location.pathname}`);
 		createMapBoxes();
 
 		ws.onmessage = handleMessage;

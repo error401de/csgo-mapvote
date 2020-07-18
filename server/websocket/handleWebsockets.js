@@ -60,7 +60,7 @@ const checkLobbyId = (webSocketServer, lobbyId) => {
 };
 
 const initLobbyId = (webSocketServer, state, ws, req) => {
-	const lobbyId = req.query.lobbyId ? req.query.lobbyId.toUpperCase() : null;
+	const lobbyId = req.params.lobbyId ? req.params.lobbyId.toUpperCase() : null;
 	if (!lobbyId) {
 		ws.lobbyId = createLobbyId();
 		state.set(ws.lobbyId, {

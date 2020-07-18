@@ -12,7 +12,7 @@
 			const input = document.getElementById('lobby-input');
 			const { value } = input;
 			if (value && value.length === 6) {
-				window.location = '/lobby.html?lobbyId=' + value;
+				window.location = '/lobby/' + value;
 			} else {
 				document.getElementById('join-lobby').blur();
 				input.reportValidity && input.reportValidity();
@@ -42,7 +42,7 @@
 				<h1>Create Lobby</h1>
 			</div>
 			<div class="box">
-				<a href="/lobby.html" class="menu-button button button-green">Create lobby</a>
+				<a href="/lobby" class="menu-button button button-green">Create lobby</a>
 			</div>
 		</div>
 		<div class="box-styling" id="box-wrapper">

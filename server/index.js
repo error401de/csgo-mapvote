@@ -1,5 +1,6 @@
 const express = require('express');
 const mime = require('mime-types');
+const path = require('path');
 
 const config = require('./config.json');
 const handleWebsockets = require('./websocket/handleWebsockets');
@@ -17,6 +18,20 @@ const wss = require('express-ws')(app, undefined, {
 	}
 });
 
+const parametrizedWebSocketPath = config.webSocketBasePath + '/:lobbyId?'
+
+app.get(parametrizedWebSocketPath, (req, res, next) => {
+	if (req.wsHandled === false) {
+		return next();
+	}
+	res.sendFile(path.join(__dirname, '../public/lobby.html'))
+});
+
+const webSocketHandler = handleWebsockets(wss);
+
+app.ws(config.webSocketBasePath, webSocketHandler);
+app.ws(parametrizedWebSocketPath, webSocketHandler);
+
 app.use(express.static('public', {
 	setHeaders: (res, path) => {
 		switch (mime.lookup(path)) {
@@ -25,9 +40,9 @@ app.use(express.static('public', {
 				res.setHeader('Cache-Control', 'public, max-age=86400');
 				break;
 		}
-	}
+	},
+	index: ['index.html'],
+	extensions: ['html'],
 }));
-
-app.ws(config.webSocketBasePath, handleWebsockets(wss));
 
 app.listen(config.port, () => console.log(`server is running at http://localhost:${config.port}`));
