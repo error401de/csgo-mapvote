@@ -9,6 +9,7 @@
 	let vetoedMaps = [];
 	let participantId = null;
 	let ws;
+	let blockUpdate = 0;
 
 	function createElement(tagName, className, id) {
 		const element = document.createElement(tagName);
@@ -69,6 +70,7 @@
 	}
 
 	function changeParticipantName(newNameElement) {
+		blockUpdate = 0;
 		newNameElement.textContent = newNameElement.textContent.trim().substring(0, 30);
 		ws.send(JSON.stringify(['participant_name_changed', { name: newNameElement.textContent }]));
 	}
@@ -85,12 +87,13 @@
 			div.classList.add('self');
 			span.setAttribute('contenteditable', 'true');
 			span.onfocus = () => {
+				blockUpdate = 1;
 				span.textContent = span.textContent.slice(0, -identifier.length);
 			};
 			span.onkeyup = (event) => {
 				if (event.key === 'Enter' || event.target.textContent.length >= 30) {
 					event.preventDefault();
-					changeParticipantName(span);
+					event.target.blur();
 				}
 			}
 			span.onblur = () => changeParticipantName(span);
@@ -104,9 +107,11 @@
 	}
 
 	function handleParticipants(data) {
-		const clearList = document.getElementById('box-participants');
-		clearList.textContent = '';
-		data.items.forEach(renderParticipant);
+		if (blockUpdate === 0) {
+			const clearList = document.getElementById('box-participants');
+			clearList.textContent = '';
+			data.items.forEach(renderParticipant);
+		}
 	}
 
 	function removeMapIcons(map) {
