@@ -95,7 +95,7 @@
 					event.preventDefault();
 					event.target.blur();
 				}
-			}
+			};
 			span.onblur = () => changeParticipantName(span);
 		}
 
@@ -155,6 +155,7 @@
 		document.querySelector('.modal-background').onclick = closeModal.bind(null, data.lobbyId, 0);
 
 		if (data.isAdmin) {
+			document.querySelector('#box-menu').classList.add('admin-view');
 			document.querySelector('.admin-modal').style.display = 'flex';
 			document.querySelector('#box-menu').style.visibility = 'visible';
 			const linkToLobby = createElement('div', 'lobby-link');
@@ -206,10 +207,10 @@
 	}
 
 	function handleSlider() {
-		let items = [{ votesPerParticipant: 1, vetosPerParticipant: 1 }];
+		const items = [{ votesPerParticipant: 1, vetosPerParticipant: 1 }];
 		document.querySelectorAll('.slider').forEach(slider => {
-			let currentSlider = document.getElementById(slider.id);
-			let output = document.getElementById(currentSlider.id + "-value");
+			const currentSlider = document.getElementById(slider.id);
+			const output = document.getElementById(currentSlider.id + "-value");
 
 			currentSlider.oninput = function () {
 				output.innerHTML = currentSlider.value;
@@ -258,44 +259,53 @@
 		window.location = '/';
 	}
 
+	function handleWSClosed(closeEvent) {
+		let message = '';
+		let shouldNavigateToHome = true;
+
+		switch (closeEvent.code) {
+			case 4001:
+				message = 'A new lobby can currently not be opened. Please try again later.';
+				break;
+			case 4400:
+				message = 'There are no free seats left, you can not join anymore.';
+				break;
+			case 4404:
+				message = 'Your lobby id is invalid.';
+				break;
+			case 4504:
+				message = 'The Lobby Admin left.';
+				break;
+			case 4429:
+				message = 'You sent too many messages. Try reloading the page in a few seconds.';
+				shouldNavigateToHome = false;
+				break;
+			default:
+				message = 'Try reloading the page';
+				shouldNavigateToHome = false;
+				break;
+		}
+		document.querySelectorAll('.modal').forEach(node => node.style.display = 'none');
+		const errorModal = document.querySelector('.error-modal');
+		errorModal.style.display = 'flex';
+		const modalBackground = document.querySelector('.modal-background');
+		modalBackground.style.display = 'block';
+		errorModal.querySelector('#error-message').textContent = message;
+
+		if (shouldNavigateToHome) {
+			errorModal.querySelector('a').style.display = 'block';
+			modalBackground.onclick = navigateToHome;
+		}
+	};
+
+
 	window.onload = function () {
 		ws = new WebSocket(`${document.location.protocol === 'https:' ? 'wss' : 'ws'}://${document.location.host}${document.location.pathname}`);
 		createMapBoxes();
 
 		ws.onmessage = handleMessage;
 
-		ws.onclose = (closeEvent) => {
-			let message = '';
-			let shouldNavigateToHome = true;
-
-			switch (closeEvent.code) {
-				case 4001:
-					message = 'A new lobby can currently not be opened. Please try again later.';
-					break;
-				case 4400:
-					message = 'There are no free seats left, you can not join anymore.';
-					break;
-				case 4404:
-					message = 'Your lobby id is invalid.';
-					break;
-				case 4504:
-					message = 'The Lobby Admin left.';
-					break;
-				case 4429:
-					message = 'You sent too many messages. Try reloading the page in a few seconds.';
-					shouldNavigateToHome = false;
-					break;
-				default:
-					message = 'Try reloading the page';
-					shouldNavigateToHome = false;
-					break;
-			}
-
-			alert('Your connection was interrupted: ' + message);
-			if (shouldNavigateToHome) {
-				navigateToHome();
-			}
-		};
+		ws.onclose = handleWSClosed;
 
 		window.addEventListener('beforeunload', () =>
 			ws.onclose = null

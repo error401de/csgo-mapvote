@@ -8,6 +8,14 @@
 	background-color: #b10000;
 }
 
+#box-menu > .menu-button {
+	display: none;
+}
+
+#box-menu.admin-view > .menu-button {
+	display: block;
+}
+
 #box-main {
 	background-color: #313a41;
 	width: 600px;
@@ -83,8 +91,8 @@
 .modal {
 	z-index: 2;
 	display: flex;
-	width: 400px;
-	max-width: 100%;
+	min-width: 270px;
+	max-width: 400px;
 	max-height: 100%;
 	position: fixed;
 	top: 50%;
@@ -97,9 +105,19 @@
 	justify-content: space-between;
 }
 
-.admin-modal, .default-modal {
+.admin-modal, .default-modal, .error-modal {
+	justify-content: center;
 	display: none;
 	padding: 10px;
+}
+
+.error-modal {
+	text-align: center;
+	padding: 14px;
+}
+
+.error-modal > .modal-content > a {
+	display: none;
 }
 
 .participant-waiting {
@@ -227,6 +245,7 @@
 	justify-content: center;
 	flex-direction: column;
 	align-items: center;
+	margin-top: 14px;
 }
 
 .slider {
