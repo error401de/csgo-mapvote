@@ -153,20 +153,20 @@
 		participantId = data.id;
 		document.querySelector('.modal-background').style.display = 'block';
 		document.querySelector('.modal-background').onclick = closeModal.bind(null, data.lobbyId, 0);
+		const linkToLobby = createElement('div', 'lobby-link');
+		linkToLobby.innerHTML = `Lobby Id: ${data.lobbyId}`;
+		document.querySelector('#lobby-link-wrapper').insertBefore(linkToLobby, document.querySelector('#lobby-link-wrapper').childNodes[0]);
+		document.querySelector('#lobby-link-img').onclick = copyToClipboard.bind(null, data.lobbyId);
 
 		if (data.isAdmin) {
 			document.querySelector('#box-menu').classList.add('admin-view');
 			document.querySelector('.admin-modal').style.display = 'flex';
-			document.querySelector('#box-menu').style.visibility = 'visible';
-			const linkToLobby = createElement('div', 'lobby-link');
-			linkToLobby.innerHTML = `Lobby Id: ${data.lobbyId}`;
-			document.querySelector('#lobby-link-wrapper').insertBefore(linkToLobby, document.querySelector('#lobby-link-wrapper').childNodes[0]);
-			document.querySelector('#lobby-link-img').onclick = copyToClipboard.bind(null, data.lobbyId);
 			document.querySelector('#lobby-url').innerHTML = generateLobbyUrl(data.lobbyId);
 			document.querySelector('#lobby-url').onclick = closeModal.bind(null, data.lobbyId, 1);
 		} else {
 			document.querySelector('.default-modal').style.display = 'flex';
-			document.querySelector('#box-settings').style.display = 'flex';
+			document.querySelectorAll('.slider').forEach(node => node.disabled = true);
+			document.querySelector('.slider-wrapper').classList.add('tooltip');
 		}
 	}
 
@@ -251,8 +251,10 @@
 	}
 
 	function updateLobbySettings() {
-		document.querySelector('#show-settings-votes').innerHTML = 'Votes: ' + settings.votesPerParticipant;
-		document.querySelector('#show-settings-vetos').innerHTML = 'Vetos: ' + settings.vetosPerParticipant;
+		document.querySelector('#slider-votes').value = settings.votesPerParticipant;
+		document.querySelector('#slider-votes-value').innerHTML = settings.votesPerParticipant;
+		document.querySelector('#slider-vetos').value = settings.vetosPerParticipant;
+		document.querySelector('#slider-vetos-value').innerHTML = settings.vetosPerParticipant;
 	}
 
 	function navigateToHome() {
