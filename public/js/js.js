@@ -40,30 +40,81 @@
 		document.querySelector('#status-message > h2').innerText = newText;
 	}
 
+	function sendVotes() {
+		ws.send(JSON.stringify(['voted', { maps: votedMaps }]));
+		vetosLeft ? displayVetoingStatus() : changeStatusTextTo('Status: Wait until the result is revealed');
+	}
+
+	function sendVetos() {
+		ws.send(JSON.stringify(['vetoed', { maps: vetoedMaps }]));
+		changeStatusTextTo('Status: Wait until the result is revealed');
+	}
+
+	function displayVotingStatus() {
+		changeStatusTextTo('Status: Please place your vote. ' + votesLeft + ' left.');
+		document.getElementById('skip').innerText = 'Skip Votes';
+	}
+
+	function displayVetoingStatus() {
+		changeStatusTextTo('Status: Please place your veto. ' + vetosLeft + ' left.');
+		document.getElementById('skip').innerText = 'Skip Vetos';
+	}
+
+	function removeVote(id) {
+		if (votesLeft === 0) {
+			ws.send(JSON.stringify(['reset_votes']));
+		};
+		votesLeft++;
+		removeMapIcons(document.getElementById(id));
+		votedMaps = votedMaps.filter(mapId => mapId !== id);
+		displayVotingStatus();
+	}
+
+	function removeVeto(id) {
+		if (vetosLeft === 0) {
+			ws.send(JSON.stringify(['reset_vetos']));
+		}
+		vetosLeft++;
+		removeMapIcons(document.getElementById(id));
+		vetoedMaps = vetoedMaps.filter(mapId => mapId !== id);
+		if (!votesLeft) { // else status text should keep displaying amount of votes
+			displayVetoingStatus();
+		}
+	}
+
+	function addVote(id) {
+		const tick = createElement('div', 'map-voted map-icon');
+		document.getElementById(id).appendChild(tick);
+		votesLeft--;
+		votedMaps.push(id);
+		displayVotingStatus();
+		if (votesLeft === 0) {
+			sendVotes();
+		}
+	}
+
+	function addVeto(id) {
+		document.getElementById(id).appendChild(renderVetoedImg());
+		vetosLeft--;
+		displayVetoingStatus();
+		vetoedMaps.push(id);
+		if (vetosLeft === 0) {
+			sendVetos();
+		}
+	}
+
 	function renderMap({ id, name }) {
 		const div = createElement('div', 'map button', id)
 		div.textContent = name;
 		div.onclick = () => {
-			if (votesLeft > 0) {
-				const tick = createElement('div', 'map-voted map-icon');
-				document.getElementById(id).appendChild(tick);
-				votesLeft--;
-				changeStatusTextTo('Status: Please place your vote. ' + votesLeft + ' left.');
-				votedMaps.push(id);
-				if (votesLeft === 0) {
-					ws.send(JSON.stringify(['voted', { maps: votedMaps }]));
-					changeStatusTextTo('Status: Please place your veto. ' + vetosLeft + ' left.');
-				}
-			}
-			else if (vetosLeft > 0) {
-				document.getElementById(id).appendChild(renderVetoedImg());
-				vetosLeft--;
-				changeStatusTextTo('Status: Please place your veto. ' + vetosLeft + ' left.');
-				vetoedMaps.push(id);
-				if (vetosLeft === 0) {
-					ws.send(JSON.stringify(['vetoed', { maps: vetoedMaps }]));
-					changeStatusTextTo('Status: Wait until the result is revealed');
-				}
+			if (votedMaps.includes(id)) {
+				removeVote(id);
+			} else if (vetoedMaps.includes(id)) {
+				removeVeto(id);
+			} else if (votesLeft > 0) {
+				addVote(id);
+			} else if (vetosLeft > 0) {
+				addVeto(id);
 			}
 		}
 		document.getElementById('box-maps').appendChild(div);
@@ -75,7 +126,7 @@
 		ws.send(JSON.stringify(['participant_name_changed', { name: newNameElement.textContent }]));
 	}
 
-	function renderParticipant({ id, name, vetoed }) {
+	function renderParticipant({ id, name, vetoed, voted }) {
 		const div = createElement('div', 'participant', 'participant' + name);
 		const span = createElement('span');
 		span.textContent = name;
@@ -101,7 +152,7 @@
 
 		document.getElementById('box-participants').appendChild(div);
 
-		const status = createElement('div', vetoed ? 'participant-finished' : 'participant-waiting');
+		const status = createElement('div', (voted && vetoed) ? 'participant-finished' : 'participant-waiting');
 
 		div.appendChild(status);
 	}
@@ -144,7 +195,7 @@
 		document.querySelectorAll('.map').forEach(map => {
 			removeMapIcons(map);
 			map.style.visibility = 'visible';
-			changeStatusTextTo('Status: Please place your vote. ' + votesLeft + " left.");
+			displayVotingStatus();
 		});
 		updateLobbySettings();
 	}
@@ -174,7 +225,7 @@
 		votesLeft = data.votesPerParticipant;
 		vetosLeft = data.vetosPerParticipant;
 		settings = data;
-		changeStatusTextTo('Status: Please place your vote. ' + votesLeft + " left.");
+		displayVotingStatus();
 		updateLobbySettings();
 	}
 
@@ -224,7 +275,29 @@
 				}
 				ws.send(JSON.stringify(['slider', { items }]));
 			}
-		})
+		});
+	}
+
+	function handleSkip() {
+		document.getElementById('skip').onclick = () => {
+			if (votesLeft) {
+				votesLeft = 0;
+				sendVotes();
+				return;
+			}
+			if (vetosLeft) {
+				vetosLeft = 0;
+				sendVetos();
+			}
+		};
+	}
+
+	function handleResetSelf() {
+		document.getElementById('reset-self').onclick = () => {
+			handleReset();
+			ws.send(JSON.stringify(['reset_votes']));
+			ws.send(JSON.stringify(['reset_vetos']));
+		}
 	}
 
 	function generateLobbyUrl(lobbyId) {
@@ -316,5 +389,7 @@
 		sendDataOnClick('#show-result', ['show_result']);
 		sendDataOnClick('#reset', ['reset']);
 		handleSlider();
+		handleSkip();
+		handleResetSelf();
 	}
 })();

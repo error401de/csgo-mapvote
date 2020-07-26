@@ -7,11 +7,11 @@
 	background-color: #b10000;
 }
 
-#box-menu > .menu-button {
+#box-menu .admin-button {
 	display: none;
 }
 
-#box-menu.admin-view > .menu-button {
+#box-menu.admin-view .admin-button {
 	display: block;
 }
 

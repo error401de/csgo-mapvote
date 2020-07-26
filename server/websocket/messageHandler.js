@@ -64,6 +64,12 @@ const handleMapChange = (webSocketServer, ws, validationProp, listProp, limit, d
 	updateParticipants(webSocketServer, ws.lobbyId);
 };
 
+const handleResetChoices = (webSocketServer, ws, validationProp, listProp) => {
+	ws[validationProp] = false;
+	ws[listProp] = [];
+	updateParticipants(webSocketServer, ws.lobbyId);
+};
+
 const showResult = (webSocketServer, lobbyState, ws) => {
 	if (ws.id !== lobbyState.adminId) {
 		console.log(`${ws.id} tried to show result as non-admin`);
@@ -143,6 +149,12 @@ const process = (webSocketServer, lobbyState, ws, msg) => {
 				break;
 			case 'vetoed':
 				handleMapChange(webSocketServer, ws, 'vetoed', 'vetos', lobbyState.vetosPerParticipant, data);
+				break;
+			case 'reset_votes':
+				handleResetChoices(webSocketServer, ws, 'voted', 'votes');
+				break;
+			case 'reset_vetos':
+				handleResetChoices(webSocketServer, ws, 'vetoed', 'vetos');
 				break;
 			case 'reset':
 				reset(webSocketServer, lobbyState, ws);
