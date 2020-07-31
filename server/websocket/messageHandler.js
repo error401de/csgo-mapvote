@@ -94,18 +94,26 @@ const reset = (webSocketServer, lobbyState, ws) => {
 	}
 	getConnectionsByLobbyId(webSocketServer, lobbyState.id).forEach(resetSingleConnection);
 	updateParticipants(webSocketServer, ws.lobbyId);
-}
+};
 
-const slider = (webSocketServer, lobbyState, ws, data) => {
+const choiceSettingsIsNotValid = (value) => {
+	return (value < 0 || value > countMaps || !Number.isInteger(value));
+};
+
+const changeSettings = (webSocketServer, lobbyState, ws, data) => {
 	if (ws.id !== lobbyState.adminId) {
-		console.log(`${ws.id} tried to change slider settings as non-admin`);
+		console.log(`${ws.id} tried to change settings as non-admin`);
 		return;
 	}
-	const votesPerParticipant = data.items[0].votesPerParticipant;
-	const vetosPerParticipant = data.items[0].vetosPerParticipant;
+	const { votesPerParticipant, vetosPerParticipant } = data;
 
-	if (sliderIsNotValid(votesPerParticipant) || sliderIsNotValid(vetosPerParticipant)) {
-		console.log(`${ws.id} tried to set slider to an invalid value: ${JSON.stringify(data)}`);
+	if (choiceSettingsIsNotValid(votesPerParticipant)) {
+		console.log(`${ws.id} tried to set votesPerParticipant to an invalid value: ${JSON.stringify(data)}`);
+		return;
+	}
+
+	if (choiceSettingsIsNotValid(vetosPerParticipant)) {
+		console.log(`${ws.id} tried to set vetosPerParticipant to an invalid value: ${JSON.stringify(data)}`);
 		return;
 	}
 
@@ -116,16 +124,16 @@ const slider = (webSocketServer, lobbyState, ws, data) => {
 	reset(webSocketServer, lobbyState, ws);
 }
 
-const getSettings = lobbyState => ({ votesPerParticipant: lobbyState.votesPerParticipant, vetosPerParticipant: lobbyState.vetosPerParticipant });
+const getSettings = lobbyState => ({
+	votesPerParticipant: lobbyState.votesPerParticipant,
+	vetosPerParticipant: lobbyState.vetosPerParticipant,
+	gameModes: ["competitive", "scrimmage"]
+});
 
 const updateSettings = (ws, lobbyState) => sendJson(ws, ['settings', getSettings(lobbyState)]);
 
 const updateSettingsForAll = (webSocketServer, lobbyState) => getConnectionsByLobbyId(webSocketServer, lobbyState.id)
 	.forEach(ws => sendJson(ws, ['settings', getSettings(lobbyState)]));
-
-const sliderIsNotValid = (value) => {
-	return (value < 0 || value > countMaps || !Number.isInteger(value));
-};
 
 const changeParticipantName = (webSocketServer, ws, data) => {
 	if (data.name.length > 30) {
@@ -159,8 +167,8 @@ const process = (webSocketServer, lobbyState, ws, msg) => {
 			case 'reset':
 				reset(webSocketServer, lobbyState, ws);
 				break;
-			case 'slider':
-				slider(webSocketServer, lobbyState, ws, data);
+			case 'settings':
+				changeSettings(webSocketServer, lobbyState, ws, data);
 				break;
 			case 'participant_name_changed':
 				changeParticipantName(webSocketServer, ws, data);

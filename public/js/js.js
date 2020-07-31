@@ -258,7 +258,8 @@
 	}
 
 	function handleSlider() {
-		const items = [{ votesPerParticipant: 1, vetosPerParticipant: 1 }];
+		let votesPerParticipant = 1;
+		let vetosPerParticipant = 1;
 		document.querySelectorAll('.slider').forEach(slider => {
 			const currentSlider = document.getElementById(slider.id);
 			const output = document.getElementById(currentSlider.id + "-value");
@@ -269,11 +270,11 @@
 
 			currentSlider.onchange = function () {
 				if (slider.id === 'slider-votes') {
-					items[0].votesPerParticipant = parseInt(currentSlider.value);
+					votesPerParticipant = parseInt(currentSlider.value);
 				} else if (slider.id === 'slider-vetos') {
-					items[0].vetosPerParticipant = parseInt(currentSlider.value);
+					vetosPerParticipant = parseInt(currentSlider.value);
 				}
-				ws.send(JSON.stringify(['slider', { items }]));
+				ws.send(JSON.stringify(['settings', { votesPerParticipant, vetosPerParticipant }]));
 			}
 		});
 	}
