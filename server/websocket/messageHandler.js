@@ -1,5 +1,8 @@
-const allMaps = require('../../public/config/maps_competitive.json');
 const getConnectionsByLobbyId = require('./getConnectionsByLobbyId');
+const { GAME_MODES } = require('../lib/constants');
+
+const allowedGameModes = [GAME_MODES.COMPETITIVE, GAME_MODES.SCRIMMAGE];
+const allMaps = allowedGameModes.reduce((accumulatedMaps, gameMode) => ({ ...accumulatedMaps, [gameMode]: require(`../../public/config/maps_${gameMode}.json`) }), {})
 
 const sendJson = (ws, data) => {
 	const dataAsString = JSON.stringify(data);
@@ -9,9 +12,13 @@ const sendJson = (ws, data) => {
 	ws.send(dataAsString)
 };
 
-const areMapsValid = maps => maps.every(mapId => allMaps.items.find(({ id }) => id === mapId));
+const areMapsValid = (lobbyState, maps) => maps
+	.every(mapId => {
+		const [gameMode, map] = mapId.split('/');
+		return lobbyState.gameModes.includes(gameMode) && allMaps[gameMode].items.find(({ id }) => id === map);
+	});
 
-const countMaps = allMaps.items.length;
+const getMapCount = (lobbyState) => lobbyState.gameModes.reduce((count, gameMode) => count + (allMaps[gameMode].items.length), 0);
 
 const removeForeignIds = (ws, participant) => {
 	if (ws.id !== participant.id) {
@@ -46,12 +53,12 @@ const publishResult = (webSocketServer, lobbyId) => {
 	connections.forEach(ws => sendJson(ws, ['result', { items }]));
 };
 
-const handleMapChange = (webSocketServer, ws, validationProp, listProp, limit, data) => {
+const handleMapChange = (webSocketServer, lobbyState, ws, validationProp, listProp, limit, data) => {
 	if (data.maps.length > limit) {
 		console.log(`${ws.id} ${validationProp} more than ${limit} maps: ${JSON.stringify(data)}`);
 		return;
 	}
-	if (!areMapsValid(data.maps)) {
+	if (!areMapsValid(lobbyState, data.maps)) {
 		console.log(`${ws.id} ${validationProp} invalid maps: ${JSON.stringify(data)}`);
 		return;
 	}
@@ -96,8 +103,8 @@ const reset = (webSocketServer, lobbyState, ws) => {
 	updateParticipants(webSocketServer, ws.lobbyId);
 };
 
-const choiceSettingsIsNotValid = (value) => {
-	return (value < 0 || value > countMaps || !Number.isInteger(value));
+const choiceSettingsIsNotValid = (lobbyState, value) => {
+	return (value < 0 || !Number.isInteger(value)) || value > getMapCount(lobbyState);
 };
 
 const changeSettings = (webSocketServer, lobbyState, ws, data) => {
@@ -105,14 +112,21 @@ const changeSettings = (webSocketServer, lobbyState, ws, data) => {
 		console.log(`${ws.id} tried to change settings as non-admin`);
 		return;
 	}
-	const { votesPerParticipant, vetosPerParticipant } = data;
+	const { votesPerParticipant, vetosPerParticipant, gameModes } = data;
 
-	if (choiceSettingsIsNotValid(votesPerParticipant)) {
+	if (gameModes.some(gameMode => !allowedGameModes.includes(gameMode))) {
+		console.log(`${ws.id} tried to set gameModes to an invalid value: ${JSON.stringify(data)}`);
+		return;
+	}
+
+	lobbyState.gameModes = gameModes;
+
+	if (choiceSettingsIsNotValid(lobbyState, votesPerParticipant)) {
 		console.log(`${ws.id} tried to set votesPerParticipant to an invalid value: ${JSON.stringify(data)}`);
 		return;
 	}
 
-	if (choiceSettingsIsNotValid(vetosPerParticipant)) {
+	if (choiceSettingsIsNotValid(lobbyState, vetosPerParticipant)) {
 		console.log(`${ws.id} tried to set vetosPerParticipant to an invalid value: ${JSON.stringify(data)}`);
 		return;
 	}
@@ -127,7 +141,7 @@ const changeSettings = (webSocketServer, lobbyState, ws, data) => {
 const getSettings = lobbyState => ({
 	votesPerParticipant: lobbyState.votesPerParticipant,
 	vetosPerParticipant: lobbyState.vetosPerParticipant,
-	gameModes: ["competitive", "scrimmage"]
+	gameModes: lobbyState.gameModes
 });
 
 const updateSettings = (ws, lobbyState) => sendJson(ws, ['settings', getSettings(lobbyState)]);
@@ -153,10 +167,10 @@ const process = (webSocketServer, lobbyState, ws, msg) => {
 				showResult(webSocketServer, lobbyState, ws);
 				break;
 			case 'voted':
-				handleMapChange(webSocketServer, ws, 'voted', 'votes', lobbyState.votesPerParticipant, data);
+				handleMapChange(webSocketServer, lobbyState, ws, 'voted', 'votes', lobbyState.votesPerParticipant, data);
 				break;
 			case 'vetoed':
-				handleMapChange(webSocketServer, ws, 'vetoed', 'vetos', lobbyState.vetosPerParticipant, data);
+				handleMapChange(webSocketServer, lobbyState, ws, 'vetoed', 'vetos', lobbyState.vetosPerParticipant, data);
 				break;
 			case 'reset_votes':
 				handleResetChoices(webSocketServer, ws, 'voted', 'votes');

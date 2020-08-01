@@ -1,9 +1,11 @@
 (() => {
+	const allGameModes = ['competitive', 'scrimmage'];
 	let votesLeft = null;
 	let vetosLeft = null;
 	let settings = {
 		votesPerParticipant: 1,
-		vetosPerParticipant: 1
+		vetosPerParticipant: 1,
+		gameModes: [allGameModes[0]]
 	};
 	let votedMaps = [];
 	let vetoedMaps = [];
@@ -19,12 +21,34 @@
 		return element;
 	}
 
-	async function createMapBoxes() {
-		const url = 'config/maps_competitive.json';
-		const response = await fetch(url);
-		const json = await response.json();
+	function renderMap({ id, name, gameMode }) {
+		const elementId = `${gameMode}/${id}`;
+		const div = createElement('div', 'map button', elementId);
+		div.textContent = name;
+		div.onclick = () => {
+			if (votedMaps.includes(elementId)) {
+				removeVote(elementId);
+			} else if (vetoedMaps.includes(elementId)) {
+				removeVeto(elementId);
+			} else if (votesLeft > 0) {
+				addVote(elementId);
+			} else if (vetosLeft > 0) {
+				addVeto(elementId);
+			}
+		}
+		setMapVisibilityByGameMode(div);
+		document.getElementById('box-maps').appendChild(div);
+	}
 
-		json.items.forEach(renderMap);
+	async function createMapBoxes() {
+		Promise.all(
+			allGameModes.map(async gameMode => {
+				const url = `config/maps_${gameMode}.json`;
+				const response = await fetch(url);
+				const json = await response.json();
+				return json.items.map(item => ({ ...item, gameMode }));
+			})
+		).then(maps => maps.flat().forEach(renderMap));
 	}
 
 	function renderVetoedImg() {
@@ -103,23 +127,6 @@
 		}
 	}
 
-	function renderMap({ id, name }) {
-		const div = createElement('div', 'map button', id)
-		div.textContent = name;
-		div.onclick = () => {
-			if (votedMaps.includes(id)) {
-				removeVote(id);
-			} else if (vetoedMaps.includes(id)) {
-				removeVeto(id);
-			} else if (votesLeft > 0) {
-				addVote(id);
-			} else if (vetosLeft > 0) {
-				addVeto(id);
-			}
-		}
-		document.getElementById('box-maps').appendChild(div);
-	}
-
 	function changeParticipantName(newNameElement) {
 		blockUpdate = 0;
 		newNameElement.textContent = newNameElement.textContent.trim().substring(0, 30);
@@ -187,6 +194,10 @@
 		changeStatusTextTo('Status: Wait until the votes are reset');
 	}
 
+	function setMapVisibilityByGameMode(map) {
+		map.style.display = settings.gameModes.some(gameMode => map.id.startsWith(gameMode)) ? 'flex' : 'none';
+	}
+
 	function handleReset() {
 		votedMaps = [];
 		vetoedMaps = [];
@@ -218,7 +229,14 @@
 			document.querySelector('.default-modal').style.display = 'flex';
 			document.querySelectorAll('.slider').forEach(node => node.disabled = true);
 			document.querySelector('.slider-wrapper').classList.add('tooltip');
+			document.querySelectorAll('input[type="checkbox"]').forEach(node => node.disabled = true);
+			document.querySelector('#game-modes').classList.add('tooltip');
+
 		}
+	}
+
+	function getMapCountByGameMode(maps, gameModes) {
+		return Array.from(maps).filter(map => gameModes.some(gameMode => map.id.startsWith(gameMode))).length
 	}
 
 	function handleSettings(data) {
@@ -227,6 +245,15 @@
 		settings = data;
 		displayVotingStatus();
 		updateLobbySettings();
+		const maps = document.querySelectorAll('.map');
+		maps.forEach(setMapVisibilityByGameMode);
+		settings.gameModes.forEach(gameMode => {
+			document.getElementById(`game-mode-${gameMode}`).checked = true;
+		});
+		const maxChoices = getMapCountByGameMode(maps, settings.gameModes);;
+		document.querySelectorAll('.slider').forEach(slider => {
+			slider.max = maxChoices;
+		});
 	}
 
 	function handleMessage(message) {
@@ -274,8 +301,31 @@
 				} else if (slider.id === 'slider-vetos') {
 					vetosPerParticipant = parseInt(currentSlider.value);
 				}
-				ws.send(JSON.stringify(['settings', { votesPerParticipant, vetosPerParticipant }]));
+				ws.send(JSON.stringify(['settings', { ...settings, votesPerParticipant, vetosPerParticipant }]));
 			}
+		});
+	}
+
+	function handleGameModes() {
+		allGameModes.forEach(gameMode => {
+			const checkbox = document.getElementById(`game-mode-${gameMode}`);
+			checkbox.checked = settings.gameModes.includes(gameMode);
+			checkbox.onchange = () => {
+				const gameModes = allGameModes.filter(gameMode => document.getElementById(`game-mode-${gameMode}`).checked);
+				const maps = document.querySelectorAll('.map');
+				const maxChoices = getMapCountByGameMode(maps, gameModes);
+				document.querySelectorAll('.slider').forEach(slider => {
+					slider.value = Math.min(slider.value, maxChoices);
+					const output = document.getElementById(slider.id + "-value");
+					output.innerHTML = slider.value;
+					slider.max = maxChoices;
+				});
+				ws.send(JSON.stringify(['settings', {
+					votesPerParticipant: Math.min(settings.votesPerParticipant, maxChoices),
+					vetosPerParticipant: Math.min(settings.vetosPerParticipant, maxChoices),
+					gameModes
+				}]));
+			};
 		});
 	}
 
@@ -390,6 +440,7 @@
 		sendDataOnClick('#show-result', ['show_result']);
 		sendDataOnClick('#reset', ['reset']);
 		handleSlider();
+		handleGameModes();
 		handleSkip();
 		handleResetSelf();
 	}
