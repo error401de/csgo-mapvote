@@ -2,7 +2,7 @@ const express = require('express');
 const mime = require('mime-types');
 const path = require('path');
 
-const config = require('./config.json');
+const config = require('./config');
 const handleWebsockets = require('./websocket/handleWebsockets');
 const rateLimiterMiddleware = require('./middleware/rateLimiterMiddleware');
 
