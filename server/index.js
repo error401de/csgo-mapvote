@@ -1,48 +1,59 @@
 const express = require('express');
 const mime = require('mime-types');
 const path = require('path');
+require('dotenv').config();
 
 const config = require('./config');
+const connectToDB = require('./db/connectToDB');
 const handleWebsockets = require('./websocket/handleWebsockets');
 const rateLimiterMiddleware = require('./middleware/rateLimiterMiddleware');
 
-const app = express();
+const isProduction = process.env.NODE_ENV === 'production';
 
-app.enable('trust proxy');
+connectToDB(isProduction, process.env.DB_FILE_NAME, config.gameModes).then(db => {
+	console.log(`Connected to SQLite3 DB ${process.env.DB_FILE_NAME}.`);
+	const app = express();
 
-app.use('/', rateLimiterMiddleware);
+	app.enable('trust proxy');
 
-const wss = require('express-ws')(app, undefined, {
-	wsOptions: {
-		maxPayload: 5 * 1024
-	}
-});
+	app.use('/', rateLimiterMiddleware);
 
-const parametrizedWebSocketPath = config.webSocketBasePath + '/:lobbyId?'
-
-app.get(parametrizedWebSocketPath, (req, res, next) => {
-	if (req.wsHandled === false) {
-		return next();
-	}
-	res.sendFile(path.join(__dirname, '../public/lobby.html'))
-});
-
-const webSocketHandler = handleWebsockets(wss);
-
-app.ws(config.webSocketBasePath, webSocketHandler);
-app.ws(parametrizedWebSocketPath, webSocketHandler);
-
-app.use(express.static('public', {
-	setHeaders: (res, path) => {
-		switch (mime.lookup(path)) {
-			case 'image/png':
-			case 'image/svg+xml':
-				res.setHeader('Cache-Control', 'public, max-age=86400');
-				break;
+	const wss = require('express-ws')(app, undefined, {
+		wsOptions: {
+			maxPayload: 5 * 1024
 		}
-	},
-	index: ['index.html'],
-	extensions: ['html'],
-}));
+	});
 
-app.listen(config.port, () => console.log(`server is running at http://localhost:${config.port}`));
+	const parametrizedWebSocketPath = config.webSocketBasePath + '/:lobbyId?'
+
+	app.get(parametrizedWebSocketPath, (req, res, next) => {
+		if (req.wsHandled === false) {
+			return next();
+		}
+		res.sendFile(path.join(__dirname, '../public/lobby.html'))
+	});
+
+	const webSocketHandler = handleWebsockets(wss, db);
+
+	app.ws(config.webSocketBasePath, webSocketHandler);
+	app.ws(parametrizedWebSocketPath, webSocketHandler);
+
+	app.use(express.static('public', {
+		setHeaders: (res, path) => {
+			switch (mime.lookup(path)) {
+				case 'image/png':
+				case 'image/svg+xml':
+					res.setHeader('Cache-Control', 'public, max-age=86400');
+					break;
+			}
+		},
+		index: ['index.html'],
+		extensions: ['html'],
+	}));
+
+	process.on('exit', function () {
+		console.log('closing db');
+		db.close();
+	});
+	app.listen(config.port, () => console.log(`server is running at http://localhost:${config.port}`));
+});

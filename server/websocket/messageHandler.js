@@ -1,5 +1,6 @@
 const getConnectionsByLobbyId = require('./getConnectionsByLobbyId');
 const { GAME_MODES } = require('../lib/constants');
+const saveLobbyStatistics = require('../db/saveLobbyStatistics');
 
 const allowedGameModes = [GAME_MODES.COMPETITIVE, GAME_MODES.SCRIMMAGE];
 const allMaps = allowedGameModes.reduce((accumulatedMaps, gameMode) => ({ ...accumulatedMaps, [gameMode]: require(`../../public/config/maps_${gameMode}.json`) }), {})
@@ -77,13 +78,15 @@ const handleResetChoices = (webSocketServer, ws, validationProp, listProp) => {
 	updateParticipants(webSocketServer, ws.lobbyId);
 };
 
-const showResult = (webSocketServer, lobbyState, ws) => {
+const showResult = (db, webSocketServer, lobbyState, ws) => {
 	if (ws.id !== lobbyState.adminId) {
 		console.log(`${ws.id} tried to show result as non-admin`);
 		return;
 	}
 	updateParticipants(webSocketServer, ws.lobbyId);
 	publishResult(webSocketServer, ws.lobbyId);
+	saveLobbyStatistics(db, lobbyState, getConnectionsByLobbyId(webSocketServer, lobbyState.id))
+		.catch(console.error);
 };
 
 const resetSingleConnection = ws => {
@@ -158,13 +161,13 @@ const changeParticipantName = (webSocketServer, ws, data) => {
 	updateParticipants(webSocketServer, ws.lobbyId);
 };
 
-const process = (webSocketServer, lobbyState, ws, msg) => {
+const process = (db, webSocketServer, lobbyState, ws, msg) => {
 	try {
 		const [msgType, data] = JSON.parse(msg);
 
 		switch (msgType) {
 			case 'show_result':
-				showResult(webSocketServer, lobbyState, ws);
+				showResult(db, webSocketServer, lobbyState, ws);
 				break;
 			case 'voted':
 				handleMapChange(webSocketServer, lobbyState, ws, 'voted', 'votes', lobbyState.votesPerParticipant, data);
