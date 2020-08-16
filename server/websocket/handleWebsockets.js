@@ -4,14 +4,15 @@ const createLobbyId = require('../createLobbyId');
 const messageHandler = require('./messageHandler');
 const getConnectionsByLobbyId = require('./getConnectionsByLobbyId');
 const messageRateLimiter = require('./messageRateLimiter');
-const { GAME_MODES } = require('../lib/constants');
+const { gameModes } = require('../config');
+const createDebouncedSaveLobbyStatistics = require('../db/createDebouncedSaveLobbyStatistics');
 
 const defaultLobbyState = {
 	id: '',
 	adminId: '',
 	votesPerParticipant: 1,
 	vetosPerParticipant: 1,
-	gameModes: [GAME_MODES.COMPETITIVE]
+	gameModes
 };
 
 function heartbeat() {
@@ -88,7 +89,7 @@ const initLobbyId = (webSocketServer, state, ws, req) => {
 
 const isLimitReached = webSocketServer => webSocketServer.getWss().clients.size > 10000;
 
-module.exports = (webSocketServer) => {
+module.exports = (webSocketServer, db) => {
 	const state = new Map();
 	const interval = setInterval(checkIsAlive.bind(null, webSocketServer, state), 30000);
 	const wss = webSocketServer.getWss();
@@ -119,7 +120,7 @@ module.exports = (webSocketServer) => {
 
 		const lobbyState = state.get(ws.lobbyId);
 
-		ws.on('message', msg => messageRateLimiter(ws, () => messageHandler.process(webSocketServer, lobbyState, ws, msg)));
+		ws.on('message', msg => messageRateLimiter(ws, () => messageHandler.process(webSocketServer, lobbyState, createDebouncedSaveLobbyStatistics(db), ws, msg)));
 		messageHandler.sendJson(ws, ['registered', { ack: true, id: ws.id, isAdmin: ws.id === lobbyState.adminId, lobbyId: ws.lobbyId }]);
 		messageHandler.updateParticipants(webSocketServer, ws.lobbyId);
 		messageHandler.updateSettings(ws, state.get(ws.lobbyId));
