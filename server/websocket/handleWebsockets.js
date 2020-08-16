@@ -5,6 +5,7 @@ const messageHandler = require('./messageHandler');
 const getConnectionsByLobbyId = require('./getConnectionsByLobbyId');
 const messageRateLimiter = require('./messageRateLimiter');
 const { gameModes } = require('../config');
+const createDebouncedSaveLobbyStatistics = require('../db/createDebouncedSaveLobbyStatistics');
 
 const defaultLobbyState = {
 	id: '',
@@ -119,7 +120,7 @@ module.exports = (webSocketServer, db) => {
 
 		const lobbyState = state.get(ws.lobbyId);
 
-		ws.on('message', msg => messageRateLimiter(ws, () => messageHandler.process(db, webSocketServer, lobbyState, ws, msg)));
+		ws.on('message', msg => messageRateLimiter(ws, () => messageHandler.process(webSocketServer, lobbyState, createDebouncedSaveLobbyStatistics(db), ws, msg)));
 		messageHandler.sendJson(ws, ['registered', { ack: true, id: ws.id, isAdmin: ws.id === lobbyState.adminId, lobbyId: ws.lobbyId }]);
 		messageHandler.updateParticipants(webSocketServer, ws.lobbyId);
 		messageHandler.updateSettings(ws, state.get(ws.lobbyId));
