@@ -9,7 +9,7 @@ The tool relies on node.js and sqlite3.
 Navigate into the main directory and run ```npm i``` to install node dependencies.
 Use `npm run dev` to start a development server.
 
-For a production environment use once `sqlite3 mapvotes.db` to create the databse file and `npm run setupDB` to create the required tables.
+For a production environment use once `sqlite3 mapvotes.db` to create the database file and `npm run setupDB` to create the required tables.
 Afterwards start the  server with `npm start`.
 
 ## contributing
