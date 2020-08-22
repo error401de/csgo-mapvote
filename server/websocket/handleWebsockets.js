@@ -107,6 +107,7 @@ module.exports = (webSocketServer, db) => {
 		ws.isAlive = true;
 		ws.votes = [];
 		ws.vetos = [];
+		ws.realIp = req.ip;
 
 		const error = initLobbyId(webSocketServer, state, ws, req);
 
