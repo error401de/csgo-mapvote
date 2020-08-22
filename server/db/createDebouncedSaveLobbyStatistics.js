@@ -6,7 +6,7 @@ const TWO_MINUTES_IN_SECONDS = 1000 * 60 * 2;
 const shouldSaveStatistics = (lobbyState, participants) => {
 	const ips = [];
 	participants.forEach(participant => {
-		const ip = participant._socket.address().address;
+		const ip = participant.realIp;
 		if (!ips.includes(ip)) {
 			ips.push(ip);
 		}
