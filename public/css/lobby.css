@@ -310,7 +310,7 @@ input:disabled:hover::-moz-range-thumb, input:disabled:hover::-webkit-slider-thu
 	z-index: 1;
 }
 
-.slider-wrapper.tooltip:hover, #game-modes.tooltip:hover {
+.slider-wrapper.tooltip:hover, #game-modes.tooltip:hover, #game-modes.tooltip:hover > * {
 	cursor: not-allowed;
 }
 
