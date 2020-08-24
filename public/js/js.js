@@ -13,6 +13,12 @@
 	let ws;
 	let blockUpdate = 0;
 
+	function sendMessage(msg) {
+		if (ws && ws.readyState === WebSocket.OPEN) {
+			ws.send(msg);
+		}
+	}
+
 	function createElement(tagName, className, id) {
 		const element = document.createElement(tagName);
 		className && element.setAttribute('class', className);
@@ -41,7 +47,7 @@
 	}
 
 	async function createMapBoxes() {
-		Promise.all(
+		return Promise.all(
 			allGameModes.map(async gameMode => {
 				const url = `config/maps_${gameMode}.json`;
 				const response = await fetch(url);
@@ -65,12 +71,12 @@
 	}
 
 	function sendVotes() {
-		ws.send(JSON.stringify(['voted', { maps: votedMaps }]));
+		sendMessage(JSON.stringify(['voted', { maps: votedMaps }]));
 		vetosLeft ? displayVetoingStatus() : changeStatusTextTo('Status: Wait until the result is revealed');
 	}
 
 	function sendVetos() {
-		ws.send(JSON.stringify(['vetoed', { maps: vetoedMaps }]));
+		sendMessage(JSON.stringify(['vetoed', { maps: vetoedMaps }]));
 		changeStatusTextTo('Status: Wait until the result is revealed');
 	}
 
@@ -86,7 +92,7 @@
 
 	function removeVote(id) {
 		if (votesLeft === 0) {
-			ws.send(JSON.stringify(['reset_votes']));
+			sendMessage(JSON.stringify(['reset_votes']));
 		};
 		votesLeft++;
 		removeMapIcons(document.getElementById(id));
@@ -96,7 +102,7 @@
 
 	function removeVeto(id) {
 		if (vetosLeft === 0) {
-			ws.send(JSON.stringify(['reset_vetos']));
+			sendMessage(JSON.stringify(['reset_vetos']));
 		}
 		vetosLeft++;
 		removeMapIcons(document.getElementById(id));
@@ -130,7 +136,7 @@
 	function changeParticipantName(newNameElement) {
 		blockUpdate = 0;
 		newNameElement.textContent = newNameElement.textContent.trim().substring(0, 30);
-		ws.send(JSON.stringify(['participant_name_changed', { name: newNameElement.textContent }]));
+		sendMessage(JSON.stringify(['participant_name_changed', { name: newNameElement.textContent }]));
 	}
 
 	function renderParticipant({ id, name, vetoed, voted }) {
@@ -281,7 +287,7 @@
 	}
 
 	function sendDataOnClick(elementId, data) {
-		document.querySelector(elementId).onclick = () => ws.send(JSON.stringify(data));
+		document.querySelector(elementId).onclick = () => sendMessage(JSON.stringify(data));
 	}
 
 	function handleSlider() {
@@ -301,8 +307,8 @@
 				} else if (slider.id === 'slider-vetos') {
 					vetosPerParticipant = parseInt(currentSlider.value);
 				}
-				ws.send(JSON.stringify(['settings', { ...settings, votesPerParticipant, vetosPerParticipant }]));
-			}
+				sendMessage(JSON.stringify(['settings', { ...settings, votesPerParticipant, vetosPerParticipant }]));
+			};
 		});
 	}
 
@@ -320,7 +326,7 @@
 					output.innerHTML = slider.value;
 					slider.max = maxChoices;
 				});
-				ws.send(JSON.stringify(['settings', {
+				sendMessage(JSON.stringify(['settings', {
 					votesPerParticipant: Math.min(settings.votesPerParticipant, maxChoices),
 					vetosPerParticipant: Math.min(settings.vetosPerParticipant, maxChoices),
 					gameModes
@@ -346,8 +352,8 @@
 	function handleResetSelf() {
 		document.getElementById('reset-self').onclick = () => {
 			handleReset();
-			ws.send(JSON.stringify(['reset_votes']));
-			ws.send(JSON.stringify(['reset_vetos']));
+			sendMessage(JSON.stringify(['reset_votes']));
+			sendMessage(JSON.stringify(['reset_vetos']));
 		}
 	}
 
@@ -425,9 +431,17 @@
 	};
 
 
-	window.onload = function () {
+	window.onload = async function () {
+		const mapBoxesPromise = createMapBoxes();
+		sendDataOnClick('#show-result', ['show_result']);
+		sendDataOnClick('#reset', ['reset']);
+		handleSlider();
+		handleGameModes();
+		handleSkip();
+		handleResetSelf();
+		await mapBoxesPromise;
+
 		ws = new WebSocket(`${document.location.protocol === 'https:' ? 'wss' : 'ws'}://${document.location.host}${document.location.pathname}`);
-		createMapBoxes();
 
 		ws.onmessage = handleMessage;
 
@@ -437,11 +451,5 @@
 			ws.onclose = null
 		);
 
-		sendDataOnClick('#show-result', ['show_result']);
-		sendDataOnClick('#reset', ['reset']);
-		handleSlider();
-		handleGameModes();
-		handleSkip();
-		handleResetSelf();
 	}
 })();
