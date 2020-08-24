@@ -7,12 +7,15 @@ const config = require('./config');
 const connectToDB = require('./db/connectToDB');
 const handleWebsockets = require('./websocket/handleWebsockets');
 const rateLimiterMiddleware = require('./middleware/rateLimiterMiddleware');
+const createLobbyId = require('./createLobbyId');
 
 const isProduction = process.env.NODE_ENV === 'production';
 
 connectToDB(isProduction, process.env.DB_FILE_NAME, config.gameModes).then(db => {
 	console.log(`Connected to SQLite3 DB ${process.env.DB_FILE_NAME}.`);
 	const app = express();
+
+	const state = new Map();
 
 	app.enable('trust proxy');
 
@@ -33,7 +36,20 @@ connectToDB(isProduction, process.env.DB_FILE_NAME, config.gameModes).then(db =>
 		res.sendFile(path.join(__dirname, '../public/lobby.html'))
 	});
 
-	const webSocketHandler = handleWebsockets(wss, db);
+	app.post(config.webSocketBasePath, (req, res) => {
+		const lobbyId = createLobbyId();
+		state.set(lobbyId, null);
+		res.json({ id: lobbyId });
+
+		setTimeout(() => {
+			console.log(state.get(lobbyId) === null)
+			if (state.get(lobbyId) === null) {
+				state.delete(lobbyId);
+			}
+		}, 30000);
+	});
+
+	const webSocketHandler = handleWebsockets(wss, db, state);
 
 	app.ws(config.webSocketBasePath, webSocketHandler);
 	app.ws(parametrizedWebSocketPath, webSocketHandler);

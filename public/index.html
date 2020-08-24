@@ -20,6 +20,20 @@
 			}
 		}
 
+		async function createLobby() {
+			try {
+				const response = await fetch('/lobby', { method: 'POST' });
+				if (response.ok) {
+					const { id } = await response.json();
+					return document.location = '/lobby/' + id;
+				}
+
+				console.error(`Lobby creation failed with status code ${response.status}`);
+			} catch (e) {
+				console.error('Could not create lobby', e);
+			}
+		}
+
 		(() => {
 			window.addEventListener('load', () => {
 				const input = document.getElementById('lobby-input');
@@ -42,7 +56,7 @@
 				<h1>Create Lobby</h1>
 			</div>
 			<div class="box">
-				<a href="/lobby" class="menu-button button button-green">Create lobby</a>
+				<div onclick="createLobby();" class="menu-button button button-green">Create lobby</div>
 			</div>
 		</div>
 		<div class="box-styling" id="box-wrapper">

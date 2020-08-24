@@ -1,6 +1,5 @@
 const { v4: uuidv4 } = require('uuid');
 
-const createLobbyId = require('../createLobbyId');
 const messageHandler = require('./messageHandler');
 const getConnectionsByLobbyId = require('./getConnectionsByLobbyId');
 const messageRateLimiter = require('./messageRateLimiter');
@@ -48,35 +47,27 @@ const checkIsAlive = (webSocketServer, state) => {
 	};
 };
 
-const checkLobbyId = (webSocketServer, lobbyId) => {
+const checkLobbyId = (webSocketServer, state, lobbyId) => {
+	if (!state.has(lobbyId)) {
+		return { error: { code: 4404, reason: 'Lobby ID Not Found' } };
+	}
 	const connections = getConnectionsByLobbyId(webSocketServer, lobbyId);
 
-	if (connections.length === 0) {
-		return { code: 4404, reason: 'Lobby ID Not Found' };
-	}
-
 	if (connections.length >= 5) {
-		return { code: 4400, reason: 'Lobby Occupied' };
+		return { error: { code: 4400, reason: 'Lobby Occupied' } };
 	}
 
-	return null;
+	if (connections.length === 0) {
+		return { isAdmin: true };
+	}
+
+	return {};
 };
 
-const initLobbyId = (webSocketServer, state, ws, req) => {
+const initLobby = (webSocketServer, state, ws, req) => {
 	const lobbyId = req.params.lobbyId ? req.params.lobbyId.toUpperCase() : null;
-	if (!lobbyId) {
-		ws.lobbyId = createLobbyId();
-		state.set(ws.lobbyId, {
-			...defaultLobbyState,
-			id: ws.lobbyId,
-			adminId: ws.id
-		});
-		console.log(`new admin ${ws.id} in lobby ${ws.lobbyId}`);
 
-		return null;
-	}
-
-	const error = checkLobbyId(webSocketServer, lobbyId);
+	const { error, isAdmin } = checkLobbyId(webSocketServer, state, lobbyId);
 
 	if (error) {
 		return error;
@@ -84,13 +75,21 @@ const initLobbyId = (webSocketServer, state, ws, req) => {
 
 	ws.lobbyId = lobbyId;
 
+	if (isAdmin) {
+		state.set(ws.lobbyId, {
+			...defaultLobbyState,
+			id: ws.lobbyId,
+			adminId: ws.id
+		});
+		console.log(`new admin ${ws.id} in lobby ${ws.lobbyId}`);
+	}
+
 	return null;
 };
 
 const isLimitReached = webSocketServer => webSocketServer.getWss().clients.size > 10000;
 
-module.exports = (webSocketServer, db) => {
-	const state = new Map();
+module.exports = (webSocketServer, db, state) => {
 	const interval = setInterval(checkIsAlive.bind(null, webSocketServer, state), 30000);
 	const wss = webSocketServer.getWss();
 
@@ -109,7 +108,7 @@ module.exports = (webSocketServer, db) => {
 		ws.vetos = [];
 		ws.realIp = req.ip;
 
-		const error = initLobbyId(webSocketServer, state, ws, req);
+		const error = initLobby(webSocketServer, state, ws, req);
 
 		if (error) {
 			return ws.close(error.code, error.reason);
