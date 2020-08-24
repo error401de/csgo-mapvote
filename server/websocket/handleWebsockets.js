@@ -4,7 +4,7 @@ const createLobbyId = require('../createLobbyId');
 const messageHandler = require('./messageHandler');
 const getConnectionsByLobbyId = require('./getConnectionsByLobbyId');
 const messageRateLimiter = require('./messageRateLimiter');
-const { gameModes } = require('../config');
+const { GAME_MODES } = require('../lib/constants');
 const createDebouncedSaveLobbyStatistics = require('../db/createDebouncedSaveLobbyStatistics');
 
 const defaultLobbyState = {
@@ -12,7 +12,7 @@ const defaultLobbyState = {
 	adminId: '',
 	votesPerParticipant: 1,
 	vetosPerParticipant: 1,
-	gameModes
+	gameModes: [GAME_MODES.COMPETITIVE]
 };
 
 function heartbeat() {
