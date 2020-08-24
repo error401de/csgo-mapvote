@@ -253,8 +253,8 @@
 		updateLobbySettings();
 		const maps = document.querySelectorAll('.map');
 		maps.forEach(setMapVisibilityByGameMode);
-		settings.gameModes.forEach(gameMode => {
-			document.getElementById(`game-mode-${gameMode}`).checked = true;
+		allGameModes.forEach(gameMode => {
+			document.getElementById(`game-mode-${gameMode}`).checked = settings.gameModes.includes(gameMode);
 		});
 		const maxChoices = getMapCountByGameMode(maps, settings.gameModes);;
 		document.querySelectorAll('.slider').forEach(slider => {
