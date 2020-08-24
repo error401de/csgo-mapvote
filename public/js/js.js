@@ -321,14 +321,13 @@
 				const maps = document.querySelectorAll('.map');
 				const maxChoices = getMapCountByGameMode(maps, gameModes);
 				document.querySelectorAll('.slider').forEach(slider => {
-					slider.value = Math.min(slider.value, maxChoices);
-					const output = document.getElementById(slider.id + "-value");
-					output.innerHTML = slider.value;
 					slider.max = maxChoices;
+					slider.value = Math.min(parseInt(slider.value) || 1, maxChoices);
+					slider.dispatchEvent(new Event('input'));
 				});
 				sendMessage(JSON.stringify(['settings', {
-					votesPerParticipant: Math.min(settings.votesPerParticipant, maxChoices),
-					vetosPerParticipant: Math.min(settings.vetosPerParticipant, maxChoices),
+					votesPerParticipant: parseInt(document.getElementById('slider-votes').value),
+					vetosPerParticipant: parseInt(document.getElementById('slider-vetos').value),
 					gameModes
 				}]));
 			};
