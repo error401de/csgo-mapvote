@@ -133,6 +133,20 @@
 		}
 	}
 
+	function enableAdminFeatures() {
+		document.querySelector('#box-menu').classList.add('admin-view');
+		document.querySelector('.slider-wrapper').classList.remove('tooltip');
+		document.querySelector('#game-modes').classList.remove('tooltip');
+		document.querySelectorAll('input[type="checkbox"]').forEach(node => node.disabled = false);
+		document.querySelectorAll('.slider').forEach(node => node.disabled = false);
+	}
+
+	function handleAdminChange({ isAdmin }) {
+		if (isAdmin) {
+			enableAdminFeatures();
+		}
+	}
+
 	function changeParticipantName(newNameElement) {
 		blockUpdate = 0;
 		newNameElement.textContent = newNameElement.textContent.trim().substring(0, 30);
@@ -227,17 +241,12 @@
 		document.querySelector('#lobby-link-img').onclick = copyToClipboard.bind(null, data.lobbyId);
 
 		if (data.isAdmin) {
-			document.querySelector('#box-menu').classList.add('admin-view');
+			enableAdminFeatures();
 			document.querySelector('.admin-modal').style.display = 'flex';
 			document.querySelector('#lobby-url').innerHTML = generateLobbyUrl(data.lobbyId);
 			document.querySelector('#lobby-url').onclick = closeModal.bind(null, data.lobbyId, 1);
 		} else {
 			document.querySelector('.default-modal').style.display = 'flex';
-			document.querySelectorAll('.slider').forEach(node => node.disabled = true);
-			document.querySelector('.slider-wrapper').classList.add('tooltip');
-			document.querySelectorAll('input[type="checkbox"]').forEach(node => node.disabled = true);
-			document.querySelector('#game-modes').classList.add('tooltip');
-
 		}
 	}
 
@@ -266,6 +275,9 @@
 		const json = JSON.parse(message.data);
 
 		switch (json[0]) {
+			case 'lobby_admin_change':
+				handleAdminChange(json[1]);
+				break;
 			case 'participants':
 				handleParticipants(json[1]);
 				break;
@@ -403,9 +415,6 @@
 				break;
 			case 4404:
 				message = 'Your lobby id is invalid.';
-				break;
-			case 4504:
-				message = 'The Lobby Admin left.';
 				break;
 			case 4429:
 				message = 'You sent too many messages. Try reloading the page in a few seconds.';

@@ -12,6 +12,10 @@ const sendJson = (ws, data) => {
 	ws.send(dataAsString)
 };
 
+const promoteToAdmin = (ws) => {
+	sendJson(ws, ['lobby_admin_change', { isAdmin: true }]);
+};
+
 const areMapsValid = (lobbyState, maps) => maps
 	.every(mapId => {
 		const [gameMode, map] = mapId.split('/');
@@ -199,6 +203,7 @@ const process = (webSocketServer, lobbyState, saveLobbyStatistics, ws, msg) => {
 
 module.exports = {
 	process,
+	promoteToAdmin,
 	updateParticipants,
 	sendJson,
 	updateSettings

@@ -24,8 +24,15 @@ const handleDeadConnection = (webSocketServer, state, ws) => {
 		messageHandler.updateParticipants(webSocketServer, ws.lobbyId);
 		return false;
 	}
-	getConnectionsByLobbyId(webSocketServer, ws.lobbyId).forEach(ws => ws.close(4504, 'Lobby Admin left'));
-	state.delete(ws.lobbyId);
+	const connections = getConnectionsByLobbyId(webSocketServer, ws.lobbyId);
+	const nextAdmin = connections[0];
+	if (nextAdmin) {
+		state.get(ws.lobbyId).adminId = nextAdmin.id;
+		messageHandler.promoteToAdmin(nextAdmin);
+		messageHandler.updateParticipants(webSocketServer, ws.lobbyId);
+	} else {
+		state.delete(ws.lobbyId);
+	}
 
 	return true
 };
