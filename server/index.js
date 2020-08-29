@@ -42,7 +42,6 @@ connectToDB(isProduction, process.env.DB_FILE_NAME, config.gameModes).then(db =>
 		res.json({ id: lobbyId });
 
 		setTimeout(() => {
-			console.log(state.get(lobbyId) === null)
 			if (state.get(lobbyId) === null) {
 				state.delete(lobbyId);
 			}
