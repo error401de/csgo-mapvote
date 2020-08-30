@@ -1,6 +1,4 @@
 const express = require('express');
-const mime = require('mime-types');
-const path = require('path');
 require('dotenv').config();
 
 const config = require('./config');
