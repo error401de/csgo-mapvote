@@ -27,14 +27,7 @@ connectToDB(isProduction, process.env.DB_FILE_NAME, config.gameModes).then(db =>
 		}
 	});
 
-	const parametrizedWebSocketPath = config.webSocketBasePath + '/:lobbyId?'
-
-	app.get(parametrizedWebSocketPath, (req, res, next) => {
-		if (req.wsHandled === false) {
-			return next();
-		}
-		res.sendFile(path.join(__dirname, '../public/lobby.html'))
-	});
+	const parametrizedWebSocketPath = config.webSocketBasePath + '/:lobbyId?';
 
 	app.post(config.webSocketBasePath, (req, res) => {
 		const lobbyId = createLobbyId();
@@ -53,18 +46,7 @@ connectToDB(isProduction, process.env.DB_FILE_NAME, config.gameModes).then(db =>
 	app.ws(config.webSocketBasePath, webSocketHandler);
 	app.ws(parametrizedWebSocketPath, webSocketHandler);
 
-	app.use(express.static('public', {
-		setHeaders: (res, path) => {
-			switch (mime.lookup(path)) {
-				case 'image/png':
-				case 'image/svg+xml':
-					res.setHeader('Cache-Control', 'public, max-age=86400');
-					break;
-			}
-		},
-		index: ['index.html'],
-		extensions: ['html'],
-	}));
+	app.use(express.static('public'));
 
 	process.on('exit', function () {
 		console.log('closing db');

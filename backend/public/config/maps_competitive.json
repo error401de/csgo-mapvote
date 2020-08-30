@@ -1,0 +1,48 @@
+{
+	"items": [
+		{
+			"id": "de_mirage",
+			"name": "Mirage"
+		},
+		{
+			"id": "de_inferno",
+			"name": "Inferno"
+		},
+		{
+			"id": "de_overpass",
+			"name": "Overpass"
+		},
+		{
+			"id": "de_vertigo",
+			"name": "Vertigo"
+		},
+		{
+			"id": "de_nuke",
+			"name": "Nuke"
+		},
+		{
+			"id": "de_train",
+			"name": "Train"
+		},
+		{
+			"id": "de_dust2",
+			"name": "Dust II"
+		},
+		{
+			"id": "de_anubis",
+			"name": "Anubis"
+		},
+		{
+			"id": "de_cache",
+			"name": "Cache"
+		},
+		{
+			"id": "cs_agency",
+			"name": "Agency"
+		},
+		{
+			"id": "cs_office",
+			"name": "Office"
+		}
+	]
+}
