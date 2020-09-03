@@ -15,3 +15,7 @@ a {
 	color: white;
 	text-decoration: none;
 }
+
+:root {
+	--color-green: #006400;
+}
