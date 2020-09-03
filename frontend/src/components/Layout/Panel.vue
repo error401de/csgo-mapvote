@@ -18,7 +18,7 @@ export default {
 
 <style scoped>
 .panel-styling {
-  display: inline-flex;
+  display: flex;
   flex-direction: column;
   background-color: #313a41;
   margin: 0 10px;

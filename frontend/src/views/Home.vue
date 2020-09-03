@@ -1,6 +1,6 @@
 <template>
   <Page>
-    <div>
+    <div class="page-content">
       <Panel headline="Create Lobby">
         <div class="panel-content">
           <Button msg="Create Lobby" @onButtonClick="createLobby" />
@@ -116,5 +116,11 @@ export default {
 
 #join-lobby {
   margin: 20px 0 0;
+}
+
+.page-content {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 </style>
