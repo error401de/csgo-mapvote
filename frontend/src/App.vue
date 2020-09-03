@@ -6,3 +6,15 @@
 
 <style>
 </style>
+
+
+
+<script>
+import setup from "@/essential.js";
+export default {
+  name: "App",
+  mounted() {
+    setup();
+  },
+};
+</script>
