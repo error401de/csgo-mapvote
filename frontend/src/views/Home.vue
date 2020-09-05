@@ -41,7 +41,8 @@ export default {
         const response = await fetch("/lobby", { method: "POST" });
         if (response.ok) {
           const { id } = await response.json();
-          return (document.location = "/lobby/" + id);
+          this.$router.push({ path: "/lobby/" + id });
+          return;
         }
 
         console.error(
@@ -55,7 +56,7 @@ export default {
       const input = this.$refs.lobbyInput;
       const { value } = input;
       if (value && value.length === 6) {
-        window.location = "/lobby/" + value;
+        this.$router.push({ path: "/lobby/" + value });
         return;
       }
       this.$refs.joinLobby.blurButton();
