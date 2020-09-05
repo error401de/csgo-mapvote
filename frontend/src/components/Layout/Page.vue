@@ -1,7 +1,9 @@
 <template>
   <div class="page-wrapper">
     <main>
-      <slot></slot>
+      <div class="page-content">
+        <slot></slot>
+      </div>
     </main>
     <GitHubLink />
   </div>
@@ -19,6 +21,16 @@ export default {
 </script>
 
 <style scoped>
+.page-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  min-height: 100vh;
+}
+
 main {
   display: flex;
   justify-content: center;
@@ -28,13 +40,9 @@ main {
   flex-wrap: wrap;
 }
 
-.page-wrapper {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
+.page-content {
   display: flex;
-  justify-content: space-between;
-  min-height: 100vh;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 </style>

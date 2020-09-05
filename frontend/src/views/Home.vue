@@ -1,27 +1,25 @@
 <template>
   <Page>
-    <div class="page-content">
-      <Panel headline="Create Lobby">
-        <div class="panel-content">
-          <Button msg="Create Lobby" @onButtonClick="createLobby" />
-        </div>
-      </Panel>
-      <Panel headline="Join Lobby">
-        <div class="panel-content">
-          <input
-            v-on:input="onInput"
-            type="text"
-            name="lobbyid"
-            id="lobby-input"
-            minlength="6"
-            maxlength="6"
-            autofocus
-            ref="lobbyInput"
-          />
-          <Button ref="joinLobby" msg="Join lobby" @onButtonClick="joinLobby" />
-        </div>
-      </Panel>
-    </div>
+    <Panel headline="Create Lobby">
+      <div class="panel-content">
+        <Button msg="Create Lobby" @onButtonClick="createLobby" />
+      </div>
+    </Panel>
+    <Panel headline="Join Lobby">
+      <div class="panel-content">
+        <input
+          v-on:input="onInput"
+          type="text"
+          name="lobbyid"
+          id="lobby-input"
+          minlength="6"
+          maxlength="6"
+          autofocus
+          ref="lobbyInput"
+        />
+        <Button ref="joinLobby" msg="Join lobby" @onButtonClick="joinLobby" />
+      </div>
+    </Panel>
   </Page>
 </template>
 
@@ -116,11 +114,5 @@ export default {
 
 #join-lobby {
   margin: 20px 0 0;
-}
-
-.page-content {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
 }
 </style>
