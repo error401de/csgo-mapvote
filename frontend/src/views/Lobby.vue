@@ -1,8 +1,8 @@
 <template>
   <Page>
-    <ParticipantsPanel/>
-    <VotingPanel/>
-    <ActionPanel/>
+    <ParticipantsPanel />
+    <VotingPanel />
+    <ActionPanel />
   </Page>
 </template>
 
@@ -19,6 +19,14 @@ export default {
     Page,
     ParticipantsPanel,
     VotingPanel,
+  },
+  mounted() {
+    this.$connect(
+      `${document.location.protocol === "https:" ? "wss" : "ws"}://${
+        document.location.host
+      }${this.$route.path}`
+    );
+    this.$options.sockets.onmessage = console.log;
   },
 };
 </script>
