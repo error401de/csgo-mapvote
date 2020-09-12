@@ -7,12 +7,8 @@ import './assets/css/main.css';
 
 Vue.config.productionTip = false;
 
-Vue.use(VueNativeSock, 'ws://localhost:9090', {
+Vue.use(VueNativeSock, `${document.location.protocol === "https:" ? "wss" : "ws"}://localhost:3000`, {
 	connectManually: true,
-	format: 'json',
-	reconnection: true,
-	reconnectionAttempts: 5,
-	reconnectionDelay: 10000,
 });
 
 new Vue({

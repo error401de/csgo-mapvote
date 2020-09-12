@@ -1,6 +1,6 @@
 <template>
   <Page>
-    <ParticipantsPanel />
+    <ParticipantsPanel id="participants-panel" />
     <VotingPanel />
     <ActionPanel />
   </Page>
@@ -11,6 +11,18 @@ import ActionPanel from "@/components/Lobby/ActionPanel.vue";
 import ParticipantsPanel from "@/components/Lobby/ParticipantsPanel.vue";
 import Page from "@/components/Layout/Page.vue";
 import VotingPanel from "@/components/Lobby/VotingPanel.vue";
+
+function handleMessage(message) {
+  const [messageType, data] = JSON.parse(message.data);
+
+  switch (messageType) {
+    case "participants":
+      this.$participantsStore.actions.setParticipantsAction(data.items);
+      break;
+    default:
+      console.log("Message not handled", message);
+  }
+}
 
 export default {
   name: "Lobby",
@@ -24,9 +36,30 @@ export default {
     this.$connect(
       `${document.location.protocol === "https:" ? "wss" : "ws"}://${
         document.location.host
-      }${this.$route.path}`
+      }${this.$route.path}`,
+      {
+        format: "json",
+        reconnection: true,
+        reconnectionAttempts: 5,
+        reconnectionDelay: 10000,
+      }
     );
-    this.$options.sockets.onmessage = console.log;
+    this.$options.sockets.onmessage = handleMessage.bind(this);
   },
 };
 </script>
+<style scoped>
+#participants-panel {
+  background-color: #313a41;
+  width: 200px;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 900px) {
+  #participants-panel {
+    width: 100%;
+    margin-top: 10px;
+  }
+}
+</style>
