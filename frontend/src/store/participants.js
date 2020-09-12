@@ -1,5 +1,5 @@
 const initialState = {
-	participants: null
+	participants: []
 };
 
 const actions = {

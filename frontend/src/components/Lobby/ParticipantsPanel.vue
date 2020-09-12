@@ -1,12 +1,13 @@
 <template>
   <Panel headline="Participants">
-    <div v-if="$participantsStore.state.participants" class="participants">
+    <div class="participants">
       <div
         class="participant"
-        v-for="(participant, index) of $participantsStore.state.participants"
+        :class="participant.isSelf && 'self'"
+        v-for="(participant, index) of participants"
         :key="participant.id || `participant-${index}`"
       >
-        <span>{{ participant.name }}</span>
+        <span class="participant-name">{{ participant.name }}</span>
         <CheckMark v-if="participant.voted && participant.vetoed" />
         <SandClock v-else />
       </div>
@@ -25,6 +26,16 @@ export default {
     CheckMark,
     Panel,
     SandClock,
+  },
+  data() {
+    return {
+      participants: this.$participantsStore.state.participants.map(
+        (participant, index) => ({
+          isSelf: participant.id === this.$settingsStore.state.participantId,
+          ...participant,
+        })
+      ),
+    };
   },
 };
 </script>
@@ -57,10 +68,14 @@ export default {
   cursor: pointer;
 }
 
-.participant > span {
-  text-overflow: ellipsis;
+.participant-name {
   flex: 0 1 100%;
+  text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
+}
+
+.self > .participant-name:after {
+  content: " (You)";
 }
 </style>

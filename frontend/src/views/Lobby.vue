@@ -19,6 +19,13 @@ function handleMessage(message) {
     case "participants":
       this.$participantsStore.actions.setParticipantsAction(data.items);
       break;
+    case "registered":
+      this.$settingsStore.actions.setParticipantIdAction(data.id);
+      this.$settingsStore.actions.setIsAdminAction(data.isAdmin);
+      break;
+    case "settings":
+      this.$settingsStore.actions.setSettingsAction(data);
+      break;
     default:
       console.log("Message not handled", message);
   }
