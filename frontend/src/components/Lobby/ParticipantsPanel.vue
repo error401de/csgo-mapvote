@@ -7,7 +7,13 @@
         v-for="(participant, index) of participants"
         :key="participant.id || `participant-${index}`"
       >
-        <span class="participant-name">{{ participant.name }}</span>
+        <span
+          class="participant-name"
+          @keyup="handleEditedName"
+          @blur="sendNewName"
+          @keydown.enter.prevent
+          v-bind:contenteditable="participant.isSelf"
+        >{{ participant.name }}</span>
         <CheckMark v-if="participant.voted && participant.vetoed" />
         <SandClock v-else />
       </div>
@@ -27,15 +33,29 @@ export default {
     Panel,
     SandClock,
   },
-  data() {
-    return {
-      participants: this.$participantsStore.state.participants.map(
+  computed: {
+    participants: function () {
+      return this.$participantsStore.state.participants.map(
         (participant, index) => ({
           isSelf: participant.id === this.$settingsStore.state.participantId,
           ...participant,
         })
-      ),
-    };
+      );
+    },
+  },
+  methods: {
+    handleEditedName(event) {
+      if (event.key === "Enter" || event.target.textContent.length >= 30) {
+        event.preventDefault();
+        event.target.blur();
+      }
+    },
+    sendNewName(event) {
+      this.$socket.sendObj([
+        "participant_name_changed",
+        { name: event.target.innerText },
+      ]);
+    },
   },
 };
 </script>
