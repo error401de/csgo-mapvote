@@ -3,6 +3,12 @@
     <div>
       <MessageSendingButton displayText="Show Result" :messageTypes="messageTypeShowResult" />
       <MessageSendingButton displayText="Reset All Choices" :messageTypes="messageTypeReset" />
+      <Button
+        v-if="$choicesStore.state.votesLeft > 0"
+        msg="Skip Votes"
+        @buttonClick="$choicesStore.actions.setVotesLeftAction(0)"
+      />
+      <Button v-else msg="Skip Vetos" @buttonClick="$choicesStore.actions.setVetosLeftAction(0)" />
       <MessageSendingButton
         displayText="Reset Own Choices"
         :messageTypes="messageTypeResetOwnChoices"
@@ -12,6 +18,7 @@
 </template>
 
 <script>
+import Button from "@/components/Button.vue";
 import Panel from "@/components/Layout/Panel.vue";
 import MessageSendingButton from "@/components/Lobby/MessageSendingButton.vue";
 import { CLIENT_MESSAGES } from "common/messageTypes";
@@ -19,6 +26,7 @@ import { CLIENT_MESSAGES } from "common/messageTypes";
 export default {
   name: "ActionPanel",
   components: {
+    Button,
     MessageSendingButton,
     Panel,
   },
