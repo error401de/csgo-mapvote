@@ -11,12 +11,14 @@ export default {
     Button,
   },
   props: {
-    messageType: String,
+    messageTypes: Array,
     displayText: String,
   },
   methods: {
     sendMessage() {
-      this.$socket.sendObj([this.messageType]);
+      this.messageTypes.forEach((messageType) =>
+        this.$socket.sendObj([messageType])
+      );
     },
   },
 };

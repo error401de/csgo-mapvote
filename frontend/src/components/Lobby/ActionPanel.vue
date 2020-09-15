@@ -1,8 +1,12 @@
 <template>
   <Panel headline="Action Menu">
     <div>
-      <MessageSendingButton displayText="Show Result" :messageType="messageTypeShowResult" />
-      <MessageSendingButton displayText="Reset All Choices" :messageType="messageTypeReset" />
+      <MessageSendingButton displayText="Show Result" :messageTypes="messageTypeShowResult" />
+      <MessageSendingButton displayText="Reset All Choices" :messageTypes="messageTypeReset" />
+      <MessageSendingButton
+        displayText="Reset Own Choices"
+        :messageTypes="messageTypeResetOwnChoices"
+      />
     </div>
   </Panel>
 </template>
@@ -20,8 +24,12 @@ export default {
   },
   data() {
     return {
-      messageTypeReset: CLIENT_MESSAGES.RESET,
-      messageTypeShowResult: CLIENT_MESSAGES.SHOW_RESULT,
+      messageTypeReset: [CLIENT_MESSAGES.RESET],
+      messageTypeShowResult: [CLIENT_MESSAGES.SHOW_RESULT],
+      messageTypeResetOwnChoices: [
+        CLIENT_MESSAGES.RESET_VOTES,
+        CLIENT_MESSAGES.RESET_VETOS,
+      ],
     };
   },
 };
