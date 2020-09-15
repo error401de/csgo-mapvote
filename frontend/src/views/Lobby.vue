@@ -1,7 +1,7 @@
 <template>
   <Page>
     <ParticipantsPanel id="participants-panel" />
-    <VotingPanel />
+    <VotingPanel id="voting-panel" />
     <ActionPanel />
   </Page>
 </template>
@@ -56,17 +56,30 @@ export default {
 };
 </script>
 <style scoped>
-#participants-panel {
+#participants-panel,
+#voting-panel {
   background-color: #313a41;
-  width: 200px;
   display: flex;
   flex-direction: column;
 }
 
+#participants-panel {
+  width: 200px;
+}
+
+#voting-panel {
+  width: 600px;
+}
+
 @media (max-width: 900px) {
-  #participants-panel {
+  #participants-panel,
+  #voting-panel {
     width: 100%;
     margin-top: 10px;
+  }
+
+  #voting-panel {
+    flex: 1 1 auto;
   }
 }
 </style>

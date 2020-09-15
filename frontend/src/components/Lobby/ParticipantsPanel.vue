@@ -14,7 +14,7 @@
           @keydown.enter.prevent
           v-bind:contenteditable="participant.isSelf"
         >{{ participant.name }}</span>
-        <CheckMark v-if="participant.voted && participant.vetoed" />
+        <CheckMark v-if="participant.voted && participant.vetoed" style="padding-right: 10px;" />
         <SandClock v-else />
       </div>
     </div>

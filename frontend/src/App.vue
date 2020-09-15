@@ -11,11 +11,12 @@
 
 <script>
 import setup from "@/essential.js";
+import choicesStore from "@/store/choices.js";
 import registerStore from "@/store/registerStore.js";
 import settingsStore from "@/store/settings.js";
 import participantsStore from "@/store/participants.js";
 
-[settingsStore, participantsStore].forEach(registerStore);
+[choicesStore, participantsStore, settingsStore].forEach(registerStore);
 
 export default {
   name: "App",

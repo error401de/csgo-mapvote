@@ -4,9 +4,9 @@ const initialState = {
 	settings: {
 		votesPerParticipant: 1,
 		vetosPerParticipant: 1,
-		gameModes: [allGameModes[0]],
-		allGameModes
+		gameModes: [allGameModes[0]]
 	},
+	allGameModes,
 	participantId: null,
 	isAdmin: null
 };
