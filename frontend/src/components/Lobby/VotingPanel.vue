@@ -1,5 +1,5 @@
 <template>
-  <Panel headline="Voting Panel">
+  <Panel headline="Voting Panel" :footer="this.footerMsg">
     <div class="maps">
       <Map
         v-for="map of maps"
@@ -38,6 +38,17 @@ export default {
     return {
       maps: [],
     };
+  },
+  computed: {
+    footerMsg() {
+      if (this.$choicesStore.state.votesLeft > 0) {
+        return `Status: Please place your vote. ${this.$choicesStore.state.votesLeft} left.`;
+      }
+      if (this.$choicesStore.state.vetosLeft > 0) {
+        return `Status: Please place your veto. ${this.$choicesStore.state.vetosLeft} left.`;
+      }
+      return "Status: Wait until the result is revealed";
+    },
   },
 };
 </script>

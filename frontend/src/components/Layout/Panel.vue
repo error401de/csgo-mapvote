@@ -1,9 +1,12 @@
 <template>
   <div class="panel-styling">
-    <div class="panel-header">
+    <div class="panel-description panel-header">
       <h1>{{ headline }}</h1>
     </div>
     <slot></slot>
+    <div class="panel-description panel-footer" v-if="this.footer">
+      <h2>{{ footer }}</h2>
+    </div>
   </div>
 </template>
 
@@ -12,6 +15,7 @@ export default {
   name: "Panel",
   props: {
     headline: String,
+    footer: String,
   },
 };
 </script>
@@ -26,14 +30,23 @@ export default {
   border-radius: 10px;
 }
 
-.panel-header {
+.panel-description {
   background-color: #1b232e;
   min-height: 25px;
   border-top-right-radius: inherit;
   border-top-left-radius: inherit;
+}
+
+.panel-header {
   display: flex;
   justify-content: flex-end;
   align-items: flex-end;
+}
+
+.panel-footer {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
 }
 
 h1,
