@@ -13,6 +13,7 @@
 </template>
 
 <script>
+import { CLIENT_MESSAGES } from "common/messageTypes";
 import Button from "@/components/Button.vue";
 import Map from "@/components/Lobby/Map.vue";
 import Panel from "@/components/Layout/Panel.vue";
@@ -48,6 +49,43 @@ export default {
         return `Status: Please place your veto. ${this.$choicesStore.state.vetosLeft} left.`;
       }
       return "Status: Wait until the result is revealed";
+    },
+  },
+
+  methods: {
+    sendVotes() {
+      const { votedMaps } = this.$choicesStore.state;
+
+      this.$socket.sendObj([CLIENT_MESSAGES.VOTED, { maps: votedMaps }]);
+    },
+    sendVetos() {
+      const { vetoedMaps } = this.$choicesStore.state;
+
+      this.$socket.sendObj([CLIENT_MESSAGES.VETOED, { maps: vetoedMaps }]);
+    },
+    resetVotes() {
+      this.$socket.sendObj([CLIENT_MESSAGES.RESET_VOTES]);
+    },
+    resetVetos() {
+      this.$socket.sendObj([CLIENT_MESSAGES.RESET_VETOS]);
+    },
+  },
+  watch: {
+    "$choicesStore.state.votesLeft"(newValue, oldValue) {
+      if (newValue > 0 && oldValue === 0) {
+        return this.resetVotes();
+      }
+      if (newValue === 0 && oldValue > 0) {
+        return this.sendVotes();
+      }
+    },
+    "$choicesStore.state.vetosLeft"(newValue, oldValue) {
+      if (newValue > 0 && oldValue === 0) {
+        return this.resetVetos();
+      }
+      if (newValue === 0 && oldValue > 0) {
+        return this.sendVetos();
+      }
     },
   },
 };

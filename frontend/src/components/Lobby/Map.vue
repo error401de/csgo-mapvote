@@ -50,12 +50,22 @@ export default {
 
       if (votedMaps.includes(this.mapId)) {
         this.$choicesStore.actions.removeVoteAction(this.mapId);
-      } else if (vetoedMaps.includes(this.mapId)) {
+        return;
+      }
+
+      if (vetoedMaps.includes(this.mapId)) {
         this.$choicesStore.actions.removeVetoAction(this.mapId);
-      } else if (votesLeft > 0) {
+        return;
+      }
+
+      if (votesLeft > 0) {
         this.$choicesStore.actions.addVoteAction(this.mapId);
-      } else if (vetosLeft > 0) {
+        return;
+      }
+
+      if (vetosLeft > 0) {
         this.$choicesStore.actions.addVetoAction(this.mapId);
+        return;
       }
     },
   },
