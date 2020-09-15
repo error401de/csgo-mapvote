@@ -25,6 +25,7 @@
 import CheckMark from "@/components/Icons/CheckMark.vue";
 import Panel from "@/components/Layout/Panel.vue";
 import SandClock from "@/components/Icons/SandClock.vue";
+import { CLIENT_MESSAGES } from "common/messageTypes";
 
 export default {
   name: "ParticipantsPanel",
@@ -52,7 +53,7 @@ export default {
     },
     sendNewName(event) {
       this.$socket.sendObj([
-        "participant_name_changed",
+        CLIENT_MESSAGES.PARTICIPANT_NAME_CHANGED,
         { name: event.target.innerText },
       ]);
     },

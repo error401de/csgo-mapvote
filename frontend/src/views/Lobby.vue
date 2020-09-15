@@ -11,19 +11,20 @@ import ActionPanel from "@/components/Lobby/ActionPanel.vue";
 import ParticipantsPanel from "@/components/Lobby/ParticipantsPanel.vue";
 import Page from "@/components/Layout/Page.vue";
 import VotingPanel from "@/components/Lobby/VotingPanel.vue";
+import { SERVER_MESSAGES } from "common/messageTypes";
 
 function handleMessage(message) {
   const [messageType, data] = JSON.parse(message.data);
 
   switch (messageType) {
-    case "participants":
+    case SERVER_MESSAGES.PARTICIPANTS:
       this.$participantsStore.actions.setParticipantsAction(data.items);
       break;
-    case "registered":
+    case SERVER_MESSAGES.REGISTERED:
       this.$settingsStore.actions.setParticipantIdAction(data.id);
       this.$settingsStore.actions.setIsAdminAction(data.isAdmin);
       break;
-    case "settings":
+    case SERVER_MESSAGES.SETTINGS:
       this.$settingsStore.actions.setSettingsAction(data);
       break;
     default:

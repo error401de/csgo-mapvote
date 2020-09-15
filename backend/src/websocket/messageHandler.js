@@ -1,5 +1,6 @@
 const getConnectionsByLobbyId = require('./getConnectionsByLobbyId');
 const { GAME_MODES } = require('../lib/constants');
+const { CLIENT_MESSAGES, SERVER_MESSAGES } = require('../../../common/messageTypes');
 
 const allowedGameModes = [GAME_MODES.COMPETITIVE, GAME_MODES.SCRIMMAGE];
 const allMaps = allowedGameModes.reduce((accumulatedMaps, gameMode) => ({ ...accumulatedMaps, [gameMode]: require(`../../public/config/maps_${gameMode}.json`) }), {});
@@ -13,7 +14,7 @@ const sendJson = (ws, data) => {
 };
 
 const promoteToAdmin = (ws) => {
-	sendJson(ws, ['lobby_admin_change', { isAdmin: true }]);
+	sendJson(ws, [SERVER_MESSAGES.LOBBY_ADMIN_CHANGE, { isAdmin: true }]);
 };
 
 const areMapsValid = (lobbyState, maps) => maps
@@ -43,7 +44,7 @@ const updateParticipants = (webSocketServer, lobbyId) => {
 		vetoed
 	}));
 	connections.forEach(ws =>
-		sendJson(ws, ['participants', { items: items.map(participant => removeForeignIds(ws, participant)) }])
+		sendJson(ws, [SERVER_MESSAGES.PARTICIPANTS, { items: items.map(participant => removeForeignIds(ws, participant)) }])
 	);
 };
 
@@ -54,7 +55,7 @@ const publishResult = (webSocketServer, lobbyId) => {
 		votes,
 		vetos
 	}));
-	connections.forEach(ws => sendJson(ws, ['result', { items }]));
+	connections.forEach(ws => sendJson(ws, [SERVER_MESSAGES.RESULT, { items }]));
 };
 
 const handleMapChange = (webSocketServer, lobbyState, ws, validationProp, listProp, limit, data) => {
@@ -96,7 +97,7 @@ const resetSingleConnection = ws => {
 	ws.voted = false;
 	ws.vetos = [];
 	ws.vetoed = false;
-	sendJson(ws, ['reset']);
+	sendJson(ws, [SERVER_MESSAGES.RESET]);
 };
 
 const reset = (webSocketServer, lobbyState, ws) => {
@@ -149,10 +150,10 @@ const getSettings = lobbyState => ({
 	gameModes: lobbyState.gameModes
 });
 
-const updateSettings = (ws, lobbyState) => sendJson(ws, ['settings', getSettings(lobbyState)]);
+const updateSettings = (ws, lobbyState) => sendJson(ws, [SERVER_MESSAGES.SETTINGS, getSettings(lobbyState)]);
 
 const updateSettingsForAll = (webSocketServer, lobbyState) => getConnectionsByLobbyId(webSocketServer, lobbyState.id)
-	.forEach(ws => sendJson(ws, ['settings', getSettings(lobbyState)]));
+	.forEach(ws => sendJson(ws, [SERVER_MESSAGES.SETTINGS, getSettings(lobbyState)]));
 
 const changeParticipantName = (webSocketServer, ws, data) => {
 	if (data.name.length > 30) {
@@ -168,28 +169,28 @@ const process = (webSocketServer, lobbyState, saveLobbyStatistics, ws, msg) => {
 		const [msgType, data] = JSON.parse(msg);
 
 		switch (msgType) {
-			case 'show_result':
+			case CLIENT_MESSAGES.SHOW_RESULT:
 				showResult(webSocketServer, lobbyState, saveLobbyStatistics, ws);
 				break;
-			case 'voted':
+			case CLIENT_MESSAGES.VOTED:
 				handleMapChange(webSocketServer, lobbyState, ws, 'voted', 'votes', lobbyState.votesPerParticipant, data);
 				break;
-			case 'vetoed':
+			case CLIENT_MESSAGES.VETOED:
 				handleMapChange(webSocketServer, lobbyState, ws, 'vetoed', 'vetos', lobbyState.vetosPerParticipant, data);
 				break;
-			case 'reset_votes':
+			case CLIENT_MESSAGES.RESET_VOTES:
 				handleResetChoices(webSocketServer, ws, 'voted', 'votes');
 				break;
-			case 'reset_vetos':
+			case CLIENT_MESSAGES.RESET_VETOS:
 				handleResetChoices(webSocketServer, ws, 'vetoed', 'vetos');
 				break;
-			case 'reset':
+			case CLIENT_MESSAGES.RESET:
 				reset(webSocketServer, lobbyState, ws);
 				break;
-			case 'settings':
+			case CLIENT_MESSAGES.SETTINGS:
 				changeSettings(webSocketServer, lobbyState, ws, data);
 				break;
-			case 'participant_name_changed':
+			case CLIENT_MESSAGES.PARTICIPANT_NAME_CHANGED:
 				changeParticipantName(webSocketServer, ws, data);
 				break;
 			default:
