@@ -33,20 +33,22 @@ export default {
 .panel-description {
   background-color: #1b232e;
   min-height: 25px;
-  border-top-right-radius: inherit;
-  border-top-left-radius: inherit;
 }
 
 .panel-header {
   display: flex;
   justify-content: flex-end;
   align-items: flex-end;
+  border-top-right-radius: inherit;
+  border-top-left-radius: inherit;
 }
 
 .panel-footer {
   display: flex;
   justify-content: flex-start;
   align-items: flex-start;
+  border-bottom-right-radius: inherit;
+  border-bottom-left-radius: inherit;
 }
 
 h1,
