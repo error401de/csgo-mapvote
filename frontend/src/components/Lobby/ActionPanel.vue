@@ -1,8 +1,16 @@
 <template>
   <Panel headline="Action Menu">
     <div>
-      <MessageSendingButton displayText="Show Result" :messageTypes="messageTypeShowResult" />
-      <MessageSendingButton displayText="Reset All Choices" :messageTypes="messageTypeReset" />
+      <MessageSendingButton
+        v-if="$settingsStore.state.isAdmin"
+        displayText="Show Result"
+        :messageTypes="messageTypeShowResult"
+      />
+      <MessageSendingButton
+        v-if="$settingsStore.state.isAdmin"
+        displayText="Reset All Choices"
+        :messageTypes="messageTypeReset"
+      />
       <Button
         v-if="$choicesStore.state.votesLeft > 0"
         msg="Skip Votes"
