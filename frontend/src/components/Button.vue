@@ -10,7 +10,7 @@ export default {
   },
   methods: {
     onButtonClick() {
-      this.$emit("onButtonClick");
+      this.$emit("buttonClick");
     },
     blurButton() {
       this.$refs.self.blur();

@@ -2,7 +2,7 @@
   <Page>
     <Panel headline="Create Lobby">
       <div class="panel-content">
-        <Button msg="Create Lobby" @onButtonClick="createLobby" />
+        <Button msg="Create Lobby" @buttonClick="createLobby" />
       </div>
     </Panel>
     <Panel headline="Join Lobby">
@@ -17,7 +17,7 @@
           autofocus
           ref="lobbyInput"
         />
-        <Button ref="joinLobby" msg="Join lobby" @onButtonClick="joinLobby" />
+        <Button ref="joinLobby" msg="Join lobby" @buttonClick="joinLobby" />
       </div>
     </Panel>
   </Page>
