@@ -24,6 +24,17 @@ function handleMessage(message) {
       this.$settingsStore.actions.setParticipantIdAction(data.id);
       this.$settingsStore.actions.setIsAdminAction(data.isAdmin);
       break;
+    case SERVER_MESSAGES.RESULT:
+      this.$choicesStore.actions.setResultAction(data.items);
+      this.$choicesStore.actions.resetAction(0, 0);
+      break;
+    case SERVER_MESSAGES.RESET:
+      this.$choicesStore.actions.setResultAction(null);
+      this.$choicesStore.actions.resetAction(
+        this.$settingsStore.state.settings.votesPerParticipant,
+        this.$settingsStore.state.settings.vetosPerParticipant
+      );
+      break;
     case SERVER_MESSAGES.SETTINGS:
       this.$settingsStore.actions.setSettingsAction(data);
       break;

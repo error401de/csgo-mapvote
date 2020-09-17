@@ -1,5 +1,9 @@
 <template>
-  <div class="map" @click="toggleMap" :class="{ hidden: isHidden }">
+  <div
+    class="map"
+    @click="toggleMap"
+    :class="{ 'not-displayed': isNotDisplayed, 'not-visible': !isVisible }"
+  >
     {{ name }}
     <CheckMark v-if="this.isVoted" class="map-icon" />
     <Rejected v-else-if="this.isVetoed" class="map-icon" />
@@ -27,16 +31,34 @@ export default {
     mapId() {
       return `${this.gameMode}/${this.id}`;
     },
+    votingResult() {
+      const { result } = this.$choicesStore.state;
+
+      if (!result) {
+        return null;
+      }
+
+      return {
+        isVoted: result.some(({ votes }) => votes.includes(this.mapId)),
+        isVetoed: result.some(({ vetos }) => vetos.includes(this.mapId)),
+      };
+    },
     isVoted() {
       return this.$choicesStore.state.votedMaps.includes(this.mapId);
     },
     isVetoed() {
-      return this.$choicesStore.state.vetoedMaps.includes(this.mapId);
+      return (
+        this.$choicesStore.state.vetoedMaps.includes(this.mapId) ||
+        (this.votingResult && this.votingResult.isVetoed)
+      );
     },
-    isHidden() {
+    isNotDisplayed() {
       return !this.$settingsStore.state.settings.gameModes.includes(
         this.gameMode
       );
+    },
+    isVisible() {
+      return !this.votingResult || this.votingResult.isVoted;
     },
   },
   methods: {
@@ -88,8 +110,12 @@ export default {
   background-color: inherit;
 }
 
-.hidden {
+.not-displayed {
   display: none;
+}
+
+.not-visible {
+  visibility: hidden;
 }
 
 .map-icon {

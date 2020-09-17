@@ -48,7 +48,10 @@ export default {
       if (this.$choicesStore.state.vetosLeft > 0) {
         return `Status: Please place your veto. ${this.$choicesStore.state.vetosLeft} left.`;
       }
-      return "Status: Wait until the result is revealed";
+      if (!this.$choicesStore.state.result) {
+        return "Status: Wait until the result is revealed";
+      }
+      return "Status: Wait until the votes are reset";
     },
   },
 

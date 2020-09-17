@@ -6,6 +6,7 @@ const initialState = {
 	vetosLeft: 1,
 	votedMaps: initialVotedMaps,
 	vetoedMaps: initialVetoedMaps,
+	result: null
 };
 
 const filterMapId = (mapIdToFilter, mapIdToTest) => mapIdToFilter !== mapIdToTest
@@ -39,6 +40,9 @@ const actions = {
 	setVetosLeftAction(state, vetosLeft) {
 		state.vetosLeft = vetosLeft;
 	},
+	setResultAction(state, newResult) {
+		state.result = newResult;
+	}
 };
 
 export default {
