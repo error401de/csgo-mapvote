@@ -17,6 +17,9 @@ function handleMessage(message) {
   const [messageType, data] = JSON.parse(message.data);
 
   switch (messageType) {
+    case SERVER_MESSAGES.LOBBY_ADMIN_CHANGE:
+      this.$settingsStore.actions.setIsAdminAction(data.isAdmin);
+      break;
     case SERVER_MESSAGES.PARTICIPANTS:
       this.$participantsStore.actions.setParticipantsAction(data.items);
       break;
