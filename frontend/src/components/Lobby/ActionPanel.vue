@@ -17,7 +17,11 @@
         @buttonClick="$choicesStore.actions.setVotesLeftAction(0)"
       />
       <Button v-else msg="Skip Vetos" @buttonClick="$choicesStore.actions.setVetosLeftAction(0)" />
-      <MessageSendingButton msg="Reset Own Choices" :messageTypes="messageTypeResetOwnChoices" />
+      <MessageSendingButton
+        msg="Reset Own Choices"
+        :messageTypes="messageTypeResetOwnChoices"
+        @buttonClick="resetVotingStatus"
+      />
     </div>
   </Panel>
 </template>
@@ -44,6 +48,14 @@ export default {
         CLIENT_MESSAGES.RESET_VETOS,
       ],
     };
+  },
+  methods: {
+    resetVotingStatus() {
+      this.$choicesStore.actions.resetAction(
+        this.$settingsStore.state.settings.votesPerParticipant,
+        this.$settingsStore.state.settings.vetosPerParticipant
+      );
+    },
   },
 };
 </script>

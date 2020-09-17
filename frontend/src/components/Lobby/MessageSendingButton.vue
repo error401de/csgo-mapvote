@@ -1,5 +1,5 @@
 <template>
-  <Button :msg="msg" @buttonClick="sendMessage" />
+  <Button :msg="msg" @buttonClick="onButtonClick" />
 </template>
 
 <script>
@@ -15,6 +15,10 @@ export default {
     msg: String,
   },
   methods: {
+    onButtonClick() {
+      this.sendMessage();
+      this.$emit("buttonClick");
+    },
     sendMessage() {
       this.messageTypes.forEach((messageType) =>
         this.$socket.sendObj([messageType])

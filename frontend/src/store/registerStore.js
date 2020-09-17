@@ -10,9 +10,9 @@ export default ({ name, initialState, actions }) => {
 
 	const observableActions = {};
 	Object.entries(actions).forEach(([key, value]) => {
-		observableActions[key] = function (newValue) {
-			if (state.debug) console.log(`${key} triggered with`, newValue);
-			value(state, newValue);
+		observableActions[key] = function (...args) {
+			if (state.debug) console.log(`${key} triggered with`, ...args);
+			value(state, ...args);
 		};
 	});
 
