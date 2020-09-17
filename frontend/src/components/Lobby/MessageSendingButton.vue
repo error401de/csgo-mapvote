@@ -1,5 +1,5 @@
 <template>
-  <Button :msg="displayText" @buttonClick="sendMessage" />
+  <Button :msg="msg" @buttonClick="sendMessage" />
 </template>
 
 <script>
@@ -12,7 +12,7 @@ export default {
   },
   props: {
     messageTypes: Array,
-    displayText: String,
+    msg: String,
   },
   methods: {
     sendMessage() {

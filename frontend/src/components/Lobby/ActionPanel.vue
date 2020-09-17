@@ -3,12 +3,12 @@
     <div>
       <MessageSendingButton
         v-if="$settingsStore.state.isAdmin"
-        displayText="Show Result"
+        msg="Show Result"
         :messageTypes="messageTypeShowResult"
       />
       <MessageSendingButton
         v-if="$settingsStore.state.isAdmin"
-        displayText="Reset All Choices"
+        msg="Reset All Choices"
         :messageTypes="messageTypeReset"
       />
       <Button
@@ -17,10 +17,7 @@
         @buttonClick="$choicesStore.actions.setVotesLeftAction(0)"
       />
       <Button v-else msg="Skip Vetos" @buttonClick="$choicesStore.actions.setVetosLeftAction(0)" />
-      <MessageSendingButton
-        displayText="Reset Own Choices"
-        :messageTypes="messageTypeResetOwnChoices"
-      />
+      <MessageSendingButton msg="Reset Own Choices" :messageTypes="messageTypeResetOwnChoices" />
     </div>
   </Panel>
 </template>
