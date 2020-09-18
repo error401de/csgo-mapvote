@@ -1,47 +1,57 @@
 <template>
   <div>
-    <div class="slider-wrapper">
-      <span class="slider-text">
-        <span>Votes:</span>
-        <span>{{ settings.votesPerParticipant }}</span>
-      </span>
-      <input
-        type="range"
-        min="0"
-        :max="mapCount"
-        :value="settings.votesPerParticipant"
-        class="slider"
-        :disabled="!$settingsStore.state.isAdmin"
-        @input="handleVotesAndVetos('votesPerParticipant')"
-      />
-      <span class="slider-text">
-        <span>Vetos:</span>
-        <span>{{ settings.vetosPerParticipant }}</span>
-      </span>
-      <input
-        type="range"
-        min="0"
-        :max="mapCount"
-        :value="settings.vetosPerParticipant"
-        class="slider"
-        :disabled="!$settingsStore.state.isAdmin"
-        @input="handleVotesAndVetos('vetosPerParticipant')"
-      />
-    </div>
-    <div class="game-modes">
-      <div>Game Modes</div>
-      <Fragment v-for="gameMode in this.$settingsStore.state.allGameModes" :key="gameMode">
-        <label for="`game-mode-${gameMode}`">{{ gameMode }}</label>
+    <Tooltip
+      :isActive="!$settingsStore.state.isAdmin"
+      msg="Settings can only be changed by lobby lead"
+    >
+      <div class="slider-wrapper">
+        <span class="slider-text">
+          <span>Votes:</span>
+          <span>{{ settings.votesPerParticipant }}</span>
+        </span>
         <input
-          type="checkbox"
-          id="`game-mode-${gameMode}`"
+          type="range"
+          min="0"
+          :max="mapCount"
+          :value="settings.votesPerParticipant"
+          class="slider"
           :disabled="!$settingsStore.state.isAdmin"
-          v-model="settings.gameModes"
-          :value="gameMode"
-          @change="handleGameModes"
+          @input="handleVotesAndVetos('votesPerParticipant')"
         />
-      </Fragment>
-    </div>
+        <span class="slider-text">
+          <span>Vetos:</span>
+          <span>{{ settings.vetosPerParticipant }}</span>
+        </span>
+        <input
+          type="range"
+          min="0"
+          :max="mapCount"
+          :value="settings.vetosPerParticipant"
+          class="slider"
+          :disabled="!$settingsStore.state.isAdmin"
+          @input="handleVotesAndVetos('vetosPerParticipant')"
+        />
+      </div>
+    </Tooltip>
+    <Tooltip
+      :isActive="!$settingsStore.state.isAdmin"
+      msg="Settings can only be changed by lobby lead"
+    >
+      <div class="game-modes">
+        <div>Game Modes</div>
+        <Fragment v-for="gameMode in this.$settingsStore.state.allGameModes" :key="gameMode">
+          <label for="`game-mode-${gameMode}`">{{ gameMode }}</label>
+          <input
+            type="checkbox"
+            id="`game-mode-${gameMode}`"
+            :disabled="!$settingsStore.state.isAdmin"
+            v-model="settings.gameModes"
+            :value="gameMode"
+            @change="handleGameModes"
+          />
+        </Fragment>
+      </div>
+    </Tooltip>
   </div>
 </template>
 
@@ -49,11 +59,13 @@
 import { Fragment } from "vue-fragment";
 
 import { CLIENT_MESSAGES } from "common/messageTypes";
+import Tooltip from "@/components/Layout/Tooltip.vue";
 
 export default {
   name: "Settings",
   components: {
     Fragment,
+    Tooltip,
   },
   data() {
     return {
@@ -178,5 +190,10 @@ input:disabled:hover {
 
 .game-modes > label {
   text-transform: capitalize;
+}
+
+.slider,
+.game-modes > * {
+  cursor: inherit;
 }
 </style>
