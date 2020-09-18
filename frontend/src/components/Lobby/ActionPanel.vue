@@ -11,6 +11,7 @@
         msg="Reset All Choices"
         :messageTypes="messageTypeReset"
       />
+      <Settings />
       <Button
         v-if="$choicesStore.state.votesLeft > 0"
         msg="Skip Votes"
@@ -30,6 +31,7 @@
 import Button from "@/components/Button.vue";
 import Panel from "@/components/Layout/Panel.vue";
 import MessageSendingButton from "@/components/Lobby/MessageSendingButton.vue";
+import Settings from "@/components/Lobby/Settings.vue";
 import { CLIENT_MESSAGES } from "common/messageTypes";
 
 export default {
@@ -38,6 +40,7 @@ export default {
     Button,
     MessageSendingButton,
     Panel,
+    Settings,
   },
   data() {
     return {

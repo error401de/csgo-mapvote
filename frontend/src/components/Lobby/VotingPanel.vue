@@ -2,7 +2,7 @@
   <Panel headline="Voting Panel" :footer="this.footerMsg">
     <div class="maps">
       <Map
-        v-for="map of maps"
+        v-for="map of $choicesStore.state.maps"
         :key="`${map.gameMode}/${map.id}`"
         :name="map.name"
         :gameMode="map.gameMode"
@@ -33,12 +33,7 @@ export default {
           .then((maps) => maps.items.map((item) => ({ ...item, gameMode })))
       )
     );
-    this.maps = maps.flat();
-  },
-  data() {
-    return {
-      maps: [],
-    };
+    this.$choicesStore.actions.setMapsAction(maps.flat());
   },
   computed: {
     footerMsg() {

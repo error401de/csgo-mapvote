@@ -2,6 +2,7 @@ const initialVotedMaps = [];
 const initialVetoedMaps = [];
 
 const initialState = {
+	maps: [],
 	votesLeft: 1,
 	vetosLeft: 1,
 	votedMaps: initialVotedMaps,
@@ -33,6 +34,9 @@ const actions = {
 		state.vetosLeft = vetosLeft;
 		state.votedMaps = initialVotedMaps;
 		state.vetoedMaps = initialVetoedMaps;
+	},
+	setMapsAction(state, maps) {
+		state.maps = maps;
 	},
 	setVotesLeftAction(state, votesLeft) {
 		state.votesLeft = votesLeft;

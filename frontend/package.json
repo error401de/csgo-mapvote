@@ -8,6 +8,7 @@
 	},
 	"dependencies": {
 		"vue": "^2.6.11",
+		"vue-fragment": "^1.5.1",
 		"vue-native-websocket": "^2.0.14",
 		"vue-router": "^3.2.0"
 	},
