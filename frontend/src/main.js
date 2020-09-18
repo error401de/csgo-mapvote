@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import VueNativeSock from 'vue-native-websocket';
 import Fragment from 'vue-fragment';
-
+import Clipboard from 'v-clipboard';
 
 import App from './App.vue';
 import router from './router';
@@ -13,6 +13,7 @@ Vue.use(VueNativeSock, `${document.location.protocol === "https:" ? "wss" : "ws"
 	connectManually: true,
 });
 Vue.use(Fragment.Plugin);
+Vue.use(Clipboard);
 
 new Vue({
 	router,

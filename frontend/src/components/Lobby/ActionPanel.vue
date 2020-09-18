@@ -12,6 +12,7 @@
         :messageTypes="messageTypeReset"
       />
       <Settings />
+      <LobbyLink />
       <Button
         v-if="$choicesStore.state.votesLeft > 0"
         msg="Skip Votes"
@@ -30,6 +31,7 @@
 <script>
 import Button from "@/components/Button.vue";
 import Panel from "@/components/Layout/Panel.vue";
+import LobbyLink from "@/components/Lobby/LobbyLink.vue";
 import MessageSendingButton from "@/components/Lobby/MessageSendingButton.vue";
 import Settings from "@/components/Lobby/Settings.vue";
 import { CLIENT_MESSAGES } from "common/messageTypes";
@@ -38,6 +40,7 @@ export default {
   name: "ActionPanel",
   components: {
     Button,
+    LobbyLink,
     MessageSendingButton,
     Panel,
     Settings,
