@@ -5,7 +5,7 @@ const getConnectionsByLobbyId = require('./getConnectionsByLobbyId');
 const messageRateLimiter = require('./messageRateLimiter');
 const { GAME_MODES } = require('../lib/constants');
 const createDebouncedSaveLobbyStatistics = require('../db/createDebouncedSaveLobbyStatistics');
-const { SERVER_MESSAGES } = require('../../../common/messageTypes');
+const { SERVER_MESSAGES, ERROR_CODES } = require('../../../common/messageTypes');
 
 const defaultLobbyState = {
 	id: '',
@@ -57,12 +57,12 @@ const checkIsAlive = (webSocketServer, state) => {
 
 const checkLobbyId = (webSocketServer, state, lobbyId) => {
 	if (!state.has(lobbyId)) {
-		return { error: { code: 4404, reason: 'Lobby ID Not Found' } };
+		return { error: { code: ERROR_CODES.LOBBY_ID_NOT_FOUND, reason: 'Lobby ID Not Found' } };
 	}
 	const connections = getConnectionsByLobbyId(webSocketServer, lobbyId);
 
 	if (connections.length >= 5) {
-		return { error: { code: 4400, reason: 'Lobby Occupied' } };
+		return { error: { code: ERROR_CODES.LOBBY_LOCKED, reason: 'Lobby Occupied' } };
 	}
 
 	if (connections.length === 0) {
@@ -107,7 +107,7 @@ module.exports = (webSocketServer, db, state) => {
 
 	return function (ws, req) {
 		if (isLimitReached(webSocketServer)) {
-			return ws.close(4001, 'Can not open new connections');
+			return ws.close(ERROR_CODES.POOL_CLOSED, 'Can not open new connections');
 		}
 
 		ws.id = uuidv4();

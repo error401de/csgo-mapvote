@@ -1,5 +1,7 @@
 const { RateLimiterMemory } = require('rate-limiter-flexible');
 
+const { ERROR_CODES } = require('../../../common/messageTypes')
+
 const rateLimiter = new RateLimiterMemory({
 	points: 10,
 	duration: 1,
@@ -14,7 +16,7 @@ const rateLimiterMiddleware = (ws, cb) => {
 			if (rejectReason.isFirstInDuration) {
 				console.log(`Closing ${ws.id}, too many messages.`);
 			}
-			ws.close(4429, 'Too many messages');
+			ws.close(ERROR_CODES.TOO_MANY_MESSAGES, 'Too many messages');
 		});
 };
 

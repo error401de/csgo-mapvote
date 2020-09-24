@@ -1,7 +1,12 @@
 <template>
   <Page>
+    <ErrorModal
+      v-if="error !== null"
+      :navigateToHome="error.shouldNavigateToHome"
+      :msg="error.msg"
+    />
     <AdminModal
-      v-if="$settingsStore.state.isAdmin && showAdminModal"
+      v-else-if="$settingsStore.state.isAdmin && showAdminModal"
       @close="showAdminModal = false;"
     />
     <EntryModal
@@ -18,10 +23,11 @@
 import ActionPanel from "@/components/Lobby/ActionPanel.vue";
 import AdminModal from "@/components/Lobby/AdminModal.vue";
 import EntryModal from "@/components/Lobby/EntryModal.vue";
+import ErrorModal from "@/components/Lobby/ErrorModal.vue";
 import ParticipantsPanel from "@/components/Lobby/ParticipantsPanel.vue";
 import Page from "@/components/Layout/Page.vue";
 import VotingPanel from "@/components/Lobby/VotingPanel.vue";
-import { SERVER_MESSAGES } from "common/messageTypes";
+import { SERVER_MESSAGES, ERROR_CODES } from "common/messageTypes";
 
 function handleMessage(message) {
   const [messageType, data] = JSON.parse(message.data);
@@ -56,12 +62,44 @@ function handleMessage(message) {
   }
 }
 
+function handleWSClosed(closeEvent) {
+  const error = {
+    msg: "",
+    shouldNavigateToHome: true,
+  };
+
+  switch (closeEvent.code) {
+    case ERROR_CODES.LOBBY_ID_NOT_FOUND:
+      error.msg = "Your lobby id is invalid.";
+      break;
+    case ERROR_CODES.LOBBY_LOCKED:
+      error.msg = "There are no free seats left, you can not join anymore.";
+      break;
+    case ERROR_CODES.POOL_CLOSED:
+      error.msg =
+        "A new lobby can currently not be opened. Please try again later.";
+      break;
+    case ERROR_CODES.TOO_MANY_MESSAGES:
+      error.msg =
+        "You sent too many messages. Try reloading the page in a few seconds.";
+      error.shouldNavigateToHome = false;
+      break;
+    default:
+      error.msg = "Try reloading the page";
+      error.shouldNavigateToHome = false;
+      break;
+  }
+
+  this.error = error;
+}
+
 export default {
   name: "Lobby",
   components: {
     ActionPanel,
     AdminModal,
     EntryModal,
+    ErrorModal,
     Page,
     ParticipantsPanel,
     VotingPanel,
@@ -70,6 +108,7 @@ export default {
     return {
       showAdminModal: true,
       showEntryModal: true,
+      error: null,
     };
   },
   mounted() {
@@ -85,6 +124,12 @@ export default {
       }
     );
     this.$options.sockets.onmessage = handleMessage.bind(this);
+    this.$options.sockets.onclose = handleWSClosed.bind(this);
+
+    window.addEventListener(
+      "beforeunload",
+      () => (this.$options.sockets = null)
+    );
   },
 };
 </script>
