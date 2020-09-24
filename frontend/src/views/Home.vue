@@ -120,6 +120,8 @@ export default {
 }
 
 .page-content {
+  width: 100%;
+  padding: 0;
   flex-direction: row;
   justify-content: center;
   flex-wrap: wrap;
