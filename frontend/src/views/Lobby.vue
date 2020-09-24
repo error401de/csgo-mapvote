@@ -1,5 +1,9 @@
 <template>
   <Page>
+    <AdminModal
+      v-if="$settingsStore.state.isAdmin && showAdminModal"
+      @close="showAdminModal = false;"
+    />
     <ParticipantsPanel id="participants-panel" />
     <VotingPanel id="voting-panel" />
     <ActionPanel />
@@ -8,6 +12,7 @@
 
 <script>
 import ActionPanel from "@/components/Lobby/ActionPanel.vue";
+import AdminModal from "@/components/Lobby/AdminModal.vue";
 import ParticipantsPanel from "@/components/Lobby/ParticipantsPanel.vue";
 import Page from "@/components/Layout/Page.vue";
 import VotingPanel from "@/components/Lobby/VotingPanel.vue";
@@ -50,9 +55,15 @@ export default {
   name: "Lobby",
   components: {
     ActionPanel,
+    AdminModal,
     Page,
     ParticipantsPanel,
     VotingPanel,
+  },
+  data() {
+    return {
+      showAdminModal: true,
+    };
   },
   mounted() {
     this.$connect(
