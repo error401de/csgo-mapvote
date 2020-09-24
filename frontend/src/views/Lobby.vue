@@ -120,9 +120,6 @@ export default {
       }${this.$route.path}`,
       {
         format: "json",
-        reconnection: true,
-        reconnectionAttempts: 5,
-        reconnectionDelay: 10000,
       }
     );
     this.$options.sockets.onmessage = handleMessage.bind(this);
