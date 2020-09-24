@@ -4,6 +4,10 @@
       v-if="$settingsStore.state.isAdmin && showAdminModal"
       @close="showAdminModal = false;"
     />
+    <EntryModal
+      v-else-if="!$settingsStore.state.isAdmin && showEntryModal"
+      @close="showEntryModal = false;"
+    />
     <ParticipantsPanel id="participants-panel" />
     <VotingPanel id="voting-panel" />
     <ActionPanel />
@@ -13,6 +17,7 @@
 <script>
 import ActionPanel from "@/components/Lobby/ActionPanel.vue";
 import AdminModal from "@/components/Lobby/AdminModal.vue";
+import EntryModal from "@/components/Lobby/EntryModal.vue";
 import ParticipantsPanel from "@/components/Lobby/ParticipantsPanel.vue";
 import Page from "@/components/Layout/Page.vue";
 import VotingPanel from "@/components/Lobby/VotingPanel.vue";
@@ -56,6 +61,7 @@ export default {
   components: {
     ActionPanel,
     AdminModal,
+    EntryModal,
     Page,
     ParticipantsPanel,
     VotingPanel,
@@ -63,6 +69,7 @@ export default {
   data() {
     return {
       showAdminModal: true,
+      showEntryModal: true,
     };
   },
   mounted() {
