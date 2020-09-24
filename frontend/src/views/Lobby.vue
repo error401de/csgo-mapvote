@@ -1,5 +1,5 @@
 <template>
-  <Page>
+  <div>
     <ErrorModal
       v-if="error !== null"
       :navigateToHome="error.shouldNavigateToHome"
@@ -13,10 +13,12 @@
       v-else-if="!$settingsStore.state.isAdmin && showEntryModal"
       @close="showEntryModal = false;"
     />
-    <ParticipantsPanel id="participants-panel" />
-    <VotingPanel id="voting-panel" />
-    <ActionPanel />
-  </Page>
+    <Page>
+      <ParticipantsPanel id="participants-panel" />
+      <VotingPanel id="voting-panel" />
+      <ActionPanel />
+    </Page>
+  </div>
 </template>
 
 <script>
