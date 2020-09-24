@@ -5,11 +5,11 @@
         <Share class="illustration" />
         <div class="modal-content-text">
           <h1 class="modal-header">Your lobby is set up!</h1>
-          <p>Go ahead and share this link with your friends:</p>
+          <p>Go ahead and share it with your friends:</p>
           <p>
-            <LobbyLink />
+            <LobbyLink class="lobby-link" />
           </p>
-          <p>Click the link to copy it to your clipboard</p>
+          <p>Click the Icon next to the Lobby id to copy the link to your clipboard</p>
         </div>
       </div>
     </template>
@@ -53,5 +53,9 @@ export default {
   margin-right: 10px;
   width: 100px;
   align-self: flex-start;
+}
+
+.lobby-link {
+  justify-content: flex-start;
 }
 </style>

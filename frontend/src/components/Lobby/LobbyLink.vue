@@ -1,6 +1,6 @@
 <template>
   <div class="lobby-link">
-    Lobby Id: {{ $route.params.lobbyId }}
+    <span class="lobby-link-text">Lobby Id: {{ $route.params.lobbyId }}</span>
     <Clipboard class="lobby-link-image" v-clipboard="() => url" />
   </div>
 </template>
@@ -39,13 +39,18 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-wrap: nowrap;
+}
+
+.lobby-link-text {
+  white-space: nowrap;
 }
 
 .lobby-link-image {
   cursor: pointer;
 }
 
-.lobby-link-image :hover {
+.lobby-link-image:hover {
   opacity: 0.5;
 }
 </style>

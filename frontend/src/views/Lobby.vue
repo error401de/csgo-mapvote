@@ -16,7 +16,7 @@
     <Page>
       <ParticipantsPanel id="participants-panel" />
       <VotingPanel id="voting-panel" />
-      <ActionPanel />
+      <ActionPanel id="action-panel" />
     </Page>
   </div>
 </template>
@@ -145,12 +145,18 @@ export default {
 }
 
 #voting-panel {
-  width: 600px;
+  max-width: 600px;
+}
+
+#action-panel {
+  width: 200px;
 }
 
 @media (max-width: 900px) {
   #participants-panel,
-  #voting-panel {
+  #voting-panel,
+  #action-panel {
+    max-width: 100%;
     width: 100%;
     margin-top: 10px;
   }

@@ -58,4 +58,14 @@ h2 {
   margin-bottom: 0px;
   padding-right: 4px;
 }
+
+@media (max-width: 900px) {
+  .panel-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    margin: auto 70px;
+    width: calc(100% - 120px);
+  }
+}
 </style>

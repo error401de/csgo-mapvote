@@ -41,8 +41,18 @@ main {
 }
 
 .page-content {
+  width: 100%;
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+}
+
+@media (max-width: 900px) {
+  .page-content {
+    flex-direction: column;
+    min-height: calc(100% - 60px);
+    padding: 20px 40px 40px;
+    width: calc(100% - 80px);
+  }
 }
 </style>

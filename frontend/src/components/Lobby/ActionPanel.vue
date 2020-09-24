@@ -7,8 +7,9 @@
         :messageTypes="messageTypeShowResult"
       />
       <MessageSendingButton
+        class="red-button"
         v-if="$settingsStore.state.isAdmin"
-        msg="Reset All Choices"
+        msg="Reset Lobby"
         :messageTypes="messageTypeReset"
       />
       <Settings />
@@ -20,7 +21,7 @@
       />
       <Button v-else msg="Skip Vetos" @buttonClick="$choicesStore.actions.setVetosLeftAction(0)" />
       <MessageSendingButton
-        msg="Reset Own Choices"
+        msg="Reset Choices"
         :messageTypes="messageTypeResetOwnChoices"
         @buttonClick="resetVotingStatus"
       />
@@ -65,3 +66,9 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.red-button {
+  background-color: #b10000;
+}
+</style>
