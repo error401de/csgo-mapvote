@@ -26,14 +26,22 @@ export default {
     Panel,
   },
   async created() {
-    const maps = await Promise.all(
-      this.$settingsStore.state.allGameModes.map((gameMode) =>
-        fetch(`/config/maps_${gameMode}.json`)
-          .then((response) => response.json())
-          .then((maps) => maps.items.map((item) => ({ ...item, gameMode })))
-      )
+    if (!this.$choicesStore.state.maps.length) {
+      const maps = await Promise.all(
+        this.$settingsStore.state.allGameModes.map((gameMode) =>
+          fetch(`/config/maps_${gameMode}.json`)
+            .then((response) => response.json())
+            .then((maps) => maps.items.map((item) => ({ ...item, gameMode })))
+        )
+      );
+      this.$choicesStore.actions.setMapsAction(maps.flat());
+    }
+  },
+  destroyed() {
+    this.$choicesStore.actions.resetAction(
+      this.$settingsStore.state.settings.votesPerParticipant,
+      this.$settingsStore.state.settings.vetosPerParticipant
     );
-    this.$choicesStore.actions.setMapsAction(maps.flat());
   },
   computed: {
     footerMsg() {

@@ -127,8 +127,12 @@ export default {
 
     window.addEventListener(
       "beforeunload",
-      () => (this.$options.sockets = null)
+      () => (this.$options.sockets.onclose = null)
     );
+  },
+  destroyed() {
+    this.$options.sockets.onclose = null;
+    this.$socket.close();
   },
 };
 </script>
