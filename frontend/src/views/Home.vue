@@ -40,7 +40,7 @@ export default {
   methods: {
     async createLobby() {
       try {
-        const response = await fetch("/lobby", { method: "POST" });
+        const response = await fetch("/api/lobby", { method: "POST" });
         if (response.ok) {
           const { id } = await response.json();
           this.$router.push({ path: "/lobby/" + id });

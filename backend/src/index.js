@@ -27,7 +27,14 @@ connectToDB(isProduction, process.env.DB_FILE_NAME, config.gameModes).then(db =>
 
 	const parametrizedWebSocketPath = config.webSocketBasePath + '/:lobbyId?';
 
-	app.post(config.webSocketBasePath, (req, res) => {
+	const webSocketHandler = handleWebsockets(wss, db, state);
+
+	app.ws(config.webSocketBasePath, webSocketHandler);
+	app.ws(parametrizedWebSocketPath, webSocketHandler);
+
+	const router = express.Router();
+
+	router.post(config.webSocketBasePath, (req, res) => {
 		const lobbyId = createLobbyId();
 		state.set(lobbyId, null);
 		res.json({ id: lobbyId });
@@ -39,12 +46,9 @@ connectToDB(isProduction, process.env.DB_FILE_NAME, config.gameModes).then(db =>
 		}, 30000);
 	});
 
-	const webSocketHandler = handleWebsockets(wss, db, state);
+	router.use(express.static('public'));
 
-	app.ws(config.webSocketBasePath, webSocketHandler);
-	app.ws(parametrizedWebSocketPath, webSocketHandler);
-
-	app.use(express.static('public'));
+	app.use('/api', router);
 
 	process.on('exit', function () {
 		console.log('closing db');

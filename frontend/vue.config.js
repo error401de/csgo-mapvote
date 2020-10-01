@@ -13,8 +13,8 @@ module.exports = {
 				ws: true,
 				changeOrigin: true
 			},
-			'^/config': {
-				target: 'ws://localhost:3000'
+			'^/api': {
+				target: 'http://localhost:3000'
 			}
 		}
 	},
