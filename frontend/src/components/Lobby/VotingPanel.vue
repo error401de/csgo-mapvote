@@ -29,7 +29,7 @@ export default {
     if (!this.$choicesStore.state.maps.length) {
       const maps = await Promise.all(
         this.$settingsStore.state.allGameModes.map((gameMode) =>
-          fetch(`/api/config/maps_${gameMode}.json`)
+          fetch(`/api/config/maps_${gameMode}`)
             .then((response) => response.json())
             .then((maps) => maps.items.map((item) => ({ ...item, gameMode })))
         )

@@ -46,7 +46,7 @@ connectToDB(isProduction, process.env.DB_FILE_NAME, config.gameModes).then(db =>
 		}, 30000);
 	});
 
-	router.use(express.static('public'));
+	router.use(express.static('public', { extensions: ['json'] }));
 
 	app.use('/api', router);
 
