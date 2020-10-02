@@ -54,5 +54,5 @@ connectToDB(isProduction, process.env.DB_FILE_NAME, config.gameModes).then(db =>
 		console.log('closing db');
 		db.close();
 	});
-	app.listen(config.port, () => console.log(`server is running at http://localhost:${config.port}`));
+	app.listen(process.env.PORT, () => console.log(`server is running at http://localhost:${process.env.PORT}`));
 });
