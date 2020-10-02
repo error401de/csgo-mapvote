@@ -1,0 +1,21 @@
+{
+	"name": "frontend",
+	"version": "0.1.0",
+	"private": true,
+	"scripts": {
+		"serve": "vue-cli-service serve --port 3001",
+		"build": "vue-cli-service build"
+	},
+	"dependencies": {
+		"v-clipboard": "^2.2.3",
+		"vue": "^2.6.11",
+		"vue-fragment": "^1.5.1",
+		"vue-native-websocket": "^2.0.14",
+		"vue-router": "^3.2.0"
+	},
+	"devDependencies": {
+		"@vue/cli-plugin-router": "~4.5.0",
+		"@vue/cli-service": "~4.5.0",
+		"vue-template-compiler": "^2.6.11"
+	}
+}
