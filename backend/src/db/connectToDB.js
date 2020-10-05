@@ -19,6 +19,7 @@ module.exports = (shouldNotCreateTables, fileName, gameModes) => {
 						id VARCHAR(36) NOT NULL,
 						votes_per_participant TINYINT NOT NULL,
 						vetos_per_participant TINYINT NOT NULL,
+						creation_date TIMESTAMP NOT NULL DEFAULT strftime('%s', CURRENT_TIMESTAMP),
 						PRIMARY KEY (id)
 					);
 				`,
