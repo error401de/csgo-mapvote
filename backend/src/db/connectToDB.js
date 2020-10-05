@@ -29,7 +29,7 @@ module.exports = (shouldNotCreateTables, fileName, gameModes) => {
 				`,
 				`CREATE TABLE
 					lobby_game_mode (
-						lobby_Id INTEGER NOT NULL,
+						lobby_Id VARCHAR(36) NOT NULL,
 						game_mode VARCHAR(15) NOT NULL,
 						PRIMARY KEY (lobby_id, game_mode),
 						FOREIGN KEY (lobby_id)
@@ -41,7 +41,7 @@ module.exports = (shouldNotCreateTables, fileName, gameModes) => {
 				`CREATE TABLE
 					vote (
 						participant_id VARCHAR(36) NOT NULL,
-						lobby_id INTEGER NOT NULL,
+						lobby_id VARCHAR(36) NOT NULL,
 						game_mode VARCHAR(15) NOT NULL,
 						map_id VARCHAR(30) NOT NULL,
 						PRIMARY KEY (participant_id, lobby_id, game_mode, map_id),
@@ -54,7 +54,7 @@ module.exports = (shouldNotCreateTables, fileName, gameModes) => {
 				`CREATE TABLE
 					veto (
 						participant_id VARCHAR(36) NOT NULL,
-						lobby_id INTEGER NOT NULL,
+						lobby_id VARCHAR(36) NOT NULL,
 						game_mode VARCHAR(15) NOT NULL,
 						map_id VARCHAR(30) NOT NULL,
 						PRIMARY KEY (participant_id, lobby_id, game_mode, map_id),
