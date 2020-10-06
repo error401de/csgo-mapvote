@@ -52,6 +52,18 @@ module.exports = (shouldNotCreateTables, fileName, gameModes) => {
 							REFERENCES game_mode (mode)
 					)
 				`,
+				`CREATE INDEX
+					idx_vote_game_mode
+				ON
+					vote
+					(game_mode)
+				`,
+				`CREATE INDEX
+					idx_vote_map_id
+				ON
+					vote
+					(map_id)
+				`,
 				`CREATE TABLE
 					veto (
 						participant_id VARCHAR(36) NOT NULL,
@@ -64,7 +76,19 @@ module.exports = (shouldNotCreateTables, fileName, gameModes) => {
 						FOREIGN KEY (game_mode)
 							REFERENCES game_mode (mode)
 					)
-				`
+				`,
+				`CREATE INDEX
+					idx_veto_game_mode
+				ON
+					veto
+					(game_mode)
+				`,
+				`CREATE INDEX
+					idx_veto_map_id
+				ON
+					veto
+					(map_id)
+				`,
 			];
 			stmnts.forEach(stmnt => db.run(stmnt));
 			const insertGameModeStmnt = db.prepare('INSERT INTO game_mode (mode) VALUES (?)');
