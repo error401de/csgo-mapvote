@@ -7,6 +7,7 @@
 		"build": "vue-cli-service build"
 	},
 	"dependencies": {
+		"d3": "^6.2.0",
 		"v-clipboard": "^2.2.3",
 		"vue": "^2.6.11",
 		"vue-fragment": "^1.5.1",

@@ -16,11 +16,18 @@ const routes = [
 		component: function () {
 			return import(/* webpackChunkName: "lobby" */ '../views/Lobby.vue')
 		}
+	},
+	{
+		path: '/statistics',
+		name: 'Statistics',
+		component: function () {
+			return import(/* webpackChunkName: "statistics" */ '../views/Statistics.vue')
+		}
 	}
-]
+];
 
 const router = new VueRouter({
 	routes
-})
+});
 
-export default router
+export default router;
