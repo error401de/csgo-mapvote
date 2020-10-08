@@ -7,7 +7,8 @@ const connectToDB = require('./db/connectToDB');
 const handleWebsockets = require('./websocket/handleWebsockets');
 const rateLimiterMiddleware = require('./middleware/rateLimiterMiddleware');
 const createLobbyId = require('./createLobbyId');
-const handleGetStatisticsGameModeUsage = require('./handleGetStatisticsGameModeUsage');
+const handleGetStatisticsGameModeUsage = require('./handler/handleGetStatisticsGameModeUsage');
+const handleGetStatisticsMaps = require('./handler/handleGetStatisticsMaps');
 
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -51,6 +52,7 @@ connectToDB(isProduction, process.env.DB_FILE_NAME, config.gameModes).then(db =>
 	router.use(express.static('public', { extensions: ['json'] }));
 
 	router.get('/statistics/game-modes', handleGetStatisticsGameModeUsage.bind(null, { db }));
+	router.get('/statistics/maps', handleGetStatisticsMaps.bind(null, { db }));
 
 	app.use('/api', router);
 
