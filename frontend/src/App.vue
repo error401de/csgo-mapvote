@@ -15,8 +15,11 @@ import choicesStore from "@/store/choices.js";
 import registerStore from "@/store/registerStore.js";
 import settingsStore from "@/store/settings.js";
 import participantsStore from "@/store/participants.js";
+import statisticsStore from "@/store/statistics.js";
 
-[choicesStore, participantsStore, settingsStore].forEach(registerStore);
+[choicesStore, participantsStore, settingsStore, statisticsStore].forEach(
+  registerStore
+);
 
 export default {
   name: "App",
