@@ -6,7 +6,8 @@
 	"scripts": {
 		"dev": "nodemon src/index.js",
 		"start": "env NODE_ENV=production env DB_FILE_NAME=mapvotes.db node src/index.js",
-		"setupDB": "env DB_FILE_NAME=mapvotes.db node src/db/setupDB.js"
+		"setupDB": "env DB_FILE_NAME=mapvotes.db node src/db/setupDB.js",
+		"test": "node_modules/.bin/mocha src/**/*.spec.js"
 	},
 	"author": "error401de,acra5y",
 	"license": "MIT",
@@ -20,6 +21,8 @@
 		"uuid": "^8.2.0"
 	},
 	"devDependencies": {
+		"chai": "^4.2.0",
+		"mocha": "^8.1.3",
 		"nodemon": "^2.0.4"
 	}
 }
