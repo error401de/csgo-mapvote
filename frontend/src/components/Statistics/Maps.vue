@@ -41,9 +41,29 @@ export default {
         .append("g")
         .attr("transform", `translate(0,${height})`)
         .call(d3.axisBottom(x));
+      svg
+        .append("text")
+        .attr(
+          "transform",
+          `translate(${width / 2},${height + margin.top + 20})`
+        )
+        .style("text-anchor", "middle")
+        .style("fill", "#fff")
+        .style("font-size", "10px")
+        .text("Votes");
 
       const y = d3.scaleLinear().domain([0, maxVetos]).range([height, 0]);
       svg.append("g").call(d3.axisLeft(y));
+      svg
+        .append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 0 - margin.left)
+        .attr("x", 0 - height / 2)
+        .attr("dy", "1em")
+        .style("text-anchor", "middle")
+        .style("fill", "#fff")
+        .style("font-size", "10px")
+        .text("Vetos");
 
       svg
         .append("g")
@@ -57,8 +77,12 @@ export default {
         .attr("cy", function (d) {
           return y(d.vetos);
         })
-        .attr("r", 1.5)
-        .style("fill", "#69b3a2");
+        .attr("r", 3)
+        .style("fill", "#69b3a2")
+        .append("svg:title")
+        .text(function (d) {
+          return `${d.gameMode}/${d.id}`;
+        });
     },
   },
 };
