@@ -6,6 +6,11 @@
           <GameModes />
         </div>
       </Panel>
+      <Panel headline="Maps">
+        <div class="panel-content">
+          <Maps />
+        </div>
+      </Panel>
     </div>
   </Page>
 </template>
@@ -14,6 +19,7 @@
 import Page from "@/components/Layout/Page.vue";
 import Panel from "@/components/Layout/Panel.vue";
 import GameModes from "@/components/Statistics/GameModes.vue";
+import Maps from "@/components/Statistics/Maps.vue";
 
 export default {
   name: "Statistics",
@@ -21,6 +27,7 @@ export default {
     Page,
     Panel,
     GameModes,
+    Maps,
   },
 };
 </script>
