@@ -6,13 +6,8 @@
 </template>
 
 <script>
-import { Fragment } from "vue-fragment";
-
 export default {
   name: "Tooltip",
-  components: {
-    Fragment,
-  },
   props: {
     isActive: Boolean,
     msg: String,
