@@ -27,3 +27,11 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.page-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  row-gap: 14px;
+}
+</style>
