@@ -6,11 +6,7 @@
           <GameModes />
         </div>
       </Panel>
-      <Panel headline="Maps">
-        <div class="panel-content">
-          <Maps />
-        </div>
-      </Panel>
+      <Maps />
     </div>
   </Page>
 </template>
