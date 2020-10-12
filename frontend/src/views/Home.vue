@@ -21,6 +21,11 @@
           <Button ref="joinLobby" msg="Join lobby" @buttonClick="joinLobby" />
         </div>
       </Panel>
+      <Panel headline="Statistics">
+        <div class="panel-content">
+          <Button msg="View Statistics" @buttonClick="navigateToStatistics" />
+        </div>
+      </Panel>
     </div>
   </Page>
 </template>
@@ -65,6 +70,9 @@ export default {
       this.$refs.joinLobby.$el.blur();
       input.reportValidity && input.reportValidity();
       input.focus();
+    },
+    navigateToStatistics() {
+      this.$router.push({ path: "/statistics" });
     },
     onInput(ev) {
       if (ev.target.value && event.key === "Enter") {

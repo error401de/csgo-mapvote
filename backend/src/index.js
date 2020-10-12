@@ -1,4 +1,5 @@
 const express = require('express');
+require('express-async-errors');
 require('dotenv').config();
 
 const config = require('./config');
@@ -6,6 +7,10 @@ const connectToDB = require('./db/connectToDB');
 const handleWebsockets = require('./websocket/handleWebsockets');
 const rateLimiterMiddleware = require('./middleware/rateLimiterMiddleware');
 const createLobbyId = require('./createLobbyId');
+const handleGetStatisticsGameModeUsage = require('./handler/handleGetStatisticsGameModeUsage');
+const handleGetStatisticsMaps = require('./handler/handleGetStatisticsMaps');
+const getChoices = require("./db/statistics/getChoices");
+const getVotingResults = require("./db/statistics/getVotingResults");
 
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -47,6 +52,9 @@ connectToDB(isProduction, process.env.DB_FILE_NAME, config.gameModes).then(db =>
 	});
 
 	router.use(express.static('public', { extensions: ['json'] }));
+
+	router.get('/statistics/game-modes', handleGetStatisticsGameModeUsage.bind(null, { db }));
+	router.get('/statistics/maps', handleGetStatisticsMaps.bind(null, { db, getChoices, getVotingResults }));
 
 	app.use('/api', router);
 
