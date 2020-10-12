@@ -38,10 +38,7 @@ export default {
     }
   },
   destroyed() {
-    this.$choicesStore.actions.resetAction(
-      this.$settingsStore.state.settings.votesPerParticipant,
-      this.$settingsStore.state.settings.vetosPerParticipant
-    );
+    this.$choicesStore.actions.setResultAction(null);
   },
   computed: {
     footerMsg() {
@@ -57,7 +54,6 @@ export default {
       return "Status: Wait until the votes are reset";
     },
   },
-
   methods: {
     sendVotes() {
       const { votedMaps } = this.$choicesStore.state;
@@ -92,6 +88,12 @@ export default {
       if (newValue === 0 && oldValue > 0) {
         return this.sendVetos();
       }
+    },
+    "$settingsStore.state.settings"() {
+      this.$choicesStore.actions.resetAction(
+        this.$settingsStore.state.settings.votesPerParticipant,
+        this.$settingsStore.state.settings.vetosPerParticipant
+      );
     },
   },
 };

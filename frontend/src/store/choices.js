@@ -34,6 +34,7 @@ const actions = {
 		state.vetosLeft = vetosLeft;
 		state.votedMaps = initialVotedMaps;
 		state.vetoedMaps = initialVetoedMaps;
+		state.result = null;
 	},
 	setMapsAction(state, maps) {
 		state.maps = maps;

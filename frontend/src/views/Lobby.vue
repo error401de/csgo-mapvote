@@ -7,11 +7,11 @@
     />
     <AdminModal
       v-else-if="$settingsStore.state.isAdmin && showAdminModal"
-      @close="showAdminModal = false;"
+      @close="showAdminModal = false"
     />
     <EntryModal
       v-else-if="!$settingsStore.state.isAdmin && showEntryModal"
-      @close="showEntryModal = false;"
+      @close="showEntryModal = false"
     />
     <Page>
       <ParticipantsPanel id="participants-panel" />
@@ -46,11 +46,10 @@ function handleMessage(message) {
       this.$settingsStore.actions.setIsAdminAction(data.isAdmin);
       break;
     case SERVER_MESSAGES.RESULT:
-      this.$choicesStore.actions.setResultAction(data.items);
       this.$choicesStore.actions.resetAction(0, 0);
+      this.$choicesStore.actions.setResultAction(data.items);
       break;
     case SERVER_MESSAGES.RESET:
-      this.$choicesStore.actions.setResultAction(null);
       this.$choicesStore.actions.resetAction(
         this.$settingsStore.state.settings.votesPerParticipant,
         this.$settingsStore.state.settings.vetosPerParticipant
