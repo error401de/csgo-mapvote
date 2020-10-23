@@ -39,11 +39,14 @@
     >
       <div class="game-modes">
         <div>Game Modes</div>
-        <Fragment v-for="gameMode in this.$settingsStore.state.allGameModes" :key="gameMode">
-          <label for="`game-mode-${gameMode}`">{{ gameMode }}</label>
+        <Fragment
+          v-for="gameMode in this.$settingsStore.state.allGameModes"
+          :key="gameMode"
+        >
+          <label :for="`game-mode-${gameMode}`">{{ gameMode }}</label>
           <input
             type="checkbox"
-            id="`game-mode-${gameMode}`"
+            :id="`game-mode-${gameMode}`"
             :disabled="!$settingsStore.state.isAdmin"
             v-model="settings.gameModes"
             :value="gameMode"
