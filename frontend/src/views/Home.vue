@@ -18,7 +18,7 @@
             autofocus
             ref="lobbyInput"
           />
-          <Button ref="joinLobby" msg="Join lobby" @buttonClick="joinLobby" />
+          <Button ref="joinLobby" msg="Join Lobby" @buttonClick="joinLobby" />
         </div>
       </Panel>
       <Panel headline="Statistics">
