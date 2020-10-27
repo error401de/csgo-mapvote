@@ -1,13 +1,22 @@
 <template>
-  <div id="game-modes-venn" />
+  <Panel headline="Game Modes">
+    <div class="panel-content">
+      <div id="game-modes-venn" />
+    </div>
+  </Panel>
 </template>
 
 <script>
 import * as d3 from "d3";
 import * as venn from "@upsetjs/venn.js";
 
+import Panel from "@/components/Layout/Panel.vue";
+
 export default {
   name: "GameModes",
+  components: {
+    Panel,
+  },
   async created() {
     if (!this.$statisticsStore.state.gameModes) {
       const data = await fetch("/api/statistics/game-modes").then((result) =>
