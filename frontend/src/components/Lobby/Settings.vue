@@ -16,7 +16,8 @@
           :value="settings.votesPerParticipant"
           class="slider"
           :disabled="!$settingsStore.state.isAdmin"
-          @input="handleVotesAndVetos('votesPerParticipant')"
+          @input="updateState('votesPerParticipant')"
+          @change="sendSettings()"
         />
         <span class="slider-text">
           <span>Vetos:</span>
@@ -29,7 +30,8 @@
           :value="settings.vetosPerParticipant"
           class="slider"
           :disabled="!$settingsStore.state.isAdmin"
-          @input="handleVotesAndVetos('vetosPerParticipant')"
+          @input="updateState('vetosPerParticipant')"
+          @change="sendSettings()"
         />
       </div>
     </Tooltip>
@@ -102,11 +104,10 @@ export default {
       );
       this.sendSettings();
     },
-    handleVotesAndVetos(settingsProp) {
+    updateState(settingsProp) {
       this.settings[settingsProp] = parseInt(event.target.value, 10);
-      this.sendSettings();
     },
-    sendSettings(ev) {
+    sendSettings() {
       this.$socket.sendObj([CLIENT_MESSAGES.SETTINGS, this.settings]);
     },
   },
