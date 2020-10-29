@@ -1,7 +1,12 @@
 <template>
   <Panel headline="Game Modes">
     <div class="panel-content">
-      <div id="game-modes-venn" />
+      <GameModesVenn
+        v-if="
+          $statisticsStore.state.gameModes !== null &&
+          $statisticsStore.state.gameModes.gameModePerLobby !== null
+        "
+      />
     </div>
   </Panel>
 </template>
@@ -10,12 +15,17 @@
 import * as d3 from "d3";
 import * as venn from "@upsetjs/venn.js";
 
+import GameModesVenn from "@/components/Statistics/GameModesVenn.vue";
 import Panel from "@/components/Layout/Panel.vue";
 
 export default {
   name: "GameModes",
   components: {
+    GameModesVenn,
     Panel,
+  },
+  beforeCreate() {
+    this.id = `game-modes-venn-${Math.floor(Math.random() * 1000)}`;
   },
   async created() {
     if (!this.$statisticsStore.state.gameModes) {
@@ -24,17 +34,6 @@ export default {
       );
       this.$statisticsStore.actions.setGameModes(data);
     }
-    this.generateVenn();
-  },
-  methods: {
-    generateVenn() {
-      const w = 500;
-      const h = 500;
-      const sets = this.$statisticsStore.state.gameModes.gameModesPerLobby;
-
-      const chart = venn.VennDiagram();
-      d3.select("#game-modes-venn").datum(sets).call(chart);
-    },
   },
 };
 </script>

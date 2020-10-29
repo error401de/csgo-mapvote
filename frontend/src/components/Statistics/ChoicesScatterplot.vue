@@ -1,5 +1,5 @@
 <template>
-  <div id="maps-scatter" />
+  <div :id="id" />
 </template>
 
 <script>
@@ -7,7 +7,10 @@ import * as d3 from "d3";
 
 export default {
   name: "ChoicesScatterplot",
-  async mounted() {
+  beforeCreate() {
+    this.id = `maps-scatter-${Math.floor(Math.random() * 1000)}`;
+  },
+  mounted() {
     this.generateScatterplot();
   },
   methods: {
@@ -23,7 +26,7 @@ export default {
         ...this.$statisticsStore.state.maps.map((m) => m.vetos)
       );
       const svg = d3
-        .select("#maps-scatter")
+        .select(`#${this.id}`)
         .append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)

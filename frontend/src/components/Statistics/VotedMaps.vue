@@ -7,15 +7,18 @@ import * as d3 from "d3";
 
 export default {
   name: "VotedMaps",
-  async mounted() {
+  mounted() {
     this.generateBarDiagrams();
   },
   props: {
     gameMode: String,
   },
+  beforeCreate() {
+    this.baseId = `times-played-${Math.floor(Math.random() * 1000)}`;
+  },
   computed: {
     id() {
-      return `times-played-${this.gameMode}`;
+      return `${this.baseId}-${this.gameMode}`;
     },
   },
   methods: {
