@@ -1,6 +1,6 @@
 <template>
   <transition name="modal">
-    <div class="modal-background" @click="$emit('close');">
+    <div class="modal-background" @click="emitCloseEvent">
       <div class="modal">
         <slot name="body" />
       </div>
@@ -11,6 +11,11 @@
 <script>
 export default {
   name: "Modal",
+  methods: {
+    emitCloseEvent(ev) {
+      this.$emit("close", ev);
+    },
+  },
 };
 </script>
 
@@ -19,6 +24,8 @@ export default {
   z-index: 1;
   width: 100%;
   height: 100%;
+  top: 0;
+  left: 0;
   position: fixed;
   background-color: rgba(255, 255, 255, 0.5);
 }
@@ -27,7 +34,7 @@ export default {
   z-index: 2;
   min-width: 270px;
   max-width: 425px;
-  max-height: 100%;
+  max-height: calc(100% - 28px);
   position: fixed;
   top: 50%;
   left: 50%;

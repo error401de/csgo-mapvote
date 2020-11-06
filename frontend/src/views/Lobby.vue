@@ -13,7 +13,7 @@
       v-else-if="!$settingsStore.state.isAdmin && showEntryModal"
       @close="showEntryModal = false"
     />
-    <Page>
+    <Page withHeader>
       <ParticipantsPanel id="participants-panel" />
       <VotingPanel id="voting-panel" />
       <ActionPanel id="action-panel" />

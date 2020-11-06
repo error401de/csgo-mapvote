@@ -1,5 +1,6 @@
 <template>
   <div class="page-wrapper">
+    <Header v-if="withHeader" />
     <main>
       <div class="page-content">
         <slot></slot>
@@ -11,11 +12,16 @@
 
 <script>
 import GitHubLink from "@/components/GitHubLink.vue";
+import Header from "@/components/Header/Header.vue";
 
 export default {
   name: "Page",
   components: {
+    Header,
     GitHubLink,
+  },
+  props: {
+    withHeader: Boolean,
   },
 };
 </script>
@@ -28,6 +34,7 @@ export default {
   right: 0;
   display: flex;
   justify-content: space-between;
+  flex-direction: column;
   min-height: 100vh;
 }
 
