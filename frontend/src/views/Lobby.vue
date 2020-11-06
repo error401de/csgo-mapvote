@@ -95,7 +95,7 @@ function handleWSClosed(closeEvent) {
 }
 
 export default {
-  name: "Lobby",
+  name: "LobbyView",
   components: {
     ActionPanel,
     AdminModal,

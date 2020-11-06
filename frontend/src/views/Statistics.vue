@@ -13,7 +13,7 @@ import GameModes from "@/components/Statistics/GameModes.vue";
 import Maps from "@/components/Statistics/Maps.vue";
 
 export default {
-  name: "Statistics",
+  name: "StatisticsView",
   components: {
     Page,
     GameModes,

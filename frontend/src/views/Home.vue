@@ -36,7 +36,7 @@ import Panel from "@/components/Layout/Panel.vue";
 import Button from "@/components/Button.vue";
 
 export default {
-  name: "Home",
+  name: "HomeView",
   components: {
     Page,
     Panel,
