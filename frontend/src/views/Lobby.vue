@@ -1,7 +1,8 @@
 <template>
   <div>
+    <ExitModal v-if="waitForConfirmation" @leave="leaveOrStay" />
     <ErrorModal
-      v-if="error !== null"
+      v-else-if="error !== null"
       :navigateToHome="error.shouldNavigateToHome"
       :msg="error.msg"
     />
@@ -26,6 +27,7 @@ import ActionPanel from "@/components/Lobby/ActionPanel.vue";
 import AdminModal from "@/components/Lobby/AdminModal.vue";
 import EntryModal from "@/components/Lobby/EntryModal.vue";
 import ErrorModal from "@/components/Lobby/ErrorModal.vue";
+import ExitModal from "@/components/Lobby/ExitModal.vue";
 import ParticipantsPanel from "@/components/Lobby/ParticipantsPanel.vue";
 import Page from "@/components/Layout/Page.vue";
 import VotingPanel from "@/components/Lobby/VotingPanel.vue";
@@ -101,6 +103,7 @@ export default {
     AdminModal,
     EntryModal,
     ErrorModal,
+    ExitModal,
     Page,
     ParticipantsPanel,
     VotingPanel,
@@ -110,7 +113,17 @@ export default {
       showAdminModal: true,
       showEntryModal: true,
       error: null,
+      waitForConfirmation: false,
+      nextRouteHandler: null,
     };
+  },
+  beforeRouteLeave(from, to, next) {
+    if (this.$socket.readyState <= 1) {
+      this.waitForConfirmation = true;
+      this.nextRouteHandler = next;
+    } else {
+      next();
+    }
   },
   mounted() {
     this.$connect(
@@ -132,6 +145,16 @@ export default {
   destroyed() {
     this.$options.sockets.onclose = null;
     this.$socket.close();
+  },
+  methods: {
+    leaveOrStay({ confirmed }) {
+      this.waitForConfirmation = false;
+      if (confirmed) {
+        this.nextRouteHandler();
+      } else {
+        this.nextRouteHandler(false);
+      }
+    },
   },
 };
 </script>
