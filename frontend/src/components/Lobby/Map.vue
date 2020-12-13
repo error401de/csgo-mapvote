@@ -2,7 +2,14 @@
   <div
     class="map"
     @click="toggleMap"
-    :class="{ 'not-displayed': isNotDisplayed, 'not-visible': !isVisible }"
+    :class="{
+      'not-displayed': isNotDisplayed,
+      'not-visible': !isVisible,
+      'cursor-voting': voting,
+      'cursor-vetoing': vetoing,
+      'cursor-trashcan': removingChoice,
+    }"
+    :style="cssProps"
   >
     {{ name }}
     <CheckMark v-if="this.isVoted" class="map-icon" />
@@ -27,9 +34,26 @@ export default {
     id: String,
     name: String,
   },
+  data() {
+    return {
+      cssProps: this.getCssProps({ layerX: 5, layerY: 5 }),
+    };
+  },
   computed: {
     mapId() {
       return `${this.gameMode}/${this.id}`;
+    },
+    voting() {
+      return this.$choicesStore.state.votesLeft > 0;
+    },
+    vetoing() {
+      return this.$choicesStore.state.vetosLeft > 0 && !this.voting;
+    },
+    removingChoice() {
+      return (
+        this.$choicesStore.state.votedMaps.includes(this.mapId) ||
+        this.$choicesStore.state.vetoedMaps.includes(this.mapId)
+      );
     },
     votingResult() {
       const { result } = this.$choicesStore.state;
@@ -62,7 +86,13 @@ export default {
     },
   },
   methods: {
-    toggleMap() {
+    getCssProps(ev) {
+      return {
+        "--icon-left": `${ev.layerX}px`,
+        "--icon-top": `${ev.layerY}px`,
+      };
+    },
+    toggleMap(ev) {
       const {
         votedMaps,
         vetoedMaps,
@@ -81,11 +111,13 @@ export default {
       }
 
       if (votesLeft > 0) {
+        this.cssProps = this.getCssProps(ev);
         this.$choicesStore.actions.addVoteAction(this.mapId);
         return;
       }
 
       if (vetosLeft > 0) {
+        this.cssProps = this.getCssProps(ev);
         this.$choicesStore.actions.addVetoAction(this.mapId);
         return;
       }
@@ -123,8 +155,8 @@ export default {
   height: 25px;
   background-size: 25px 25px;
   position: absolute;
-  right: 5px;
-  bottom: 5px;
+  left: var(--icon-left);
+  top: var(--icon-top);
 }
 
 .map:active > .map-icon,
@@ -133,8 +165,8 @@ export default {
   width: 23px;
   height: 23px;
   background-size: 23px 23px;
-  right: 6px;
-  bottom: 6px;
+  left: calc(var(--icon-left) + 1px);
+  top: calc(var(--icon-top) + 1px);
 }
 
 .map:hover,
@@ -143,6 +175,18 @@ export default {
   cursor: pointer;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.5) inset,
     0 6px 20px 0 rgba(0, 0, 0, 0.19) inset;
+}
+
+.cursor-voting:hover {
+  cursor: url("~@/assets/img/tick.svg") 0 0, pointer;
+}
+
+.cursor-vetoing:hover {
+  cursor: url("~@/assets/img/rejected.svg") 0 0, pointer;
+}
+
+.cursor-trashcan:hover {
+  cursor: url("~@/assets/img/trashcan.svg") 0 0, pointer;
 }
 
 @media (hover: none) {
