@@ -1,1 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 612 792" width="512" height="512" style=""><rect id="backgroundrect" width="100%" height="100%" x="0" y="0" fill="none" stroke="none" class="" style=""/><g class="currentLayer" style=""><title>Layer 1</title><path d="m511.9999885559082,256 c0,-141.4 -114.6,-256 -256,-256 s-256,114.6 -256,256 s114.6,256 256,256 s256,-114.6 256,-256 zm-60.3,-99.7 l-241,241 l-17.2,17.2 l-133.2,-133.2 l58.8,-58.8 l74.5,74.5 l199.4,-199.4 z" fill="#006400" id="svg_1" class=""/></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25 25" width="25" height="25">
+    <style>
+        tspan { white-space:pre }
+        .shp0 { fill: #006400 }
+    </style>
+    <g id="Layer">
+        <path id="svg_1" fill-rule="evenodd" class="shp0" d="M12.5 25C5.6 25 0 19.4 0 12.5C0 5.6 5.6 0 12.5 0C19.4 0 25 5.6 25 12.5C25 19.4 19.4 25 12.5 25ZM19.19 4.77L9.45 14.5L5.82 10.86L2.94 13.74L9.45 20.24L22.06 7.63L19.19 4.77Z" />
+    </g>
+</svg>
