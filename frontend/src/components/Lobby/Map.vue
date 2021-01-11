@@ -140,6 +140,7 @@ export default {
   position: relative;
   padding: 0;
   background-color: inherit;
+  font-size: 16px;
 }
 
 .not-displayed {
@@ -175,6 +176,7 @@ export default {
   cursor: pointer;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.5) inset,
     0 6px 20px 0 rgba(0, 0, 0, 0.19) inset;
+  font-size: 15px;
 }
 
 .cursor-voting:hover {
