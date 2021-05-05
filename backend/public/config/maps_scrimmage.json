@@ -1,16 +1,12 @@
 {
 	"items": [
 		{
-			"id": "de_engage",
-			"name": "Engage"
+			"id": "de_mocha",
+			"name": "Mocha"
 		},
 		{
-			"id": "de_ancient",
-			"name": "Ancient"
-		},
-		{
-			"id": "cs_apollo",
-			"name": "Apollo"
+			"id": "de_grind",
+			"name": "Grind"
 		}
 	]
 }
