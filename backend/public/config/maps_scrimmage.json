@@ -1,12 +1,3 @@
 {
-	"items": [
-		{
-			"id": "de_mocha",
-			"name": "Mocha"
-		},
-		{
-			"id": "de_grind",
-			"name": "Grind"
-		}
-	]
+	"items": []
 }
