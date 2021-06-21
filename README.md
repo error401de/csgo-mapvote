@@ -1,9 +1,6 @@
 # csgo-mapvote
 csgo-mapvote is a tool to reach a consensus on a CS:GO map pool while playing with friends.
 
-## work in progress
-The project is still in development, there are some missing functionalities (see issues).
-
 ## installation
 The tool relies on node.js and sqlite3 on server side and vuejs on the frontend.
 
