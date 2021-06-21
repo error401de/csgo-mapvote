@@ -1,22 +1,28 @@
 <template>
   <Panel headline="Participants">
     <div class="participants">
-      <div
-        class="participant"
-        :class="participant.isSelf && 'self'"
-        v-for="(participant, index) of participants"
-        :key="participant.id || `participant-${index}`"
-      >
-        <span
-          class="participant-name"
-          @keyup="handleEditedName"
-          @blur="sendNewName"
-          @keydown.enter.prevent
-          v-bind:contenteditable="participant.isSelf"
-        >{{ participant.name }}</span>
-        <CheckMark v-if="participant.voted && participant.vetoed" style="padding-right: 10px;" />
-        <SandClock v-else />
-      </div>
+      <transition-group name="participants">
+        <div
+          class="participant"
+          :class="participant.isSelf && 'self'"
+          v-for="(participant, index) of participants"
+          :key="participant.id || `participant-${index}`"
+        >
+          <span
+            class="participant-name"
+            @keyup="handleEditedName"
+            @blur="sendNewName"
+            @keydown.enter.prevent
+            v-bind:contenteditable="participant.isSelf"
+            >{{ participant.name }}</span
+          >
+          <CheckMark
+            v-if="participant.voted && participant.vetoed"
+            style="padding-right: 10px"
+          />
+          <SandClock v-else />
+        </div>
+      </transition-group>
     </div>
   </Panel>
 </template>
@@ -98,5 +104,19 @@ export default {
 
 .self > .participant-name:after {
   content: " (You)";
+}
+
+.participants-enter-active,
+.participants-leave-active {
+  transition: all 1s;
+}
+
+.participants-enter,
+.participants-leave-to {
+  opacity: 0;
+}
+
+.participants-move {
+  transition: transform 1s;
 }
 </style>
