@@ -45,12 +45,12 @@
 			"name": "Office"
 		},
 		{
-			"id": "de_mocha",
-			"name": "Mocha"
+			"id": "de_basalt",
+			"name": "Basalt"
 		},
 		{
-			"id": "de_grind",
-			"name": "Grind"
+			"id": "cs_insertion2",
+			"name": "Insertion II"
 		}
 	]
 }
