@@ -45,12 +45,12 @@
 			"name": "Office"
 		},
 		{
-			"id": "de_basalt",
-			"name": "Basalt"
+			"id": "de_iris",
+			"name": "Iris"
 		},
 		{
-			"id": "cs_insertion2",
-			"name": "Insertion II"
+			"id": "cs_climb",
+			"name": "Climb"
 		}
 	]
 }
