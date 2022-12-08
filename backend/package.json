@@ -17,7 +17,7 @@
 		"express-async-errors": "^3.1.1",
 		"express-ws": "^4.0.0",
 		"rate-limiter-flexible": "^2.1.9",
-		"sqlite3": "^5.0.0",
+		"sqlite3": "^5.0.3",
 		"uuid": "^8.2.0"
 	},
 	"devDependencies": {
